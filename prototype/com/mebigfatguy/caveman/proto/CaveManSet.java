@@ -65,7 +65,17 @@ public class CaveManSet {
 	}
 	
 	public CaveMan[] toArray() {
-		return null;
+		CaveMan[] array = new CaveMan[size];
+		int index = 0;
+		for (CaveManBucket b : buckets) {
+			if (b != null) {
+				for (int i = 0; i < b.bucketSize; i++) {
+					array[index++] = b.list[i];
+				}
+			}
+		}
+		
+		return array;
 	}
 	
 	public boolean add(CaveMan item) {
