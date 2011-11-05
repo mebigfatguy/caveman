@@ -109,7 +109,7 @@
                 target="${javac.target}"
                 deprecation="${javac.deprecation}"
                 debug="${javac.debug}"
-                includeantruntime="false">
+                includeantruntime="true">
             <classpath refid="caveman.classpath"/>
         </javac>
 	</target>
