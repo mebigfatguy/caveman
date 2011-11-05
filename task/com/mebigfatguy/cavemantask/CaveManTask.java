@@ -72,6 +72,16 @@ public class CaveManTask extends Task {
 
 			String line = br.readLine();
 			while (line != null) {
+				if (line.contains("assertEquals")) {
+					if ("float".equals(primitive)) {
+						line = line.replaceAll("assertEquals\\(([^,]*),([^;]*)", "assertEquals($1,$2");
+						line = line.substring(0, line.length() - 2) + ", 0.0001f);";
+					} else if ("double".equals(primitive)) {
+						line = line.replaceAll("assertEquals\\(([^,]*),([^;]*)", "assertEquals($1,$2");					
+						line = line.substring(0, line.length() - 2) + ", 0.0001f);";
+					}
+				}
+				
 				if (line.trim().startsWith("package ")) {
 					pw.println("package " + dstPackage + ";");
 				} else if (line.contains("toCaveMan")) {
@@ -169,6 +179,12 @@ public class CaveManTask extends Task {
 		task.setSourceFolder(new File("/home/dave/dev/caveman/prototype/com/mebigfatguy/caveman/proto/"));
 		task.setDestinationFolder(new File("/home/dave/dev/caveman/src/com/mebigfatguy/caveman/"));
 		task.setPackage("com.mebigfatguy.caveman");
+
+		task.execute();
+		
+		task.setSourceFolder(new File("/home/dave/dev/caveman/prototype/com/mebigfatguy/caveman/proto/test"));
+		task.setDestinationFolder(new File("/home/dave/dev/caveman/test/com/mebigfatguy/caveman/test"));
+		task.setPackage("com.mebigfatguy.caveman.test");
 
 		task.execute();
 	}
