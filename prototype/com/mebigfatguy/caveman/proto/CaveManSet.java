@@ -84,6 +84,7 @@ public class CaveManSet {
 	}
 	
 	public boolean add(CaveMan item) {
+		++version;
 		int hash = fromCaveMan(item) % buckets.length;
 		CaveManBucket b = buckets[hash];
 		if (b == null) {
@@ -99,6 +100,7 @@ public class CaveManSet {
 	}
 	
 	public boolean remove(CaveMan item) {
+		++version;
 		int hash = fromCaveMan(item) % buckets.length;
 		CaveManBucket b = buckets[hash];
 		if (b == null) {
@@ -117,10 +119,12 @@ public class CaveManSet {
 	}
 	
 	public boolean addAll(CaveManSet c) {
+		++version;
 		return true;
 	}
 	
 	public boolean retainAll(CaveManSet c) {
+		++version;
 		return false;
 	}
 	
@@ -129,6 +133,7 @@ public class CaveManSet {
 	}	
 	
 	public void clear() {
+		++version;
 		for (int i = 0; i < buckets.length; i++) {
 			buckets[i] = null;
 		}
