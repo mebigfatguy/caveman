@@ -8,8 +8,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -19,7 +17,6 @@ import org.apache.tools.ant.Task;
 public class CaveManTask extends Task {
 
 	private static final String[] PRIMITIVES = new String[] { "boolean", "byte", "char", "short", "int", "long", "float", "double" };
-	private static final Pattern WHOLE_WORD_CAVEMAN = Pattern.compile("\bCaveMan\b");
 
 	private File srcDir;
 	private File dstDir;
@@ -45,8 +42,16 @@ public class CaveManTask extends Task {
 		File[] cmFiles = srcDir.listFiles();
 		for (File cmf : cmFiles) {
 			if (cmf.isFile()) {
-				for (String primitive : PRIMITIVES) {
-					generate(cmf, primitive);
+				if (cmf.getName().contains("CaveManKeyCaveManValue")) {
+					for (String keyPrimitive : PRIMITIVES) {
+						for (String valuePrimitive : PRIMITIVES) {
+							generate(cmf, keyPrimitive, valuePrimitive);
+						}
+					}
+				} else {
+					for (String primitive : PRIMITIVES) {
+						generate(cmf, primitive);
+					}
 				}
 			}
 		}
@@ -71,6 +76,40 @@ public class CaveManTask extends Task {
 					pw.println("package " + dstPackage + ";");
 				} else if (!line.trim().startsWith("import") || line.contains("java.")) {
 					pw.println(line.replaceAll("\\bCaveMan\\b", primitive).replaceAll("CaveMan", primitiveLabel));
+				}
+				line = br.readLine();
+			}
+		} catch (IOException ioe) {
+			throw new BuildException("Failed writing to file: " + f, ioe);
+		} finally {
+			closeQuietly(pw);
+			closeQuietly(br);
+		}
+	}
+	
+	private void generate(File cavemanProtoFile, String keyPrimitive, String valuePrimitive) {
+		String keyPrimitiveLabel = Character.toUpperCase(keyPrimitive.charAt(0)) + keyPrimitive.substring(1);
+		String valuePrimitiveLabel = Character.toUpperCase(valuePrimitive.charAt(0)) + valuePrimitive.substring(1);
+		
+		String fileName = cavemanProtoFile.getName();
+		String className = fileName.substring(0, fileName.length() - ".java".length()).replaceAll("CaveManKey", keyPrimitiveLabel).replaceAll("CaveManValue", valuePrimitiveLabel);
+		File f = new File(dstDir, className + ".java");
+		
+		BufferedReader br = null;
+		PrintWriter pw = null;
+		try {
+			br = new BufferedReader(new FileReader(cavemanProtoFile));
+			pw = new PrintWriter(new BufferedWriter(new FileWriter(f)));
+			
+			String line = br.readLine();
+			while (line != null) {
+				if (line.trim().startsWith("package ")) {
+					pw.println("package " + dstPackage + ";");
+				} else if (!line.trim().startsWith("import") || line.contains("java.")) {
+					pw.println(line.replaceAll("\\bCaveManKey\\b", keyPrimitive)
+							       .replaceAll("\\bCaveManValue\\b", valuePrimitive)
+							       .replaceAll("CaveManKey", keyPrimitiveLabel)
+							       .replaceAll("CaveManValue", valuePrimitiveLabel));
 				}
 				line = br.readLine();
 			}
