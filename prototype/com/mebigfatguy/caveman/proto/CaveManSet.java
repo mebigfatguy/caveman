@@ -76,12 +76,25 @@ public class CaveManSet {
 			buckets[hash] = b;
 		}
 		
-		buckets[hash].add(item);
-		return true;
+		boolean added = b.add(item);
+		if (added) {
+			++size;
+		}
+		return added;
 	}
 	
 	public boolean remove(CaveMan item) {
-		return false;
+		int hash = fromCaveMan(item) % buckets.length;
+		CaveManBucket b = buckets[hash];
+		if (b == null) {
+			return false;
+		}
+		
+		boolean removed = b.remove(item);
+		if (removed) {
+			--size;
+		}
+		return removed;
 	}
 	
 	public boolean containsAll(CaveManSet c) {
@@ -106,24 +119,25 @@ public class CaveManSet {
 	
 	private static class CaveManBucket {
 		CaveMan[] list = new CaveMan[1];
-		int size;
+		int bucketSize;
 		
-		public void add(CaveMan item) {
+		public boolean add(CaveMan item) {
 			if (contains(item)) {
-				return;
+				return false;
 			}
 			
-			if (size >= list.length) {
+			if (bucketSize >= list.length) {
 				CaveMan[] newList = new CaveMan[list.length + 4];
-				System.arraycopy(list,  0, newList, 0, size);
+				System.arraycopy(list,  0, newList, 0, bucketSize);
 				list = newList;
 			}
 			
-			list[size++] = item;
+			list[bucketSize++] = item;
+			return true;
 		}
 		
 		public boolean contains(CaveMan item) {
-			for (int i = 0; i < size; i++) {
+			for (int i = 0; i < bucketSize; i++) {
 				if (item == list[i])
 					return true;
 			}
@@ -131,7 +145,16 @@ public class CaveManSet {
 			return false;
 		}
 		
-		
+		public boolean remove(CaveMan item) {
+			for (int i = 0; i < bucketSize; i++) {
+				if (item == list[i]) {
+					--bucketSize;
+					System.arraycopy(list, i + 1, list, i, bucketSize - i);
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 	
 	
