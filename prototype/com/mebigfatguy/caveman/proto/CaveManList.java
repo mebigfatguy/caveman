@@ -17,6 +17,9 @@
  */
 package com.mebigfatguy.caveman.proto;
 
+import java.util.ConcurrentModificationException;
+import java.util.NoSuchElementException;
+
 import com.mebigfatguy.caveman.proto.aux.CaveMan;
 
 public class CaveManList {
@@ -24,6 +27,7 @@ public class CaveManList {
 	
 	private CaveMan[] list;
 	private int size;
+	private int version;
 	
 	public CaveManList() {
 		this(DEFAULT_SIZE);
@@ -32,6 +36,7 @@ public class CaveManList {
 	public CaveManList(int defaultSize) {
 		list = new CaveMan[defaultSize];
 		size = 0;
+		version = 0;
 	}
 	
 	public int size() {
@@ -52,7 +57,7 @@ public class CaveManList {
 	}
 	
 	public CaveManIterator iterator() {
-		return null;
+		return new CaveManListIterator(version);
 	}
 	
 	public CaveMan[] toArray() {
@@ -62,6 +67,7 @@ public class CaveManList {
 	}
 	
 	public boolean add(CaveMan item) {
+		++version;
 		if (size >= list.length) {
 			grow();		
 		}
@@ -71,7 +77,7 @@ public class CaveManList {
 	}
 	
 	public CaveMan removeAt(int index) {
-
+		++version;
 		CaveMan item = get(index);
 		
 		--size;		
@@ -80,6 +86,7 @@ public class CaveManList {
 	}
 	
 	public boolean remove(CaveMan item) {
+		++version;
 		int index = indexOf(item);
 		if (index < 0) {
 			return false;
@@ -101,6 +108,7 @@ public class CaveManList {
 	}
 	
 	public boolean addAll(CaveManList c) {
+		++version;
 		int newSize = size + c.size;
 		ensureSize(newSize);
 
@@ -112,6 +120,7 @@ public class CaveManList {
 	}
 	
 	public boolean removeAll(CaveManList c) {
+		++version;
 		int startSize = size;
 		
 		for (int i = 0; i < c.size; i++) {
@@ -122,6 +131,7 @@ public class CaveManList {
 	}
 
 	public boolean retainAll(CaveManList c) {
+		++version;
 		int startSize = size;
 		
 		for (int i = 0; i < size; i++) {
@@ -134,20 +144,22 @@ public class CaveManList {
 	}
 	
 	public void clear() {
+		++version;
 		size = 0;
 	}
 	
 	public CaveMan get(int index) {
 		if ((index < 0) || (index >= size)) {
-			throw new IllegalArgumentException("Index: " + index + " is out of bounds [0, " + size + "]");
+			throw new IllegalArgumentException("Index: " + index + " is out of bounds [0, " + (size - 1) + "]");
 		}
 		
 		return list[index];
 	}
 	
 	public CaveMan set(int index, CaveMan item) {
+		++version;
 		if ((index < 0) || (index >= size)) {
-			throw new IllegalArgumentException("Index: " + index + " is out of bounds [0, " + size + "]");
+			throw new IllegalArgumentException("Index: " + index + " is out of bounds [0, " + (size - 1) + "]");
 		}
 		
 		CaveMan oldItem = list[index];
@@ -156,6 +168,7 @@ public class CaveManList {
 	}
 	
 	public void add(int index, CaveMan item) {
+		++version;
 		if (size >= list.length) {
 			grow();		
 		}
@@ -199,6 +212,46 @@ public class CaveManList {
 			CaveMan[] newList = new CaveMan[newSize];
 			System.arraycopy(list, 0, newList, 0, size);
 			list = newList;
+		}
+	}
+	
+	private class CaveManListIterator implements CaveManIterator {
+
+		private int iteratorVersion;
+		private int pos;
+		
+		CaveManListIterator(int vers) {
+			iteratorVersion = vers;
+		}
+		
+		@Override
+		public boolean hasNext() {
+			if (iteratorVersion != version) {
+				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
+			}
+			return (pos < size);
+		}
+
+		@Override
+		public CaveMan next() throws NoSuchElementException {
+			if (iteratorVersion != version) {
+				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
+			}
+			
+			if (pos > size) {
+				throw new NoSuchElementException("Index " + pos + " is out of bounds [0, " + (size - 1) + "]");
+			}
+			return list[pos++];
+		}
+
+		@Override
+		public void remove() {
+			if (iteratorVersion != version) {
+				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
+			}
+			
+			removeAt(pos);
+			++iteratorVersion;
 		}
 	}
 }
