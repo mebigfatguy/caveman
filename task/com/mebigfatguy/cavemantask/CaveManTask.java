@@ -69,7 +69,7 @@ public class CaveManTask extends Task {
 			while (line != null) {
 				if (line.trim().startsWith("package ")) {
 					pw.println("package " + dstPackage + ";");
-				} else if (!line.trim().startsWith("import")) {
+				} else if (!line.trim().startsWith("import") || line.contains("java.")) {
 					pw.println(line.replaceAll("\\bCaveMan\\b", primitive).replaceAll("CaveMan", primitiveLabel));
 				}
 				line = br.readLine();
