@@ -15,22 +15,7 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.mebigfatguy.caveman.proto;
+package com.mebigfatguy.caveman.proto.aux;
 
-import com.mebigfatguy.caveman.proto.aux.CaveMan;
-
-public class CaveManList {
-	private static final int DEFAULT_SIZE = 20;
-	
-	private CaveMan[] list;
-	private int size;
-	
-	public CaveManList() {
-		this(DEFAULT_SIZE);
-	}
-	
-	public CaveManList(int defaultSize) {
-		list = new CaveMan[defaultSize];
-		size = 0;
-	}
+public class CaveMan {
 }

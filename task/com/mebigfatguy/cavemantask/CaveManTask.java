@@ -8,6 +8,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -16,7 +18,8 @@ import org.apache.tools.ant.Task;
 
 public class CaveManTask extends Task {
 
-	private static final String[] primitives = new String[] { "boolean", "byte", "char", "short", "int", "long", "float", "double" };
+	private static final String[] PRIMITIVES = new String[] { "boolean", "byte", "char", "short", "int", "long", "float", "double" };
+	private static final Pattern WHOLE_WORD_CAVEMAN = Pattern.compile("\bCaveMan\b");
 
 	private File srcDir;
 	private File dstDir;
@@ -41,10 +44,11 @@ public class CaveManTask extends Task {
 		
 		File[] cmFiles = srcDir.listFiles();
 		for (File cmf : cmFiles) {
-			for (String primitive : primitives) {
-				generate(cmf, primitive);
+			if (cmf.isFile()) {
+				for (String primitive : PRIMITIVES) {
+					generate(cmf, primitive);
+				}
 			}
-
 		}
 	}
 	
@@ -64,11 +68,10 @@ public class CaveManTask extends Task {
 			String line = br.readLine();
 			while (line != null) {
 				if (line.trim().startsWith("package ")) {
-					line = "package " + dstPackage + ";";
-				} else {
-					line = line.replaceAll("\bCaveMan\b", primitive).replaceAll("CaveMan", primitiveLabel);
+					pw.println("package " + dstPackage + ";");
+				} else if (!line.trim().startsWith("import")) {
+					pw.println(line.replaceAll("\\bCaveMan\\b", primitive).replaceAll("CaveMan", primitiveLabel));
 				}
-				pw.println(line);
 				line = br.readLine();
 			}
 		} catch (IOException ioe) {
