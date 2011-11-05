@@ -93,6 +93,15 @@ public class CaveManTask extends Task {
 							pw.println(line.replaceAll("toCaveMan\\(([^\\)]*)\\)", "(" + primitive + ") $1").replaceAll("\\bCaveMan\\b", primitive).replaceAll("CaveMan", primitiveLabel));
 						}
 					}
+				} else if (line.contains("fromCaveMan")) {
+					if (!line.contains("private")) {
+						if ("boolean".equals(primitive)) {
+							pw.println(line.replaceAll("fromCaveMan\\(([^\\)]*)\\)", "(($1) ? 1 : 0)").replaceAll("\\bCaveMan\\b", primitive).replaceAll("CaveMan", primitiveLabel));
+							
+						} else {
+							pw.println(line.replaceAll("fromCaveMan\\(([^\\)]*)\\)", "(int) $1").replaceAll("\\bCaveMan\\b", primitive).replaceAll("CaveMan", primitiveLabel));
+						}
+					}
 				} else if (!line.contains(".aux.")) {
 					if (line.contains(".proto."))
 						pw.println(line.replaceAll("\\.proto", "").replaceAll("\\bCaveMan\\b", primitive).replaceAll("CaveMan", primitiveLabel));

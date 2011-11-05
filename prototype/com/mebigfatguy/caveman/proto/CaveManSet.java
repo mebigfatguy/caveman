@@ -63,6 +63,7 @@ public class CaveManSet {
 	}
 	
 	public boolean add(CaveMan item) {
+		int hash = fromCaveMan(item);
 		return true;
 	}
 	
@@ -94,5 +95,8 @@ public class CaveManSet {
 		CaveMan[] list;
 		int size;
 	}
+	
+	
+	private int fromCaveMan(CaveMan item) {return 0;}
 }
 
