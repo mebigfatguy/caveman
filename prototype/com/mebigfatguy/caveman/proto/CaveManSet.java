@@ -17,10 +17,6 @@
  */
 package com.mebigfatguy.caveman.proto;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
-
 import com.mebigfatguy.caveman.proto.aux.CaveMan;
 
 public class CaveManSet {
