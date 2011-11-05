@@ -17,6 +17,61 @@
  */
 package com.mebigfatguy.caveman.proto;
 
-public class CaveManMap<V> {
+import com.mebigfatguy.caveman.proto.aux.CaveMan;
 
+public class CaveManMap<V> {
+	private static final int DEFAULT_CAPACITY = 31;
+	private static final float DEFAULT_LOAD_FACTOR = 0.80f;
+
+	private int size;
+	private float loadFactor;
+	
+	public CaveManMap() {
+		this(DEFAULT_CAPACITY);
+	}
+	
+	public CaveManMap(int initialCapacity) {
+		this(initialCapacity, DEFAULT_LOAD_FACTOR);
+	}
+	
+	public CaveManMap(int initialCapacity, float loadingFactor) {
+		loadFactor = loadingFactor;
+		size = 0;
+	}
+	
+	public int size() {
+		return size;
+	}
+	
+	public boolean isEmpty() {
+		return size == 0;
+	}
+	
+	public boolean containsKey(CaveMan key) {
+		return false;
+	}
+	
+	public boolean containsValue(V value) {
+		return false;		
+	}
+	
+	public V get(CaveMan key) {
+		return null;
+	}
+	
+	public void put(CaveMan key, V value) {
+	}
+	
+	public void remove(CaveMan key) {
+	}
+	
+	public void putAll(CaveManMap m) {
+	}
+	
+	public void clear() {
+	}
+	
+	public CaveManSet keySet() {
+		return null;
+	}
 }
