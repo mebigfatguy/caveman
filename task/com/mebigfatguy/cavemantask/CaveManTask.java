@@ -72,7 +72,7 @@ public class CaveManTask extends Task {
 
 			String line = br.readLine();
 			while (line != null) {
-				if (line.contains("assertEquals")) {
+				if (line.contains("assertEquals") && line.contains("toCaveMan")) {
 					if ("float".equals(primitive)) {
 						line = line.replaceAll("assertEquals\\(([^,]*),([^;]*)", "assertEquals($1,$2");
 						line = line.substring(0, line.length() - 2) + ", 0.0001f);";
