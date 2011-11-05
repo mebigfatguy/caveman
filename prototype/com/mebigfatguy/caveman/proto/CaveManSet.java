@@ -63,7 +63,14 @@ public class CaveManSet {
 	}
 	
 	public boolean add(CaveMan item) {
-		int hash = fromCaveMan(item);
+		int hash = fromCaveMan(item) % buckets.length;
+		CaveManBucket b = buckets[hash];
+		if (b == null) {
+			b = new CaveManBucket();
+			buckets[hash] = b;
+		}
+		
+		buckets[hash].add(item);
 		return true;
 	}
 	
@@ -94,6 +101,26 @@ public class CaveManSet {
 	private static class CaveManBucket {
 		CaveMan[] list;
 		int size;
+		
+		public void add(CaveMan item) {
+			if (contains(item)) {
+				return;
+			}
+			
+			
+			list[size++] = item;
+		}
+		
+		public boolean contains(CaveMan item) {
+			for (int i = 0; i < size; i++) {
+				if (item == list[i])
+					return true;
+			}
+			
+			return false;
+		}
+		
+		
 	}
 	
 	
