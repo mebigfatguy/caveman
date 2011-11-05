@@ -1,0 +1,151 @@
+<!--
+/*
+ * caveman - A primitive collection library
+ * Copyright 2011 MeBigFatGuy.com
+ * Copyright 2011 Dave Brosius
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and limitations
+ * under the License.
+ */
+ -->
+
+<project name="caveman" default="jar">
+    <property file="build.properties"/>
+
+    <property name="src.dir" value="${basedir}/src"/>
+    <property name="task.dir" value="${basedir}/task"/>
+    <property name="prototype.dir" value="${basedir}/prototype"/>
+    <property name="classes.dir" value="${basedir}/classes"/>
+    <property name="task.classes.dir" value="${basedir}/task.classes"/>
+    <property name="lib.dir" value="${basedir}/lib"/>
+    <property name="javadoc.dir" value="${basedir}/javadoc"/>
+    <property name="javac.source" value="1.5"/>
+    <property name="javac.target" value="1.5"/>
+    <property name="javac.deprecation" value="on"/>
+    <property name="javac.debug" value="on"/>
+ 
+	<property name="caveman.version" value="0.0.1"/>
+	
+    <property name="ant_.version" value="1.8.2"/>
+    <property name="ant-url" value="http://repo1.maven.org/maven2/org/apache/ant/ant/${ant_.version}/ant-${ant_.version}.jar"/> 
+
+	<target name="ant-check">
+        <available file="${basedir}/lib/ant-${ant_.version}.jar" property="ant-exists"/>
+    </target>
+
+    <target name="install-ant" depends="ant-check" unless="ant-exists" description="installs ant.jar into lib">
+        <get src="${ant-url}" dest="${basedir}/lib/ant-${ant_.version}.jar" verbose="true" ignoreerrors="true"/>
+    </target>
+
+    <target name="pull" depends="install-ant" description="pull 3rdparty jars to the lib directory"/>
+	
+    <path id="caveman.classpath">
+        <pathelement location="${lib.dir}/ant-${ant_.version}.jar"/>
+        <pathelement location="${task.classes.dir}"/>
+    </path>
+    	
+    <target name="clean" description="removes all generated collateral">
+        <delete dir="${src.dir}"/>
+        <delete dir="${classes.dir}"/>
+        <delete dir="${task.classes.dir}"/>
+        <delete dir="${javadoc.dir}"/>
+        <delete file="${basedir}/caveman-${caveman.version}.jar"/>
+        <delete file="${basedir}/caveman-src-${caveman.version}.zip"/>
+    </target>
+    
+    <target name="-init" description="prepares repository for a build">
+        <mkdir dir="${src.dir}"/>
+        <mkdir dir="${classes.dir}"/>
+        <mkdir dir="${task.classes.dir}"/>
+        <mkdir dir="${javadoc.dir}"/>
+        <mkdir dir="${lib.dir}"/>
+    </target>
+	
+	<target name="produce" description="generates the primitive classes from the prototype">
+		 <taskdef name="caveman" classname="com.mebigfatguy.cavemantask.CaveManTask" classpathref="caveman.classpath"/>
+		 <caveman sourceFolder="${prototype.dir}/com/mebigfatguy/caveman/proto" 
+		          destinationFolder="${src.dir}/com/mebigfatguy/caveman" 
+		          package="com.mebigfatguy.caveman"/>	
+	</target>
+        
+    <target name="compile_src" depends="-init" description="compiles java files">
+        <javac  srcdir="${src.dir}"
+                destdir="${classes.dir}"
+                source="${javac.source}"
+                target="${javac.target}"
+                deprecation="${javac.deprecation}"
+                debug="${javac.debug}"
+                includeantruntime="false">
+            <classpath refid="caveman.classpath"/>
+        </javac>
+    </target>
+	
+	<target name="compile_task" depends="-init">
+        <javac  srcdir="${task.dir}"
+                destdir="${task.classes.dir}"
+                source="${javac.source}"
+                target="${javac.target}"
+                deprecation="${javac.deprecation}"
+                debug="${javac.debug}"
+                includeantruntime="false">
+            <classpath refid="caveman.classpath"/>
+        </javac>
+	</target>
+
+    <target name="srczip" description="builds the source distribution zip file">
+        <zip destfile="${basedir}/caveman-src-${caveman.version}.zip" basedir="${basedir}">
+            <fileset dir="${src.dir}">
+                <include name="**/*.java"/>
+            </fileset>
+            <fileset dir="${task.dir}">
+                <include name="**/*.java"/>
+            </fileset>
+            <fileset dir="${prototype.dir}">
+                <include name="**/*.java"/>
+            </fileset>
+        </zip>
+    </target>
+
+    <target name="javadoc" depends="-init" description="build the javadoc for the project">
+        <javadoc packagenames="com.mebigfatguy.*"
+                 sourcepath="${src.dir}"
+                 classpathref="caveman.classpath"
+                 destdir="${javadoc.dir}"
+                 windowtitle="caveman api">
+            <doctitle><![CDATA[<h1>caveman javadoc</h1>]]></doctitle>
+            <bottom><![CDATA[<i>Copyright &#169; 2011-2011 MeBigFatGuy.com. All Rights Reserved.</i>]]></bottom>
+        </javadoc>
+    </target>
+
+    <target name="build" depends="clean, -init, pull, compile_task, produce, compile_src" description="compiles the code">
+    </target>
+	
+	<target name="jar" depends="build" description="produces the caveman jar file">
+        <jar destfile="${basedir}/caveman-${caveman.version}.jar">
+            <fileset dir="${classes.dir}">
+                <include name="**/*.class"/>
+            </fileset>
+            <manifest>
+                <attribute name="caveman-version" value="${caveman.version}"/>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name" value="caveman plugin"/>
+                <attribute name="Bundle-SymbolicName" value="caveman; singleton:=true"/>
+                <attribute name="Bundle-Version" value="${caveman.version}"/>                
+                <attribute name="Bundle-ClassPath" value="."/>
+                <attribute name="Bundle-Vendor" value="caveman Project"/>
+                <attribute name="Bundle-ActivationPolicy" value="lazy"/>
+            </manifest>
+        </jar>
+	</target>
+
+    <target name="release" depends="build, srczip, javadoc" description="prepares everything for a release"/>
+</project>

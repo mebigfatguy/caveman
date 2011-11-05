@@ -1,0 +1,7 @@
+src
+classes
+javadoc
+task.classes
+*.jar
+*.zip
+*.*~
