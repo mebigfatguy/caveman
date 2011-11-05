@@ -24,8 +24,10 @@
     <property name="src.dir" value="${basedir}/src"/>
     <property name="task.dir" value="${basedir}/task"/>
     <property name="prototype.dir" value="${basedir}/prototype"/>
+    <property name="test.dir" value="${basedir}/test"/>
     <property name="classes.dir" value="${basedir}/classes"/>
     <property name="task.classes.dir" value="${basedir}/task.classes"/>
+	<property name="test.classes.dir" value="${basedir}/test.classes"/>
     <property name="lib.dir" value="${basedir}/lib"/>
     <property name="javadoc.dir" value="${basedir}/javadoc"/>
     <property name="javac.source" value="1.5"/>
@@ -36,17 +38,26 @@
 	<property name="caveman.version" value="0.0.1"/>
 	
     <property name="ant_.version" value="1.8.2"/>
+	<property name="junit.version" value="4.10"/>
+	
     <property name="ant-url" value="http://repo1.maven.org/maven2/org/apache/ant/ant/${ant_.version}/ant-${ant_.version}.jar"/> 
+    <property name="junit-url" value="http://repo1.maven.org/maven2/junit/junit/${junit.version}/junit-${junit.version}.jar"/> 
 
 	<target name="ant-check">
         <available file="${basedir}/lib/ant-${ant_.version}.jar" property="ant-exists"/>
     </target>
-
-    <target name="install-ant" depends="ant-check" unless="ant-exists" description="installs ant.jar into lib">
-        <get src="${ant-url}" dest="${basedir}/lib/ant-${ant_.version}.jar" verbose="true" ignoreerrors="true"/>
+	<target name="junit-check">
+        <available file="${basedir}/lib/junit-${junit.version}.jar" property="junit-exists"/>
     </target>
-
-    <target name="pull" depends="install-ant" description="pull 3rdparty jars to the lib directory"/>
+    	
+    <target name="install-ant" depends="ant-check" unless="ant-exists" description="installs ant.jar into lib">
+        <get src="${ant-url}" dest="${lib.dir}/ant-${ant_.version}.jar" verbose="true" ignoreerrors="true"/>
+    </target>
+    <target name="install-junit" depends="junit-check" unless="junit-exists" description="installs junit.jar into lib">
+        <get src="${junit-url}" dest="${lib.dir}/junit-${junit.version}.jar" verbose="true" ignoreerrors="true"/>
+    </target>
+        	
+    <target name="pull" depends="install-ant, install-junit" description="pull 3rdparty jars to the lib directory"/>
 	
     <path id="caveman.classpath">
         <pathelement location="${lib.dir}/ant-${ant_.version}.jar"/>
@@ -57,6 +68,7 @@
         <delete dir="${src.dir}"/>
         <delete dir="${classes.dir}"/>
         <delete dir="${task.classes.dir}"/>
+        <delete dir="${test.classes.dir}"/>
         <delete dir="${javadoc.dir}"/>
         <delete file="${basedir}/caveman-${caveman.version}.jar"/>
         <delete file="${basedir}/caveman-src-${caveman.version}.zip"/>
@@ -66,6 +78,7 @@
         <mkdir dir="${src.dir}"/>
         <mkdir dir="${classes.dir}"/>
         <mkdir dir="${task.classes.dir}"/>
+        <mkdir dir="${test.classes.dir}"/>
         <mkdir dir="${javadoc.dir}"/>
         <mkdir dir="${lib.dir}"/>
     </target>
@@ -77,7 +90,7 @@
 		          package="com.mebigfatguy.caveman"/>	
 	</target>
         
-    <target name="compile_src" depends="-init" description="compiles java files">
+    <target name="compile_src" depends="produce" description="compiles java files">
         <javac  srcdir="${src.dir}"
                 destdir="${classes.dir}"
                 source="${javac.source}"
@@ -100,34 +113,30 @@
             <classpath refid="caveman.classpath"/>
         </javac>
 	</target>
+	
+	<target name="compile_test" depends="compile_src" description="builds the test classes">
+        <javac  srcdir="${test.dir}"
+                destdir="${test.classes.dir}"
+                source="${javac.source}"
+                target="${javac.target}"
+                deprecation="${javac.deprecation}"
+                debug="${javac.debug}"
+                includeantruntime="false">
+            <classpath refid="caveman.classpath"/>
+        </javac>
+	</target>
+	
+	<target name="test" depends="compile_test" description="run the unit tests">
+		<junit printsummary="yes" haltonfailure="yes">
+		  <classpath>
+		    <pathelement location="${test.classes.dir}"/>
+		    <pathelement path="${classes.dir}"/>
+		    <pathelement path="${lib.dir}/junit-${junit.version}.jar"/>
+		  </classpath>
+		</junit>
+	</target>
 
-    <target name="srczip" description="builds the source distribution zip file">
-        <zip destfile="${basedir}/caveman-src-${caveman.version}.zip" basedir="${basedir}">
-            <fileset dir="${src.dir}">
-                <include name="**/*.java"/>
-            </fileset>
-            <fileset dir="${task.dir}">
-                <include name="**/*.java"/>
-            </fileset>
-            <fileset dir="${prototype.dir}">
-                <include name="**/*.java"/>
-            </fileset>
-        </zip>
-    </target>
-
-    <target name="javadoc" depends="-init" description="build the javadoc for the project">
-        <javadoc packagenames="com.mebigfatguy.*"
-                 sourcepath="${src.dir}"
-                 classpathref="caveman.classpath"
-                 destdir="${javadoc.dir}"
-                 windowtitle="caveman api">
-            <doctitle><![CDATA[<h1>caveman javadoc</h1>]]></doctitle>
-            <bottom><![CDATA[<i>Copyright &#169; 2011-2011 MeBigFatGuy.com. All Rights Reserved.</i>]]></bottom>
-        </javadoc>
-    </target>
-
-    <target name="build" depends="clean, -init, pull, compile_task, produce, compile_src" description="compiles the code">
-    </target>
+    <target name="build" depends="clean, -init, pull, compile_task, produce, compile_src, compile_test, test" description="compiles the code"/>
 	
 	<target name="jar" depends="build" description="produces the caveman jar file">
         <jar destfile="${basedir}/caveman-${caveman.version}.jar">
@@ -146,6 +155,38 @@
             </manifest>
         </jar>
 	</target>
+
+    <target name="srczip" description="builds the source distribution zip file">
+        <zip destfile="${basedir}/caveman-src-${caveman.version}.zip" basedir="${basedir}">
+            <fileset dir="${src.dir}">
+                <include name="**/*.java"/>
+            </fileset>
+            <fileset dir="${task.dir}">
+                <include name="**/*.java"/>
+            </fileset>
+            <fileset dir="${prototype.dir}">
+                <include name="**/*.java"/>
+            </fileset>
+            <fileset dir="${test.dir}">
+                <include name="**/*.java"/>
+            </fileset>
+            <fileset dir="${basedir}">
+                <include name="build.xml"/>
+                <include name="README"/>
+            </fileset>
+        </zip>
+    </target>
+	
+    <target name="javadoc" depends="-init" description="build the javadoc for the project">
+        <javadoc packagenames="com.mebigfatguy.*"
+                 sourcepath="${src.dir}"
+                 classpathref="caveman.classpath"
+                 destdir="${javadoc.dir}"
+                 windowtitle="caveman api">
+            <doctitle><![CDATA[<h1>caveman javadoc</h1>]]></doctitle>
+            <bottom><![CDATA[<i>Copyright &#169; 2011-2011 MeBigFatGuy.com. All Rights Reserved.</i>]]></bottom>
+        </javadoc>
+    </target>
 
     <target name="release" depends="build, srczip, javadoc" description="prepares everything for a release"/>
 </project>
