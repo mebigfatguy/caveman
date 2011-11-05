@@ -17,6 +17,6 @@
  */
 package com.mebigfatguy.caveman.proto;
 
-public class CaveManValueMap {
+public class CaveManValueMap<K> {
 
 }
