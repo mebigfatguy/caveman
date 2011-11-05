@@ -2,6 +2,7 @@ src
 test
 classes
 javadoc
+reports
 task.classes
 test.classes
 *.jar
