@@ -62,32 +62,75 @@ public class CaveManList {
 	}
 	
 	public boolean add(CaveMan item) {
-		return false;
+		if (size >= list.length) {
+			grow();		
+		}
+		
+		list[size++] = item;
+		return true;
 	}
 	
-	public CaveMan remove(int index) {
+	public CaveMan removeAt(int index) {
 
 		CaveMan item = get(index);
 		
+		--size;		
 		System.arraycopy(list, index + 1, list, index, size - index);
-		--size;
 		return item;
 	}
 	
+	public boolean remove(CaveMan item) {
+		int index = indexOf(item);
+		if (index < 0) {
+			return false;
+		}
+		
+		--size;		
+		System.arraycopy(list, index + 1, list, index, size - index);
+		return true;
+	}
+	
 	public boolean containsAll(CaveManList c) {
-		return false;
+		for (int i = 0; i < c.size; i++) {
+			if (!contains(c.list[i])) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 	public boolean addAll(CaveManList c) {
-		return false;
+		int newSize = size + c.size;
+		ensureSize(newSize);
+
+		for (int i = 0; i < c.size; i++) {
+			add(c.list[i]);
+		}
+		
+		return true;
 	}
 	
 	public boolean removeAll(CaveManList c) {
-		return false;
+		int startSize = size;
+		
+		for (int i = 0; i < c.size; i++) {
+			remove(c.list[i]);
+		}
+		
+		return startSize != size;
 	}
 
 	public boolean retainAll(CaveManList c) {
-		return false;
+		int startSize = size;
+		
+		for (int i = 0; i < size; i++) {
+			if (!c.contains(list[i])) {
+				removeAt(i);
+			}
+		}
+		
+		return startSize != size;
 	}
 	
 	public void clear() {
@@ -113,6 +156,12 @@ public class CaveManList {
 	}
 	
 	public void add(int index, CaveMan item) {
+		if (size >= list.length) {
+			grow();		
+		}
+		
+		System.arraycopy(list, index, list, index + 1, size - index);
+		++size;
 	}
 	
 	public int indexOf(CaveMan item) {
@@ -134,5 +183,23 @@ public class CaveManList {
 		
 		return -1;
 	}	
+	
+	private void grow() {
+		int increase = (int)(size * 1.3);
+		increase = Math.max(20, increase);
+		
+		CaveMan[] newList = new CaveMan[size + increase];
+		System.arraycopy(list, 0, newList, 0, size);
+		list = newList;
+	}
+	
+	private void ensureSize(int newSize) {
+		
+		if (newSize > list.length) {
+			CaveMan[] newList = new CaveMan[newSize];
+			System.arraycopy(list, 0, newList, 0, size);
+			list = newList;
+		}
+	}
 }
 
