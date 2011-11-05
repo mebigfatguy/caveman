@@ -1,7 +1,9 @@
 src
+test
 classes
 javadoc
 task.classes
+test.classes
 *.jar
 *.zip
 *.*~
