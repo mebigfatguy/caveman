@@ -50,7 +50,13 @@ public class CaveManBag {
 	}
 	
 	public boolean contains(CaveMan item) {
-		return false;
+		int hash = fromCaveMan(item) % buckets.length;
+		CaveManBucket b = buckets[hash];
+		
+		if (b == null)
+			return false;
+		
+		return b.contains(item);
 	}
 	
 	public CaveManIterator iterator() {
@@ -58,15 +64,44 @@ public class CaveManBag {
 	}
 	
 	public CaveMan[] toArray() {
-		return null;
+		CaveMan[] array = new CaveMan[size];
+		int index = 0;
+		for (CaveManBucket b : buckets) {
+			if (b != null) {
+				for (int i = 0; i < b.bucketSize; i++) {
+					array[index++] = b.list[i];
+				}
+			}
+		}
+		
+		return array;
 	}
 	
 	public boolean add(CaveMan item) {
+		int hash = fromCaveMan(item) % buckets.length;
+		CaveManBucket b = buckets[hash];
+		if (b == null) {
+			b = new CaveManBucket();
+			buckets[hash] = b;
+		}
+		
+		b.add(item);
+		++size;
 		return true;
 	}
 	
 	public boolean remove(CaveMan item) {
-		return false;
+		int hash = fromCaveMan(item) % buckets.length;
+		CaveManBucket b = buckets[hash];
+		if (b == null) {
+			return false;
+		}
+		
+		boolean removed = b.remove(item);
+		if (removed) {
+			--size;
+		}
+		return removed;
 	}
 	
 	public boolean containsAll(CaveManSet c) {
@@ -86,11 +121,46 @@ public class CaveManBag {
 	}	
 	
 	public void clear() {
-		
+		for (int i = 0; i < buckets.length; i++) {
+			buckets[i] = null;
+		}
 	}
 	
 	private static class CaveManBucket {
-		CaveMan[] list;
-		int size;
+		CaveMan[] list = new CaveMan[1];
+		int bucketSize;
+		
+		public void add(CaveMan item) {
+			
+			if (bucketSize >= list.length) {
+				CaveMan[] newList = new CaveMan[list.length + 4];
+				System.arraycopy(list,  0, newList, 0, bucketSize);
+				list = newList;
+			}
+			
+			list[bucketSize++] = item;
+		}
+		
+		public boolean contains(CaveMan item) {
+			for (int i = 0; i < bucketSize; i++) {
+				if (item == list[i])
+					return true;
+			}
+			
+			return false;
+		}
+		
+		public boolean remove(CaveMan item) {
+			for (int i = 0; i < bucketSize; i++) {
+				if (item == list[i]) {
+					--bucketSize;
+					System.arraycopy(list, i + 1, list, i, bucketSize - i);
+					return true;
+				}
+			}
+			return false;
+		}
 	}
+	
+	private int fromCaveMan(CaveMan item) {return 0;}
 }

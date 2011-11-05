@@ -17,6 +17,9 @@
  */
 package com.mebigfatguy.caveman.proto;
 
+import java.util.ConcurrentModificationException;
+import java.util.NoSuchElementException;
+
 import com.mebigfatguy.caveman.proto.aux.CaveMan;
 
 public class CaveManSet {
@@ -27,6 +30,7 @@ public class CaveManSet {
 	private CaveManBucket[] buckets;
 	private int size;
 	private float loadFactor;
+	private int version;
 	
 	public CaveManSet() {
 		this(DEFAULT_CAPACITY);
@@ -40,6 +44,7 @@ public class CaveManSet {
 		buckets = new CaveManBucket[initialCapacity];
 		loadFactor = loadingFactor;
 		size = 0;
+		version = 0;
 	}
 	
 	public int size() {
@@ -61,7 +66,7 @@ public class CaveManSet {
 	}
 	
 	public CaveManIterator iterator() {
-		return null;
+		return new CaveManSetIterator(version);
 	}
 	
 	public CaveMan[] toArray() {
@@ -166,6 +171,90 @@ public class CaveManSet {
 				}
 			}
 			return false;
+		}
+	}
+	
+	private class CaveManSetIterator implements CaveManIterator {
+
+		private int iteratorVersion;
+		private int bucketIndex;
+		private int bucketSubIndex;
+		private int pos;
+		
+		CaveManSetIterator(int vers) {
+			iteratorVersion = vers;
+			
+			if (size > 0) {
+				for (int bucketIndex = 0; bucketIndex < buckets.length; bucketIndex++) {
+					CaveManBucket b = buckets[bucketIndex];
+					if ((b != null) && (b.bucketSize > 0)) {
+						bucketSubIndex = 0;
+						break;
+					}
+				}
+				//?? shouldn't get here
+			}
+			
+		}
+		
+		@Override
+		public boolean hasNext() {
+			if (iteratorVersion != version) {
+				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
+			}
+
+			return pos >= size;
+		}
+
+		@Override
+		public CaveMan next() throws NoSuchElementException {
+			if (iteratorVersion != version) {
+				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
+			}
+
+			if (pos >= size) {
+				throw new NoSuchElementException("Index " + pos + " is out of bounds [0, " + (size - 1) + "]");
+			}
+
+			CaveManBucket b = buckets[bucketIndex];
+			CaveMan item = b.list[bucketSubIndex++];
+			if (bucketSubIndex >= b.list.length) {
+				bucketSubIndex = 0;
+				for (;bucketIndex < buckets.length; bucketIndex++) {
+					b = buckets[bucketIndex];
+					if ((b != null) && (b.bucketSize > 0)) {
+						break;
+					}
+				}
+			}
+			++pos;
+			
+			return item;
+		}
+
+		@Override
+		public void remove() {
+			if (iteratorVersion != version) {
+				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
+			}
+			
+			if (pos >= size) {
+				throw new NoSuchElementException("Index " + pos + " is out of bounds [0, " + (size - 1) + "]");
+			}
+			
+			CaveManBucket b = buckets[bucketIndex];
+			System.arraycopy(b.list, bucketSubIndex + 1, b.list, bucketSubIndex, b.bucketSize - bucketSubIndex);
+			--b.bucketSize;
+			if (bucketSubIndex >= b.bucketSize) {
+				bucketSubIndex = 0;
+				for (;bucketIndex < buckets.length; bucketIndex++) {
+					b = buckets[bucketIndex];
+					if ((b != null) && (b.bucketSize > 0)) {
+						break;
+					}
+				}
+			}
+			--pos;
 		}
 	}
 	

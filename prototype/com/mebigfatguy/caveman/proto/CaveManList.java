@@ -238,7 +238,7 @@ public class CaveManList {
 				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
 			}
 			
-			if (pos > size) {
+			if (pos >= size) {
 				throw new NoSuchElementException("Index " + pos + " is out of bounds [0, " + (size - 1) + "]");
 			}
 			return list[pos++];
@@ -248,6 +248,10 @@ public class CaveManList {
 		public void remove() {
 			if (iteratorVersion != version) {
 				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
+			}
+			
+			if (pos >= size) {
+				throw new NoSuchElementException("Index " + pos + " is out of bounds [0, " + (size - 1) + "]");
 			}
 			
 			removeAt(pos);
