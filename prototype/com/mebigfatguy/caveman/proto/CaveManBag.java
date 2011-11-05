@@ -17,6 +17,80 @@
  */
 package com.mebigfatguy.caveman.proto;
 
-public class CaveManBag {
+import com.mebigfatguy.caveman.proto.aux.CaveMan;
 
+public class CaveManBag {
+	private static final int DEFAULT_CAPACITY = 31;
+	private static final float DEFAULT_LOAD_FACTOR = 0.80f;
+	
+	private CaveManBucket[] buckets;
+	private int size;
+	private float loadFactor;
+	
+	public CaveManBag() {
+		this(DEFAULT_CAPACITY);
+	}
+	
+	public CaveManBag(int initialCapacity) {
+		this(initialCapacity, DEFAULT_LOAD_FACTOR);
+	}
+	
+	public CaveManBag(int initialCapacity, float loadingFactor) {
+		buckets = new CaveManBucket[initialCapacity];
+		loadFactor = loadingFactor;
+		size = 0;
+	}
+	
+	public int size() {
+		return size;
+	}
+	
+	public boolean isEmpty() {
+		return size == 0;
+	}
+	
+	public boolean contains(CaveMan item) {
+		return false;
+	}
+	
+	public CaveManIterator iterator() {
+		return null;
+	}
+	
+	public CaveMan[] toArray() {
+		return null;
+	}
+	
+	public boolean add(CaveMan item) {
+		return true;
+	}
+	
+	public boolean remove(CaveMan item) {
+		return false;
+	}
+	
+	public boolean containsAll(CaveManSet c) {
+		return false;
+	}
+	
+	public boolean addAll(CaveManSet c) {
+		return true;
+	}
+	
+	public boolean retainAll(CaveManSet c) {
+		return false;
+	}
+	
+	public boolean removeAll(CaveManSet c) {
+		return false;
+	}	
+	
+	public void clear() {
+		
+	}
+	
+	private static class CaveManBucket {
+		CaveMan[] list;
+		int size;
+	}
 }
