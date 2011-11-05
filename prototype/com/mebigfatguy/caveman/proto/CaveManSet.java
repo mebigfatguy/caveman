@@ -107,6 +107,11 @@ public class CaveManSet {
 				return;
 			}
 			
+			if (size >= list.length) {
+				CaveMan[] newList = new CaveMan[list.length + 4];
+				System.arraycopy(list,  0, newList, 0, size);
+				list = newList;
+			}
 			
 			list[size++] = item;
 		}
