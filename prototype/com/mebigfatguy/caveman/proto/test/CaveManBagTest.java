@@ -41,8 +41,8 @@ public class CaveManBagTest {
 		s.remove(toCaveMan(0));
 		s.remove(toCaveMan(1));
 		
-		Assert.assertEquals(18, s.size());
-		Assert.assertFalse(s.isEmpty());
+		Assert.assertEquals(0, s.size());
+		Assert.assertTrue(s.isEmpty());
 	}
 	
 	@Test

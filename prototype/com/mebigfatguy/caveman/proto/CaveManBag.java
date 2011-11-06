@@ -17,6 +17,9 @@
  */
 package com.mebigfatguy.caveman.proto;
 
+import java.util.ConcurrentModificationException;
+import java.util.NoSuchElementException;
+
 import com.mebigfatguy.caveman.proto.aux.CaveMan;
 
 public class CaveManBag {
@@ -26,6 +29,7 @@ public class CaveManBag {
 	private CaveManBucket[] buckets;
 	private int size;
 	private float loadFactor;
+	private int version;
 	
 	public CaveManBag() {
 		this(DEFAULT_CAPACITY);
@@ -39,6 +43,7 @@ public class CaveManBag {
 		buckets = new CaveManBucket[initialCapacity];
 		loadFactor = loadingFactor;
 		size = 0;
+		version = 0;
 	}
 	
 	public int size() {
@@ -60,7 +65,7 @@ public class CaveManBag {
 	}
 	
 	public CaveManIterator iterator() {
-		return null;
+		return new CaveManBagIterator(version);
 	}
 	
 	public CaveMan[] toArray() {
@@ -78,6 +83,7 @@ public class CaveManBag {
 	}
 	
 	public boolean add(CaveMan item) {
+		++version;
 		int hash = fromCaveMan(item) % buckets.length;
 		CaveManBucket b = buckets[hash];
 		if (b == null) {
@@ -91,6 +97,26 @@ public class CaveManBag {
 	}
 	
 	public boolean remove(CaveMan item) {
+		++version;
+		int hash = fromCaveMan(item) % buckets.length;
+		CaveManBucket b = buckets[hash];
+		if (b == null) {
+			return false;
+		}
+		
+		boolean oneRemoved = b.remove(item);
+		boolean removed = oneRemoved;
+		
+		while (removed) {
+			--size;
+			removed = b.remove(item);
+			
+		}
+		return oneRemoved;
+	}
+	
+	public boolean removeOne(CaveMan item) {
+		++version;
 		int hash = fromCaveMan(item) % buckets.length;
 		CaveManBucket b = buckets[hash];
 		if (b == null) {
@@ -98,6 +124,7 @@ public class CaveManBag {
 		}
 		
 		boolean removed = b.remove(item);
+		
 		if (removed) {
 			--size;
 		}
@@ -105,22 +132,50 @@ public class CaveManBag {
 	}
 	
 	public boolean containsAll(CaveManSet c) {
-		return false;
-	}
-	
-	public boolean addAll(CaveManSet c) {
+		CaveManIterator it = c.iterator();
+		while (it.hasNext()) {
+			if (!contains(it.next())) {
+				return false;
+			}
+		}
 		return true;
 	}
 	
+	public boolean addAll(CaveManSet c) {
+		++version;
+		int startSize = size;
+		CaveManIterator it = c.iterator();
+		while (it.hasNext()) {
+			add(it.next());
+		}
+		return startSize != size;
+	}
+	
 	public boolean retainAll(CaveManSet c) {
-		return false;
+		++version;
+		int startSize = size;
+		CaveManIterator it = iterator();
+		while (it.hasNext()) {
+			CaveMan item = it.next();
+			if (!c.contains(item)) {
+				it.remove();
+			}
+		}
+		return startSize != size;
 	}
 	
 	public boolean removeAll(CaveManSet c) {
-		return false;
+		++version;
+		int startSize = size;
+		CaveManIterator it = c.iterator();
+		while (it.hasNext()) {
+			remove(it.next());
+		}
+		return startSize != size;
 	}	
 	
 	public void clear() {
+		++version;
 		for (int i = 0; i < buckets.length; i++) {
 			buckets[i] = null;
 		}
@@ -161,6 +216,92 @@ public class CaveManBag {
 			return false;
 		}
 	}
+	
+	private class CaveManBagIterator implements CaveManIterator {
+
+		private int iteratorVersion;
+		private int bucketIndex;
+		private int bucketSubIndex;
+		private int pos;
+		
+		CaveManBagIterator(int vers) {
+			iteratorVersion = vers;
+			
+			if (size > 0) {
+				for (int bucketIndex = 0; bucketIndex < buckets.length; bucketIndex++) {
+					CaveManBucket b = buckets[bucketIndex];
+					if ((b != null) && (b.bucketSize > 0)) {
+						bucketSubIndex = 0;
+						break;
+					}
+				}
+				//?? shouldn't get here
+			}
+			
+		}
+		
+		@Override
+		public boolean hasNext() {
+			if (iteratorVersion != version) {
+				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
+			}
+
+			return pos >= size;
+		}
+
+		@Override
+		public CaveMan next() throws NoSuchElementException {
+			if (iteratorVersion != version) {
+				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
+			}
+
+			if (pos >= size) {
+				throw new NoSuchElementException("Index " + pos + " is out of bounds [0, " + (size - 1) + "]");
+			}
+
+			CaveManBucket b = buckets[bucketIndex];
+			CaveMan item = b.list[bucketSubIndex++];
+			if (bucketSubIndex >= b.list.length) {
+				bucketSubIndex = 0;
+				for (;bucketIndex < buckets.length; bucketIndex++) {
+					b = buckets[bucketIndex];
+					if ((b != null) && (b.bucketSize > 0)) {
+						break;
+					}
+				}
+			}
+			++pos;
+			
+			return item;
+		}
+
+		@Override
+		public void remove() {
+			if (iteratorVersion != version) {
+				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
+			}
+			
+			if (pos >= size) {
+				throw new NoSuchElementException("Index " + pos + " is out of bounds [0, " + (size - 1) + "]");
+			}
+			
+			CaveManBucket b = buckets[bucketIndex];
+			System.arraycopy(b.list, bucketSubIndex + 1, b.list, bucketSubIndex, b.bucketSize - bucketSubIndex);
+			--b.bucketSize;
+			if (bucketSubIndex >= b.bucketSize) {
+				bucketSubIndex = 0;
+				for (;bucketIndex < buckets.length; bucketIndex++) {
+					b = buckets[bucketIndex];
+					if ((b != null) && (b.bucketSize > 0)) {
+						break;
+					}
+				}
+			}
+			--pos;
+		}
+	}
+
+	
 	
 	private int fromCaveMan(CaveMan item) {return 0;}
 }
