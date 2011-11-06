@@ -22,7 +22,7 @@ import java.util.NoSuchElementException;
 
 import com.mebigfatguy.caveman.proto.aux.CaveMan;
 
-public class CaveManList {
+public class CaveManList implements CaveManCollection {
 	private static final int DEFAULT_SIZE = 20;
 	
 	private CaveMan[] list;

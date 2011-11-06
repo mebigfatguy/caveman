@@ -22,7 +22,7 @@ import java.util.NoSuchElementException;
 
 import com.mebigfatguy.caveman.proto.aux.CaveMan;
 
-public class CaveManBag {
+public class CaveManBag implements CaveManCollection {
 	private static final int DEFAULT_CAPACITY = 31;
 	private static final float DEFAULT_LOAD_FACTOR = 0.80f;
 	
