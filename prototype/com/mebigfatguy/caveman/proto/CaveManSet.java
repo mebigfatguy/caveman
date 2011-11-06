@@ -115,21 +115,46 @@ public class CaveManSet {
 	}
 	
 	public boolean containsAll(CaveManSet c) {
-		return false;
+		CaveManIterator it = c.iterator();
+		while (it.hasNext()) {
+			if (!contains(it.next())) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	public boolean addAll(CaveManSet c) {
 		++version;
-		return true;
+		int startSize = size;
+		CaveManIterator it = c.iterator();
+		while (it.hasNext()) {
+			add(it.next());
+		}
+		return startSize != size;
 	}
 	
 	public boolean retainAll(CaveManSet c) {
 		++version;
-		return false;
+		int startSize = size;
+		CaveManIterator it = iterator();
+		while (it.hasNext()) {
+			CaveMan item = it.next();
+			if (!c.contains(item)) {
+				it.remove();
+			}
+		}
+		return startSize != size;
 	}
 	
 	public boolean removeAll(CaveManSet c) {
-		return false;
+		++version;
+		int startSize = size;
+		CaveManIterator it = c.iterator();
+		while (it.hasNext()) {
+			remove(it.next());
+		}
+		return startSize != size;
 	}	
 	
 	public void clear() {
