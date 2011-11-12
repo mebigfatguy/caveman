@@ -27,7 +27,9 @@ import com.mebigfatguy.caveman.proto.aux.CM;
 
 public class CaveManCMList implements CMList {
 	private static final int DEFAULT_SIZE = 20;
+	private static final CaveManCMListExpander DEFAULT_EXPANDER = new CaveManCMListExpander();
 	
+	private CMListExpander expander;
 	private CM[] list;
 	private int size;
 	private int version;
@@ -37,6 +39,11 @@ public class CaveManCMList implements CMList {
 	}
 	
 	public CaveManCMList(int defaultSize) {
+		this(defaultSize, DEFAULT_EXPANDER);
+	}
+	
+	public CaveManCMList(int defaultSize, CMListExpander listExpander) {
+		expander = listExpander;
 		list = new CM[defaultSize];
 		size = 0;
 		version = 0;
@@ -71,9 +78,8 @@ public class CaveManCMList implements CMList {
 	
 	public boolean add(CM item) {
 		++version;
-		if (size >= list.length) {
-			grow();		
-		}
+		
+		ensureSize(size + 1);
 		
 		list[size++] = item;
 		return true;
@@ -177,9 +183,8 @@ public class CaveManCMList implements CMList {
 	
 	public void add(int index, CM item) {
 		++version;
-		if (size >= list.length) {
-			grow();		
-		}
+		
+		ensureSize(size + 1);
 		
 		System.arraycopy(list, index, list, index + 1, size - index);
 		++size;
@@ -205,19 +210,15 @@ public class CaveManCMList implements CMList {
 		return -1;
 	}	
 	
-	private void grow() {
-		int increase = (int)(size * 1.3);
-		increase = Math.max(20, increase);
-		
-		CM[] newList = new CM[size + increase];
-		System.arraycopy(list, 0, newList, 0, size);
-		list = newList;
-	}
-	
 	private void ensureSize(int newSize) {
 		
 		if (newSize > list.length) {
-			CM[] newList = new CM[newSize];
+			int expansionSize = expander.grow(size,  newSize);
+			if (expansionSize < newSize) {
+				expansionSize = newSize;
+			}
+			
+			CM[] newList = new CM[expansionSize];
 			System.arraycopy(list, 0, newList, 0, size);
 			list = newList;
 		}
@@ -264,6 +265,16 @@ public class CaveManCMList implements CMList {
 			
 			removeAt(pos);
 			++iteratorVersion;
+		}
+	}
+	
+	private static final class CaveManCMListExpander implements CMListExpander {
+
+		@Override
+		public int grow(int oldSize, int newSize) {
+			int increase = (int)(newSize * 1.3);
+			increase = Math.max(20, increase);
+			return increase;
 		}
 	}
 }

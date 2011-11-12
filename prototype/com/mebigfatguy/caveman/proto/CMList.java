@@ -21,6 +21,10 @@ import com.mebigfatguy.caveman.proto.aux.CM;
 
 public interface CMList extends CMCollection {
 	
+	interface CMListExpander {
+		int grow(int oldSize, int newSize);
+	}
+	
 	CM removeAt(int index);
 	
 	CM get(int index);
