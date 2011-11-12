@@ -49,11 +49,11 @@ public class CaveManCMSetTest {
 	@Test
 	public void testAddContains() {
 		CaveManCMSet s = new CaveManCMSet();
-		for (int i = 0; i < 30; i++) {
+		for (int i = 0; i < 100; i++) {
 			s.add(toCaveMan(i));
 		}
 		
-		for (int i = 0; i < 30; i++) {
+		for (int i = 0; i < 100; i++) {
 			Assert.assertTrue(s.contains(toCaveMan(i)));
 		}
 	}
