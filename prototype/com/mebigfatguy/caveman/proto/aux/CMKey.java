@@ -17,6 +17,6 @@
  */
 package com.mebigfatguy.caveman.proto.aux;
 
-public class CaveManKey {
+public class CMKey {
 
 }

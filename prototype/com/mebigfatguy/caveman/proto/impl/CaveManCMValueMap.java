@@ -15,29 +15,26 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.mebigfatguy.caveman.proto;
+package com.mebigfatguy.caveman.proto.impl;
 
-import com.mebigfatguy.caveman.proto.aux.CaveManKey;
-import com.mebigfatguy.caveman.proto.aux.CaveManKeySet;
-import com.mebigfatguy.caveman.proto.aux.CaveManValue;
-import com.mebigfatguy.caveman.proto.aux.CaveManValueBag;
+import com.mebigfatguy.caveman.proto.aux.CM;
 
-public class CaveManKeyCaveManValueMap {
+public class CaveManCMValueMap<K> {
 	private static final int DEFAULT_CAPACITY = 31;
 	private static final float DEFAULT_LOAD_FACTOR = 0.80f;
 
 	private int size;
 	private float loadFactor;
 	
-	public CaveManKeyCaveManValueMap() {
+	public CaveManCMValueMap() {
 		this(DEFAULT_CAPACITY);
 	}
 	
-	public CaveManKeyCaveManValueMap(int initialCapacity) {
+	public CaveManCMValueMap(int initialCapacity) {
 		this(initialCapacity, DEFAULT_LOAD_FACTOR);
 	}
 	
-	public CaveManKeyCaveManValueMap(int initialCapacity, float loadingFactor) {
+	public CaveManCMValueMap(int initialCapacity, float loadingFactor) {
 		loadFactor = loadingFactor;
 		size = 0;
 	}
@@ -50,35 +47,31 @@ public class CaveManKeyCaveManValueMap {
 		return size == 0;
 	}
 	
-	public boolean containsKey(CaveManKey key) {
+	public boolean containsKey(K key) {
 		return false;
 	}
 	
-	public boolean containsValue(CaveManKey value) {
+	public boolean containsValue(CM value) {
 		return false;		
 	}
 	
-	public CaveManValue get(CaveManKey key, CaveManValue notFoundValue) {
+	public CM get(K key, CM notFoundValue) {
 		return notFoundValue;
 	}
 	
-	public void put(CaveManKey key, CaveManValue value) {
+	public void put(K key, CM value) {
 	}
 	
-	public void remove(CaveManKey key) {
+	public void remove(K key) {
 	}
 	
-	public void putAll(CaveManKeyCaveManValueMap m) {
+	public void putAll(CaveManCMValueMap<K> m) {
 	}
 	
 	public void clear() {
 	}
 	
-	public CaveManKeySet keySet() {
+	public CaveManCMBag values() {
 		return null;
 	}
-	public CaveManValueBag values() {
-		return null;
-	}
-
 }

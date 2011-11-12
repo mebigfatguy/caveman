@@ -15,8 +15,21 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.mebigfatguy.caveman.proto.aux;
+package com.mebigfatguy.caveman.proto;
 
-public class CaveManValueBag {
+import com.mebigfatguy.caveman.proto.aux.CM;
 
+public interface CMList extends CMCollection {
+	
+	CM removeAt(int index);
+	
+	CM get(int index);
+	
+	CM set(int index, CM item);
+	
+	void add(int index, CM item);
+	
+	int indexOf(CM item);
+	
+	int lastIndexOf(CM item);	
 }

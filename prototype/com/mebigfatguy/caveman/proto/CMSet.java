@@ -17,15 +17,14 @@
  */
 package com.mebigfatguy.caveman.proto;
 
-import java.util.NoSuchElementException;
 
-import com.mebigfatguy.caveman.proto.aux.CaveMan;
-
-public interface CaveManIterator {
-
-	boolean hasNext();
+public interface CMSet extends CMCollection {
 	
-	CaveMan next() throws NoSuchElementException;
+	boolean containsAll(CMCollection c);
 	
-	void remove();
+	boolean addAll(CMCollection c);
+	
+	boolean retainAll(CMCollection c);
+	
+	boolean removeAll(CMCollection c);	
 }

@@ -17,6 +17,6 @@
  */
 package com.mebigfatguy.caveman.proto.aux;
 
-public class CaveManKeySet {
+public class CMValue {
 
 }

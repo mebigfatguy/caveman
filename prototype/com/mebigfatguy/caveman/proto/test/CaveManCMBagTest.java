@@ -20,13 +20,13 @@ package com.mebigfatguy.caveman.proto.test;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.mebigfatguy.caveman.proto.CaveManBag;
-import com.mebigfatguy.caveman.proto.aux.CaveMan;
+import com.mebigfatguy.caveman.proto.aux.CM;
+import com.mebigfatguy.caveman.proto.impl.CaveManCMBag;
 
-public class CaveManBagTest {
+public class CaveManCMBagTest {
 	@Test
 	public void testSizeIsEmpty() {
-		CaveManBag s = new CaveManBag();
+		CaveManCMBag s = new CaveManCMBag();
 		Assert.assertEquals(0, s.size());
 		Assert.assertTrue(s.isEmpty());
 		
@@ -47,7 +47,7 @@ public class CaveManBagTest {
 	
 	@Test
 	public void testAddContains() {
-		CaveManBag s = new CaveManBag();
+		CaveManCMBag s = new CaveManCMBag();
 		for (int i = 0; i < 30; i++) {
 			s.add(toCaveMan(i));
 		}
@@ -58,5 +58,5 @@ public class CaveManBagTest {
 	}
 	
 	
-	private CaveMan toCaveMan(int i) { return null; }
+	private CM toCaveMan(int i) { return null; }
 }

@@ -15,32 +15,35 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.mebigfatguy.caveman.proto;
+package com.mebigfatguy.caveman.proto.impl;
 
 import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
 
-import com.mebigfatguy.caveman.proto.aux.CaveMan;
+import com.mebigfatguy.caveman.proto.CMBag;
+import com.mebigfatguy.caveman.proto.CMCollection;
+import com.mebigfatguy.caveman.proto.CMIterator;
+import com.mebigfatguy.caveman.proto.aux.CM;
 
-public class CaveManBag implements CaveManCollection {
+public class CaveManCMBag implements CMBag {
 	private static final int DEFAULT_CAPACITY = 31;
 	private static final float DEFAULT_LOAD_FACTOR = 0.80f;
 	
-	private CaveManBucket[] buckets;
+	private CMBucket[] buckets;
 	private int size;
 	private float loadFactor;
 	private int version;
 	
-	public CaveManBag() {
+	public CaveManCMBag() {
 		this(DEFAULT_CAPACITY);
 	}
 	
-	public CaveManBag(int initialCapacity) {
+	public CaveManCMBag(int initialCapacity) {
 		this(initialCapacity, DEFAULT_LOAD_FACTOR);
 	}
 	
-	public CaveManBag(int initialCapacity, float loadingFactor) {
-		buckets = new CaveManBucket[initialCapacity];
+	public CaveManCMBag(int initialCapacity, float loadingFactor) {
+		buckets = new CMBucket[initialCapacity];
 		loadFactor = loadingFactor;
 		size = 0;
 		version = 0;
@@ -54,9 +57,9 @@ public class CaveManBag implements CaveManCollection {
 		return size == 0;
 	}
 	
-	public boolean contains(CaveMan item) {
+	public boolean contains(CM item) {
 		int hash = fromCaveMan(item) % buckets.length;
-		CaveManBucket b = buckets[hash];
+		CMBucket b = buckets[hash];
 		
 		if (b == null)
 			return false;
@@ -64,14 +67,14 @@ public class CaveManBag implements CaveManCollection {
 		return b.contains(item);
 	}
 	
-	public CaveManIterator iterator() {
-		return new CaveManBagIterator(version);
+	public CMIterator iterator() {
+		return new CaveManCMBagIterator(version);
 	}
 	
-	public CaveMan[] toArray() {
-		CaveMan[] array = new CaveMan[size];
+	public CM[] toArray() {
+		CM[] array = new CM[size];
 		int index = 0;
-		for (CaveManBucket b : buckets) {
+		for (CMBucket b : buckets) {
 			if (b != null) {
 				for (int i = 0; i < b.bucketSize; i++) {
 					array[index++] = b.list[i];
@@ -82,12 +85,12 @@ public class CaveManBag implements CaveManCollection {
 		return array;
 	}
 	
-	public boolean add(CaveMan item) {
+	public boolean add(CM item) {
 		++version;
 		int hash = fromCaveMan(item) % buckets.length;
-		CaveManBucket b = buckets[hash];
+		CMBucket b = buckets[hash];
 		if (b == null) {
-			b = new CaveManBucket();
+			b = new CMBucket();
 			buckets[hash] = b;
 		}
 		
@@ -96,10 +99,10 @@ public class CaveManBag implements CaveManCollection {
 		return true;
 	}
 	
-	public boolean remove(CaveMan item) {
+	public boolean remove(CM item) {
 		++version;
 		int hash = fromCaveMan(item) % buckets.length;
-		CaveManBucket b = buckets[hash];
+		CMBucket b = buckets[hash];
 		if (b == null) {
 			return false;
 		}
@@ -115,10 +118,10 @@ public class CaveManBag implements CaveManCollection {
 		return oneRemoved;
 	}
 	
-	public boolean removeOne(CaveMan item) {
+	public boolean removeOne(CM item) {
 		++version;
 		int hash = fromCaveMan(item) % buckets.length;
-		CaveManBucket b = buckets[hash];
+		CMBucket b = buckets[hash];
 		if (b == null) {
 			return false;
 		}
@@ -131,8 +134,8 @@ public class CaveManBag implements CaveManCollection {
 		return removed;
 	}
 	
-	public boolean containsAll(CaveManSet c) {
-		CaveManIterator it = c.iterator();
+	public boolean containsAll(CMCollection c) {
+		CMIterator it = c.iterator();
 		while (it.hasNext()) {
 			if (!contains(it.next())) {
 				return false;
@@ -141,22 +144,22 @@ public class CaveManBag implements CaveManCollection {
 		return true;
 	}
 	
-	public boolean addAll(CaveManSet c) {
+	public boolean addAll(CMCollection c) {
 		++version;
 		int startSize = size;
-		CaveManIterator it = c.iterator();
+		CMIterator it = c.iterator();
 		while (it.hasNext()) {
 			add(it.next());
 		}
 		return startSize != size;
 	}
 	
-	public boolean retainAll(CaveManSet c) {
+	public boolean retainAll(CMCollection c) {
 		++version;
 		int startSize = size;
-		CaveManIterator it = iterator();
+		CMIterator it = iterator();
 		while (it.hasNext()) {
-			CaveMan item = it.next();
+			CM item = it.next();
 			if (!c.contains(item)) {
 				it.remove();
 			}
@@ -164,10 +167,10 @@ public class CaveManBag implements CaveManCollection {
 		return startSize != size;
 	}
 	
-	public boolean removeAll(CaveManSet c) {
+	public boolean removeAll(CMCollection c) {
 		++version;
 		int startSize = size;
-		CaveManIterator it = c.iterator();
+		CMIterator it = c.iterator();
 		while (it.hasNext()) {
 			remove(it.next());
 		}
@@ -181,14 +184,14 @@ public class CaveManBag implements CaveManCollection {
 		}
 	}
 	
-	private static class CaveManBucket {
-		CaveMan[] list = new CaveMan[1];
+	private static class CMBucket {
+		CM[] list = new CM[1];
 		int bucketSize;
 		
-		public void add(CaveMan item) {
+		public void add(CM item) {
 			
 			if (bucketSize >= list.length) {
-				CaveMan[] newList = new CaveMan[list.length + 4];
+				CM[] newList = new CM[list.length + 4];
 				System.arraycopy(list,  0, newList, 0, bucketSize);
 				list = newList;
 			}
@@ -196,7 +199,7 @@ public class CaveManBag implements CaveManCollection {
 			list[bucketSize++] = item;
 		}
 		
-		public boolean contains(CaveMan item) {
+		public boolean contains(CM item) {
 			for (int i = 0; i < bucketSize; i++) {
 				if (item == list[i])
 					return true;
@@ -205,7 +208,7 @@ public class CaveManBag implements CaveManCollection {
 			return false;
 		}
 		
-		public boolean remove(CaveMan item) {
+		public boolean remove(CM item) {
 			for (int i = 0; i < bucketSize; i++) {
 				if (item == list[i]) {
 					--bucketSize;
@@ -217,19 +220,19 @@ public class CaveManBag implements CaveManCollection {
 		}
 	}
 	
-	private class CaveManBagIterator implements CaveManIterator {
+	private class CaveManCMBagIterator implements CMIterator {
 
 		private int iteratorVersion;
 		private int bucketIndex;
 		private int bucketSubIndex;
 		private int pos;
 		
-		CaveManBagIterator(int vers) {
+		CaveManCMBagIterator(int vers) {
 			iteratorVersion = vers;
 			
 			if (size > 0) {
 				for (int bucketIndex = 0; bucketIndex < buckets.length; bucketIndex++) {
-					CaveManBucket b = buckets[bucketIndex];
+					CMBucket b = buckets[bucketIndex];
 					if ((b != null) && (b.bucketSize > 0)) {
 						bucketSubIndex = 0;
 						break;
@@ -250,7 +253,7 @@ public class CaveManBag implements CaveManCollection {
 		}
 
 		@Override
-		public CaveMan next() throws NoSuchElementException {
+		public CM next() throws NoSuchElementException {
 			if (iteratorVersion != version) {
 				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
 			}
@@ -259,8 +262,8 @@ public class CaveManBag implements CaveManCollection {
 				throw new NoSuchElementException("Index " + pos + " is out of bounds [0, " + (size - 1) + "]");
 			}
 
-			CaveManBucket b = buckets[bucketIndex];
-			CaveMan item = b.list[bucketSubIndex++];
+			CMBucket b = buckets[bucketIndex];
+			CM item = b.list[bucketSubIndex++];
 			if (bucketSubIndex >= b.list.length) {
 				bucketSubIndex = 0;
 				for (;bucketIndex < buckets.length; bucketIndex++) {
@@ -285,7 +288,7 @@ public class CaveManBag implements CaveManCollection {
 				throw new NoSuchElementException("Index " + pos + " is out of bounds [0, " + (size - 1) + "]");
 			}
 			
-			CaveManBucket b = buckets[bucketIndex];
+			CMBucket b = buckets[bucketIndex];
 			System.arraycopy(b.list, bucketSubIndex + 1, b.list, bucketSubIndex, b.bucketSize - bucketSubIndex);
 			--b.bucketSize;
 			if (bucketSubIndex >= b.bucketSize) {
@@ -303,5 +306,5 @@ public class CaveManBag implements CaveManCollection {
 
 	
 	
-	private int fromCaveMan(CaveMan item) {return 0;}
+	private int fromCaveMan(CM item) {return 0;}
 }

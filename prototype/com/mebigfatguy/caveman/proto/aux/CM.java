@@ -17,5 +17,5 @@
  */
 package com.mebigfatguy.caveman.proto.aux;
 
-public class CaveMan {
+public class CM {
 }

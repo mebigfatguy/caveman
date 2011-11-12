@@ -23,15 +23,15 @@ import java.util.NoSuchElementException;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.mebigfatguy.caveman.proto.CaveManIterator;
-import com.mebigfatguy.caveman.proto.CaveManList;
-import com.mebigfatguy.caveman.proto.aux.CaveMan;
+import com.mebigfatguy.caveman.proto.CMIterator;
+import com.mebigfatguy.caveman.proto.aux.CM;
+import com.mebigfatguy.caveman.proto.impl.CaveManCMList;
 
-public class CaveManListTest {
+public class CaveManCMListTest {
 
 	@Test
 	public void testSizeEmpty() {
-		CaveManList l = new CaveManList();
+		CaveManCMList l = new CaveManCMList();
 		Assert.assertEquals(0, l.size());
 		Assert.assertTrue(l.isEmpty());
 		
@@ -46,27 +46,27 @@ public class CaveManListTest {
 	
 	@Test
 	public void testAddRemove() {
-		CaveManList l = new CaveManList();
+		CaveManCMList l = new CaveManCMList();
 		for (int i = 0; i < 30; i++) {
 			l.add(toCaveMan(i));
 		}
 		
 		for (int i = 0; i < 30; i++) {
-			Assert.assertEquals(toCaveMan(i), (CaveMan) l.get(i));
+			Assert.assertEquals(toCaveMan(i), (CM) l.get(i));
 		}
 	}
 	
 	@Test
 	public void testSimpleIterator() {
-		CaveManList l = new CaveManList();
+		CaveManCMList l = new CaveManCMList();
 		for (int i = 0; i < 30; i++) {
 			l.add(toCaveMan(i));
 		}
 		
-		CaveManIterator it = l.iterator();
+		CMIterator it = l.iterator();
 		int i = 0;
 		while (it.hasNext()) {
-			Assert.assertEquals(toCaveMan(i), (CaveMan) it.next());
+			Assert.assertEquals(toCaveMan(i), (CM) it.next());
 			++i;
 		}
 	}
@@ -74,12 +74,12 @@ public class CaveManListTest {
 	@Test
 	public void testConcurrentModException() {
 		try {
-			CaveManList l = new CaveManList();
+			CaveManCMList l = new CaveManCMList();
 			for (int i = 0; i < 30; i++) {
 				l.add(toCaveMan(i));
 			}
 			
-			CaveManIterator it = l.iterator();
+			CMIterator it = l.iterator();
 			it.next();
 			it.next();
 			
@@ -97,10 +97,10 @@ public class CaveManListTest {
 	@Test
 	public void testOffTheEndIterator() {
 		try {
-			CaveManList l = new CaveManList();
+			CaveManCMList l = new CaveManCMList();
 			l.add(toCaveMan(10));
 			
-			CaveManIterator it = l.iterator();
+			CMIterator it = l.iterator();
 			it.next();
 			it.next();
 			
@@ -111,5 +111,5 @@ public class CaveManListTest {
 		}
 	}
 	
-	private CaveMan toCaveMan(int i) { return null; }
+	private CM toCaveMan(int i) { return null; }
 }

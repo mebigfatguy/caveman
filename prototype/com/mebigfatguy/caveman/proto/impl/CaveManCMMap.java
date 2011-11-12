@@ -15,28 +15,26 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.mebigfatguy.caveman.proto;
+package com.mebigfatguy.caveman.proto.impl;
 
-import java.util.Set;
+import com.mebigfatguy.caveman.proto.aux.CM;
 
-import com.mebigfatguy.caveman.proto.aux.CaveMan;
-
-public class CaveManValueMap<K> {
+public class CaveManCMMap<V> {
 	private static final int DEFAULT_CAPACITY = 31;
 	private static final float DEFAULT_LOAD_FACTOR = 0.80f;
 
 	private int size;
 	private float loadFactor;
 	
-	public CaveManValueMap() {
+	public CaveManCMMap() {
 		this(DEFAULT_CAPACITY);
 	}
 	
-	public CaveManValueMap(int initialCapacity) {
+	public CaveManCMMap(int initialCapacity) {
 		this(initialCapacity, DEFAULT_LOAD_FACTOR);
 	}
 	
-	public CaveManValueMap(int initialCapacity, float loadingFactor) {
+	public CaveManCMMap(int initialCapacity, float loadingFactor) {
 		loadFactor = loadingFactor;
 		size = 0;
 	}
@@ -49,31 +47,31 @@ public class CaveManValueMap<K> {
 		return size == 0;
 	}
 	
-	public boolean containsKey(K key) {
+	public boolean containsKey(CM key) {
 		return false;
 	}
 	
-	public boolean containsValue(CaveMan value) {
+	public boolean containsValue(V value) {
 		return false;		
 	}
 	
-	public CaveMan get(K key, CaveMan notFoundValue) {
-		return notFoundValue;
+	public V get(CM key) {
+		return null;
 	}
 	
-	public void put(K key, CaveMan value) {
+	public void put(CM key, V value) {
 	}
 	
-	public void remove(K key) {
+	public void remove(CM key) {
 	}
 	
-	public void putAll(CaveManValueMap<K> m) {
+	public void putAll(CaveManCMMap m) {
 	}
 	
 	public void clear() {
 	}
 	
-	public CaveManBag values() {
+	public CaveManCMSet keySet() {
 		return null;
 	}
 }

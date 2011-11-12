@@ -15,8 +15,33 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.mebigfatguy.caveman.proto.aux;
+package com.mebigfatguy.caveman.proto;
 
-public class CaveManValue {
+import com.mebigfatguy.caveman.proto.aux.CM;
 
+public interface CMCollection {
+
+	int size();
+	
+	boolean isEmpty();
+	
+	boolean contains(CM item);
+	
+	CMIterator iterator();
+	
+	CM[] toArray();
+	
+	boolean add(CM item);
+	
+	boolean remove(CM item);
+	
+	void clear();
+	
+	boolean containsAll(CMCollection c);
+	
+	boolean addAll(CMCollection c);
+	
+	boolean retainAll(CMCollection c);
+	
+	boolean removeAll(CMCollection c);	
 }

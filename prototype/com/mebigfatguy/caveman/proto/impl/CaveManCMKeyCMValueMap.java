@@ -15,26 +15,29 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.mebigfatguy.caveman.proto;
+package com.mebigfatguy.caveman.proto.impl;
 
-import com.mebigfatguy.caveman.proto.aux.CaveMan;
+import com.mebigfatguy.caveman.proto.aux.CMKey;
+import com.mebigfatguy.caveman.proto.aux.CMKeySet;
+import com.mebigfatguy.caveman.proto.aux.CMValue;
+import com.mebigfatguy.caveman.proto.aux.CMValueBag;
 
-public class CaveManMap<V> {
+public class CaveManCMKeyCMValueMap {
 	private static final int DEFAULT_CAPACITY = 31;
 	private static final float DEFAULT_LOAD_FACTOR = 0.80f;
 
 	private int size;
 	private float loadFactor;
 	
-	public CaveManMap() {
+	public CaveManCMKeyCMValueMap() {
 		this(DEFAULT_CAPACITY);
 	}
 	
-	public CaveManMap(int initialCapacity) {
+	public CaveManCMKeyCMValueMap(int initialCapacity) {
 		this(initialCapacity, DEFAULT_LOAD_FACTOR);
 	}
 	
-	public CaveManMap(int initialCapacity, float loadingFactor) {
+	public CaveManCMKeyCMValueMap(int initialCapacity, float loadingFactor) {
 		loadFactor = loadingFactor;
 		size = 0;
 	}
@@ -47,31 +50,36 @@ public class CaveManMap<V> {
 		return size == 0;
 	}
 	
-	public boolean containsKey(CaveMan key) {
+	public boolean containsKey(CMKey key) {
 		return false;
 	}
 	
-	public boolean containsValue(V value) {
+	public boolean containsValue(CMValue value) {
 		return false;		
 	}
 	
-	public V get(CaveMan key) {
-		return null;
+	public CMValue get(CMKey key, CMValue notFoundValue) {
+		return notFoundValue;
 	}
 	
-	public void put(CaveMan key, V value) {
+	public void put(CMKey key, CMValue value) {
 	}
 	
-	public void remove(CaveMan key) {
+	public void remove(CMKey key) {
 	}
 	
-	public void putAll(CaveManMap m) {
+	public void putAll(CaveManCMKeyCMValueMap m) {
 	}
 	
 	public void clear() {
 	}
 	
-	public CaveManSet keySet() {
+	public CMKeySet keySet() {
 		return null;
 	}
+	
+	public CMValueBag values() {
+		return null;
+	}
+
 }

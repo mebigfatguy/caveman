@@ -94,6 +94,7 @@
 	<target name="produce" description="generates the primitive classes from the prototype">
 		<taskdef name="caveman" classname="com.mebigfatguy.cavemantask.CaveManTask" classpathref="caveman.classpath" />
 		<caveman sourceFolder="${prototype.dir}/com/mebigfatguy/caveman/proto" destinationFolder="${src.dir}/com/mebigfatguy/caveman" package="com.mebigfatguy.caveman" />
+		<caveman sourceFolder="${prototype.dir}/com/mebigfatguy/caveman/proto/impl" destinationFolder="${src.dir}/com/mebigfatguy/caveman/impl" package="com.mebigfatguy.caveman.impl" />
 		<caveman sourceFolder="${prototype.dir}/com/mebigfatguy/caveman/proto/test" destinationFolder="${test.dir}/com/mebigfatguy/caveman/test" package="com.mebigfatguy.caveman.test" />
 	</target>
 

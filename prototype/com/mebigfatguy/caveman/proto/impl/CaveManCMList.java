@@ -15,26 +15,29 @@
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.mebigfatguy.caveman.proto;
+package com.mebigfatguy.caveman.proto.impl;
 
 import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
 
-import com.mebigfatguy.caveman.proto.aux.CaveMan;
+import com.mebigfatguy.caveman.proto.CMCollection;
+import com.mebigfatguy.caveman.proto.CMIterator;
+import com.mebigfatguy.caveman.proto.CMList;
+import com.mebigfatguy.caveman.proto.aux.CM;
 
-public class CaveManList implements CaveManCollection {
+public class CaveManCMList implements CMList {
 	private static final int DEFAULT_SIZE = 20;
 	
-	private CaveMan[] list;
+	private CM[] list;
 	private int size;
 	private int version;
 	
-	public CaveManList() {
+	public CaveManCMList() {
 		this(DEFAULT_SIZE);
 	}
 	
-	public CaveManList(int defaultSize) {
-		list = new CaveMan[defaultSize];
+	public CaveManCMList(int defaultSize) {
+		list = new CM[defaultSize];
 		size = 0;
 		version = 0;
 	}
@@ -47,7 +50,7 @@ public class CaveManList implements CaveManCollection {
 		return size == 0;
 	}
 	
-	public boolean contains(CaveMan item) {
+	public boolean contains(CM item) {
 		for (int i = 0; i < size; i++) {
 			if (item == list[i])
 				return true;
@@ -56,17 +59,17 @@ public class CaveManList implements CaveManCollection {
 		return false;
 	}
 	
-	public CaveManIterator iterator() {
-		return new CaveManListIterator(version);
+	public CMIterator iterator() {
+		return new CaveManCMListIterator(version);
 	}
 	
-	public CaveMan[] toArray() {
-		CaveMan[] array = new CaveMan[size];
+	public CM[] toArray() {
+		CM[] array = new CM[size];
 		System.arraycopy(list,  0, array, 0, size);
 		return array;
 	}
 	
-	public boolean add(CaveMan item) {
+	public boolean add(CM item) {
 		++version;
 		if (size >= list.length) {
 			grow();		
@@ -76,16 +79,16 @@ public class CaveManList implements CaveManCollection {
 		return true;
 	}
 	
-	public CaveMan removeAt(int index) {
+	public CM removeAt(int index) {
 		++version;
-		CaveMan item = get(index);
+		CM item = get(index);
 		
 		--size;		
 		System.arraycopy(list, index + 1, list, index, size - index);
 		return item;
 	}
 	
-	public boolean remove(CaveMan item) {
+	public boolean remove(CM item) {
 		++version;
 		int index = indexOf(item);
 		if (index < 0) {
@@ -97,9 +100,11 @@ public class CaveManList implements CaveManCollection {
 		return true;
 	}
 	
-	public boolean containsAll(CaveManList c) {
-		for (int i = 0; i < c.size; i++) {
-			if (!contains(c.list[i])) {
+	public boolean containsAll(CMCollection c) {
+		
+		CMIterator it = c.iterator();
+		while (it.hasNext()) {
+			if (!contains(it.next())) { 
 				return false;
 			}
 		}
@@ -107,30 +112,33 @@ public class CaveManList implements CaveManCollection {
 		return true;
 	}
 	
-	public boolean addAll(CaveManList c) {
+	public boolean addAll(CMCollection c) {
 		++version;
-		int newSize = size + c.size;
+		int newSize = size + c.size();
 		ensureSize(newSize);
 
-		for (int i = 0; i < c.size; i++) {
-			add(c.list[i]);
+		CMIterator it = c.iterator();
+		while (it.hasNext()) {
+			add(it.next());
 		}
 		
-		return true;
+		return c.size() > 0;
 	}
 	
-	public boolean removeAll(CaveManList c) {
+	public boolean removeAll(CMCollection c) {
 		++version;
 		int startSize = size;
 		
-		for (int i = 0; i < c.size; i++) {
-			remove(c.list[i]);
+		CMIterator it = c.iterator();
+		while (it.hasNext()) {
+			remove(it.next());
 		}
+
 		
 		return startSize != size;
 	}
 
-	public boolean retainAll(CaveManList c) {
+	public boolean retainAll(CMCollection c) {
 		++version;
 		int startSize = size;
 		
@@ -148,7 +156,7 @@ public class CaveManList implements CaveManCollection {
 		size = 0;
 	}
 	
-	public CaveMan get(int index) {
+	public CM get(int index) {
 		if ((index < 0) || (index >= size)) {
 			throw new IllegalArgumentException("Index: " + index + " is out of bounds [0, " + (size - 1) + "]");
 		}
@@ -156,18 +164,18 @@ public class CaveManList implements CaveManCollection {
 		return list[index];
 	}
 	
-	public CaveMan set(int index, CaveMan item) {
+	public CM set(int index, CM item) {
 		++version;
 		if ((index < 0) || (index >= size)) {
 			throw new IllegalArgumentException("Index: " + index + " is out of bounds [0, " + (size - 1) + "]");
 		}
 		
-		CaveMan oldItem = list[index];
+		CM oldItem = list[index];
 		list[index] = item;
 		return oldItem;
 	}
 	
-	public void add(int index, CaveMan item) {
+	public void add(int index, CM item) {
 		++version;
 		if (size >= list.length) {
 			grow();		
@@ -177,7 +185,7 @@ public class CaveManList implements CaveManCollection {
 		++size;
 	}
 	
-	public int indexOf(CaveMan item) {
+	public int indexOf(CM item) {
 		for (int i = 0; i < size; i++) {
 			if (item == list[i]) {
 				return i;
@@ -187,7 +195,7 @@ public class CaveManList implements CaveManCollection {
 		return -1;
 	}
 	
-	public int lastIndexOf(CaveMan item) {
+	public int lastIndexOf(CM item) {
 		for (int i = size - 1; i >= 0; i--) {
 			if (item == list[i]) {
 				return i;
@@ -201,7 +209,7 @@ public class CaveManList implements CaveManCollection {
 		int increase = (int)(size * 1.3);
 		increase = Math.max(20, increase);
 		
-		CaveMan[] newList = new CaveMan[size + increase];
+		CM[] newList = new CM[size + increase];
 		System.arraycopy(list, 0, newList, 0, size);
 		list = newList;
 	}
@@ -209,18 +217,18 @@ public class CaveManList implements CaveManCollection {
 	private void ensureSize(int newSize) {
 		
 		if (newSize > list.length) {
-			CaveMan[] newList = new CaveMan[newSize];
+			CM[] newList = new CM[newSize];
 			System.arraycopy(list, 0, newList, 0, size);
 			list = newList;
 		}
 	}
 	
-	private class CaveManListIterator implements CaveManIterator {
+	private class CaveManCMListIterator implements CMIterator {
 
 		private int iteratorVersion;
 		private int pos;
 		
-		CaveManListIterator(int vers) {
+		CaveManCMListIterator(int vers) {
 			iteratorVersion = vers;
 		}
 		
@@ -233,7 +241,7 @@ public class CaveManList implements CaveManCollection {
 		}
 
 		@Override
-		public CaveMan next() throws NoSuchElementException {
+		public CM next() throws NoSuchElementException {
 			if (iteratorVersion != version) {
 				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
 			}
