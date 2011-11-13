@@ -1,1 +1,60 @@
-A library containing standard collections using primitive types
+A library containing standard collections using primitive types, including
+
+List
+Set
+Map
+Bag
+
+Each collection type can be used with any primitive type, 
+
+boolean
+byte
+char
+short
+int
+long
+float
+double
+
+There are interfaces defined for each primitive types, in the package
+
+com.mebigfatguy.caveman
+
+such as
+
+IntList
+CharSet
+ByteBag
+
+For Maps there are actually there kinds:
+
+primitive->primitive
+primitive->Object
+Object->primitive
+
+so, interfaces like
+
+IntLongMap
+CharMap<V>
+ShortValueMap<K>
+
+For each combination of primitive there are class implementations in the package
+
+com.mebigfatguy.caveman.impl
+
+These classes following the naming of the interface but are prefixed by CaveMan, so
+
+IntList l = new CaveManIntList();
+ByteSet s = new CaveManByteSet();
+FloatBag b = new CaveManFloatBag();
+
+and for maps,
+
+IntDoubleMap m = new CaveManIntDoubleMap();
+CharMap<Integer> m = new CharMap<Integer>();
+DoubleValueMap<String> m = new DoubleValueMap<String>();
+
+On top of the available interfaces, classes derive from a 'collection' class with a primitive name, such as
+
+FloatCollection
+
