@@ -17,12 +17,14 @@
  */
 package com.mebigfatguy.caveman.proto.impl;
 
+import com.mebigfatguy.caveman.proto.CMKeyCMValueIterator;
+import com.mebigfatguy.caveman.proto.CMKeyCMValueMap;
 import com.mebigfatguy.caveman.proto.aux.CMKey;
 import com.mebigfatguy.caveman.proto.aux.CMKeySet;
 import com.mebigfatguy.caveman.proto.aux.CMValue;
 import com.mebigfatguy.caveman.proto.aux.CMValueBag;
 
-public class CaveManCMKeyCMValueMap {
+public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 	private static final int DEFAULT_CAPACITY = 31;
 	private static final float DEFAULT_LOAD_FACTOR = 0.80f;
 
@@ -42,6 +44,7 @@ public class CaveManCMKeyCMValueMap {
 	public CaveManCMKeyCMValueMap(int initialCapacity, float loadingFactor) {
 		loadFactor = loadingFactor;
 		size = 0;
+		buckets = new CMBucket[initialCapacity];
 	}
 	
 	public int size() {
@@ -115,26 +118,31 @@ public class CaveManCMKeyCMValueMap {
 		}
 	}
 	
-	public void putAll(CaveManCMKeyCMValueMap m) {
+	public void putAll(CMKeyCMValueMap m) {
 		++version;
 		
 		ensureSize(size + m.size());
 		
-		for (CMBucket b : m.buckets) {
-			if (b != null) {
-				for (int i = 0; i < b.bucketSize; i++) {
-					put(b.keys[i], b.values[i]);
-				}
-			}
+		CMKeyCMValueIterator iterator = m.iterator();
+		
+		while (iterator.hasNext()) {
+			iterator.next();
+			put(iterator.key(), iterator.value());
 		}
 	}
 	
 	public void clear() {
+		++version;
+		
 		for (CMBucket b : buckets) {
 			if (b != null) {
 				b.clear();
 			}
 		}
+	}
+	
+	public CMKeyCMValueIterator iterator() {
+		return null;
 	}
 	
 	public CMKeySet keySet() {
@@ -228,6 +236,7 @@ public class CaveManCMKeyCMValueMap {
 			bucketSize = 0;
 		}
 	}
+	
 	
 	private int fromCaveMan(CMKey key) {return 0;}
 }

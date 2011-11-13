@@ -137,12 +137,28 @@ public class CaveManTask extends Task {
 			while (line != null) {
 				if (line.trim().startsWith("package ")) {
 					pw.println("package " + dstPackage + ";");
-				} else if (!line.trim().startsWith("import") || line.contains("java.")) {
+				} else if (line.contains("toCaveMan")) {
+					if (!line.contains("private")) {
+						if ("boolean".equals(keyPrimitive)) {
+							line = (line.replaceAll("toCaveManKey\\(([^\\)]*)\\)", "(($1 == 0) ? false : true)").replaceAll("\\bCM\\b", keyPrimitive).replaceAll("CM", keyPrimitiveLabel));
+							
+						} else {
+							line = (line.replaceAll("toCaveManKey\\(([^\\)]*)\\)", "(" + keyPrimitive + ") $1").replaceAll("\\bCM\\b", keyPrimitive).replaceAll("CM", keyPrimitiveLabel));
+						}
+						if ("boolean".equals(valuePrimitive)) {
+							pw.println(line.replaceAll("toCaveManValue\\(([^\\)]*)\\)", "(($1 == 0) ? false : true)").replaceAll("\\bCM\\b", valuePrimitive).replaceAll("CM", valuePrimitiveLabel));
+							
+						} else {
+							pw.println(line.replaceAll("toCaveManValue\\(([^\\)]*)\\)", "(" + valuePrimitive + ") $1").replaceAll("\\bCM\\b", valuePrimitive).replaceAll("CM", valuePrimitiveLabel));
+						}
+					}					
+				} else if (!line.trim().startsWith("import") || line.contains("java.") || line.contains("org.")) {
 					pw.println(line.replaceAll("\\bCMKey\\b", keyPrimitive).replaceAll("\\bCMValue\\b", valuePrimitive)
 							.replaceAll("CMKey", keyPrimitiveLabel).replaceAll("CMValue", valuePrimitiveLabel));
 				} else if (line.trim().startsWith("import") && (line.contains("CMKeySet") || line.contains("CMValueBag"))) {
-					pw.println(line.replaceAll("\\.proto\\.aux", "").replaceAll("\\bCMKey\\b", keyPrimitive).replaceAll("\\bCMValue\\b", valuePrimitive)
-							.replaceAll("CMKey", keyPrimitiveLabel).replaceAll("CMValue", valuePrimitiveLabel));;
+					pw.println(line.replaceAll("\\.proto\\.aux", "").replaceAll("CMKey", keyPrimitiveLabel).replaceAll("CMValue", valuePrimitiveLabel));
+				} else if (line.trim().startsWith("import") && (line.contains("proto.CMKeyCMValue") || line.contains("proto.impl.CaveManCMKeyCMValue"))) {
+					pw.println(line.replaceAll("\\.proto", "").replaceAll("CMKey", keyPrimitiveLabel).replaceAll("CMValue", valuePrimitiveLabel));
 				}
 				line = br.readLine();
 			}
