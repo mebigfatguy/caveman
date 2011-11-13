@@ -16,7 +16,7 @@ long
 float
 double
 
-There are interfaces defined for each primitive types, in the package
+There are interfaces defined for each primitive type, in the package
 
 com.mebigfatguy.caveman
 
@@ -35,8 +35,8 @@ Object->primitive
 so, interfaces like
 
 IntLongMap
-CharMap<V>
-ShortValueMap<K>
+CharMap<V>          // a map with a key type of char
+ShortValueMap<K>    // a map with a value type of short
 
 For each combination of primitive there are class implementations in the package
 
