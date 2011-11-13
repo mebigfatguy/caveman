@@ -17,7 +17,6 @@
  */
 package com.mebigfatguy.caveman.proto.impl;
 
-import com.mebigfatguy.caveman.proto.aux.CM;
 import com.mebigfatguy.caveman.proto.aux.CMKey;
 import com.mebigfatguy.caveman.proto.aux.CMKeySet;
 import com.mebigfatguy.caveman.proto.aux.CMValue;
@@ -83,8 +82,7 @@ public class CaveManCMKeyCMValueMap {
 		CMBucket b = buckets[hash];
 		
 		if (b != null) {
-			CMValue value = b.get(key, notFoundValue);
-			
+			CMValue value = b.get(key, notFoundValue);	
 		}
 		
 		return notFoundValue;
@@ -93,19 +91,50 @@ public class CaveManCMKeyCMValueMap {
 	public void put(CMKey key, CMValue value) {
 		++version;
 		
+		ensureSize(size + 1);
+
 		int hash = fromCaveMan(key) % buckets.length;
 		CMBucket b = buckets[hash];
+		
+		if (b == null) {
+			b = new CMBucket();
+			buckets[hash] = b;
+		}
 		
 		b.add(key, value);
 	}
 	
 	public void remove(CMKey key) {
+		++version;
+		
+		int hash = fromCaveMan(key) % buckets.length;
+		CMBucket b = buckets[hash];
+		
+		if (b != null) {
+			b.remove(key);
+		}
 	}
 	
 	public void putAll(CaveManCMKeyCMValueMap m) {
+		++version;
+		
+		ensureSize(size + m.size());
+		
+		for (CMBucket b : m.buckets) {
+			if (b != null) {
+				for (int i = 0; i < b.bucketSize; i++) {
+					put(b.keys[i], b.values[i]);
+				}
+			}
+		}
 	}
 	
 	public void clear() {
+		for (CMBucket b : buckets) {
+			if (b != null) {
+				b.clear();
+			}
+		}
 	}
 	
 	public CMKeySet keySet() {
@@ -114,6 +143,29 @@ public class CaveManCMKeyCMValueMap {
 	
 	public CMValueBag values() {
 		return null;
+	}
+	
+	private void ensureSize(int newSize) {
+		if ((newSize / (double) buckets.length) > loadFactor) {
+			int newBucketSize = (int) ((2.0 * loadFactor) * newSize);
+			CMBucket[] newBuckets = new CMBucket[newBucketSize];
+			
+			for (CMBucket oldBucket : buckets) {
+				if (oldBucket != null) {
+					for (int oldBucketIndex = 0; oldBucketIndex < oldBucket.bucketSize; ++oldBucketIndex) {
+						CMKey key = oldBucket.keys[oldBucketIndex];
+						int hash = fromCaveMan(key) % newBuckets.length;
+						CMBucket newBucket = newBuckets[hash];
+						if (newBucket == null) {
+							newBucket = new CMBucket();
+							newBuckets[hash] = newBucket;
+						}
+						newBucket.add(key, oldBucket.values[oldBucketIndex]);
+					}
+				}
+			}
+			buckets = newBuckets;		
+		}
 	}
 	
 	private static class CMBucket {
@@ -170,6 +222,10 @@ public class CaveManCMKeyCMValueMap {
 			}
 			
 			return notFoundValue;
+		}
+		
+		public void clear() {
+			bucketSize = 0;
 		}
 	}
 	
