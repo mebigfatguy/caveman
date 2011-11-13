@@ -67,7 +67,7 @@ public class CaveManCMKeyCMValueMap {
 		for (CMBucket bucket : buckets) {
 			if (bucket != null) {
 				for (int i = 0; i < bucket.bucketSize; ++i) {
-					if (bucket.list[i].value == value) {
+					if (bucket.values[i] == value) {
 						return true;
 					}
 				}
@@ -117,31 +117,37 @@ public class CaveManCMKeyCMValueMap {
 	}
 	
 	private static class CMBucket {
-		CMKeyCMValuePair[] list = new CMKeyCMValuePair[1];
+		CMKey[] keys = new CMKey[1];
+		CMValue[] values = new CMValue[1];
 		int bucketSize;
 		
 		public boolean add(CMKey key, CMValue value) {
 			int existingIndex = indexOf(key);
 			if (existingIndex >= 0) {
-				list[existingIndex].value = value;
+				values[existingIndex] = value;
 			} else {
-				if (bucketSize >= list.length) {
-					CMKeyCMValuePair[] newList = new CMKeyCMValuePair[list.length + 4];
-					System.arraycopy(list,  0, newList, 0, bucketSize);
-					list = newList;
+				if (bucketSize >= keys.length) {
+					CMKey[] newKeys = new CMKey[keys.length + 4];
+					System.arraycopy(keys,  0, newKeys, 0, bucketSize);
+					keys = newKeys;
+					CMValue[] newValues = new CMValue[values.length + 4];
+					System.arraycopy(values,  0, newValues, 0, bucketSize);
+					values = newValues;					
 				}
 				
-				list[bucketSize++] = new CMKeyCMValuePair(key, value);				
+				keys[bucketSize] = key;
+				values[bucketSize++] = value;
 			}
 			
 			return true;
 		}
 		
-		public boolean remove(CMKeyCMValuePair pair) {
+		public boolean remove(CMKey key) {
 			for (int i = 0; i < bucketSize; i++) {
-				if (pair.key == list[i].key) {
+				if (key == keys[i]) {
 					--bucketSize;
-					System.arraycopy(list, i + 1, list, i, bucketSize - i);
+					System.arraycopy(keys, i + 1, keys, i, bucketSize - i);
+					System.arraycopy(values, i + 1, values, i, bucketSize - i);
 					return true;
 				}
 			}
@@ -150,7 +156,7 @@ public class CaveManCMKeyCMValueMap {
 		
 		public int indexOf(CMKey key) {
 			for (int i = 0; i < bucketSize; i++) {
-				if (key == list[i].key)
+				if (key == keys[i])
 					return i;
 			}
 			
@@ -159,24 +165,13 @@ public class CaveManCMKeyCMValueMap {
 		
 		public CMValue get(CMKey key, CMValue notFoundValue) {
 			for (int i = 0; i < bucketSize; i++) {
-				if (key == list[i].key)
-					return list[i].value;
+				if (key == keys[i])
+					return values[i];
 			}
 			
 			return notFoundValue;
 		}
 	}
-	
-	private static class CMKeyCMValuePair {
-		CMKey key;
-		CMValue value;
-		
-		CMKeyCMValuePair(CMKey k, CMValue v) {
-			key = k;
-			value = v;
-		}
-	}
-	
 	
 	private int fromCaveMan(CMKey key) {return 0;}
 }
