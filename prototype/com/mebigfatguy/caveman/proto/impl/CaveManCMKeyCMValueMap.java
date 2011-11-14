@@ -17,8 +17,8 @@
  */
 package com.mebigfatguy.caveman.proto.impl;
 
-import com.mebigfatguy.caveman.proto.CMKeyCMValueMapIterator;
 import com.mebigfatguy.caveman.proto.CMKeyCMValueMap;
+import com.mebigfatguy.caveman.proto.CMKeyCMValueMapIterator;
 import com.mebigfatguy.caveman.proto.aux.CMKey;
 import com.mebigfatguy.caveman.proto.aux.CMKeySet;
 import com.mebigfatguy.caveman.proto.aux.CMValue;
@@ -29,8 +29,8 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 	private static final float DEFAULT_LOAD_FACTOR = 0.80f;
 
 	private CMBucket[] buckets;
-	private int size;
-	private float loadFactor;
+	private final int size;
+	private final float loadFactor;
 	private int version;
 	
 	public CaveManCMKeyCMValueMap() {
@@ -47,14 +47,17 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 		buckets = new CMBucket[initialCapacity];
 	}
 	
+	@Override
 	public int size() {
 		return size;
 	}
 	
+	@Override
 	public boolean isEmpty() {
 		return size == 0;
 	}
 	
+	@Override
 	public boolean containsKey(CMKey key) {
 		int hash = fromCaveMan(key) % buckets.length;
 		CMBucket b = buckets[hash];
@@ -65,6 +68,7 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 		return b.indexOf(key) >= 0;
 	}
 	
+	@Override
 	public boolean containsValue(CMValue value) {
 		for (CMBucket bucket : buckets) {
 			if (bucket != null) {
@@ -79,18 +83,20 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 		return false;
 	}
 	
+	@Override
 	public CMValue get(CMKey key, CMValue notFoundValue) {
 		
 		int hash = fromCaveMan(key) % buckets.length;
 		CMBucket b = buckets[hash];
 		
 		if (b != null) {
-			CMValue value = b.get(key, notFoundValue);	
+			return b.get(key, notFoundValue);	
 		}
 		
 		return notFoundValue;
 	}
 	
+	@Override
 	public void put(CMKey key, CMValue value) {
 		++version;
 		
@@ -107,6 +113,7 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 		b.add(key, value);
 	}
 	
+	@Override
 	public void remove(CMKey key) {
 		++version;
 		
@@ -118,6 +125,7 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 		}
 	}
 	
+	@Override
 	public void putAll(CMKeyCMValueMap m) {
 		++version;
 		
@@ -131,6 +139,7 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 		}
 	}
 	
+	@Override
 	public void clear() {
 		++version;
 		
@@ -141,14 +150,17 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 		}
 	}
 	
+	@Override
 	public CMKeyCMValueMapIterator iterator() {
 		return null;
 	}
 	
+	@Override
 	public CMKeySet keySet() {
 		return null;
 	}
 	
+	@Override
 	public CMValueBag values() {
 		return null;
 	}

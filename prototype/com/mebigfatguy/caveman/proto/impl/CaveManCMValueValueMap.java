@@ -161,7 +161,7 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 	}
 	
 	@Override
-	public CMValueValueMapIterator iterator() {
+	public CMValueValueMapIterator<K> iterator() {
 		return null;
 	}
 	
