@@ -228,13 +228,9 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 		
 		public int indexOf(K key) {
 			for (int i = 0; i < bucketSize; i++) {
-				if (key == null) {
-					if (keys[i] == null) {
-						return i;
-					}
-				}
-				if (key.equals(keys[i]))
+				if (((key == null) && (keys[i] == null)) || key.equals(keys[i])) {
 					return i;
+				}
 			}
 			
 			return -1;
@@ -242,12 +238,7 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 		
 		public CMValue get(K key, CMValue notFoundValue) {
 			for (int i = 0; i < bucketSize; i++) {
-				if (key == null) {
-					if (keys[i] == null) {
-						return values[i];
-					}
-				}
-				if (key.equals(keys[i])) {
+				if (((key == null) && (keys[i] == null)) || key.equals(keys[i])) {
 					return values[i];
 				}
 			}

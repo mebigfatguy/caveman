@@ -29,7 +29,7 @@ public class CaveManCMList implements CMList {
 	private static final int DEFAULT_SIZE = 20;
 	private static final CaveManCMListExpander DEFAULT_EXPANDER = new CaveManCMListExpander();
 	
-	private CMListExpander expander;
+	private final CMListExpander expander;
 	private CM[] list;
 	private int size;
 	private int version;
@@ -49,14 +49,17 @@ public class CaveManCMList implements CMList {
 		version = 0;
 	}
 	
+	@Override
 	public int size() {
 		return size;
 	}
 	
+	@Override
 	public boolean isEmpty() {
 		return size == 0;
 	}
 	
+	@Override
 	public boolean contains(CM item) {
 		for (int i = 0; i < size; i++) {
 			if (item == list[i])
@@ -66,16 +69,19 @@ public class CaveManCMList implements CMList {
 		return false;
 	}
 	
+	@Override
 	public CMIterator iterator() {
 		return new CaveManCMListIterator(version);
 	}
 	
+	@Override
 	public CM[] toArray() {
 		CM[] array = new CM[size];
 		System.arraycopy(list,  0, array, 0, size);
 		return array;
 	}
 	
+	@Override
 	public boolean add(CM item) {
 		++version;
 		
@@ -85,6 +91,7 @@ public class CaveManCMList implements CMList {
 		return true;
 	}
 	
+	@Override
 	public CM removeAt(int index) {
 		++version;
 		CM item = get(index);
@@ -94,6 +101,7 @@ public class CaveManCMList implements CMList {
 		return item;
 	}
 	
+	@Override
 	public boolean remove(CM item) {
 		++version;
 		int index = indexOf(item);
@@ -106,6 +114,7 @@ public class CaveManCMList implements CMList {
 		return true;
 	}
 	
+	@Override
 	public boolean containsAll(CMCollection c) {
 		
 		CMIterator it = c.iterator();
@@ -118,6 +127,7 @@ public class CaveManCMList implements CMList {
 		return true;
 	}
 	
+	@Override
 	public boolean addAll(CMCollection c) {
 		++version;
 		int newSize = size + c.size();
@@ -131,6 +141,7 @@ public class CaveManCMList implements CMList {
 		return c.size() > 0;
 	}
 	
+	@Override
 	public boolean removeAll(CMCollection c) {
 		++version;
 		int startSize = size;
@@ -144,6 +155,7 @@ public class CaveManCMList implements CMList {
 		return startSize != size;
 	}
 
+	@Override
 	public boolean retainAll(CMCollection c) {
 		++version;
 		int startSize = size;
@@ -157,11 +169,13 @@ public class CaveManCMList implements CMList {
 		return startSize != size;
 	}
 	
+	@Override
 	public void clear() {
 		++version;
 		size = 0;
 	}
 	
+	@Override
 	public CM get(int index) {
 		if ((index < 0) || (index >= size)) {
 			throw new IllegalArgumentException("Index: " + index + " is out of bounds [0, " + (size - 1) + "]");
@@ -170,6 +184,7 @@ public class CaveManCMList implements CMList {
 		return list[index];
 	}
 	
+	@Override
 	public CM set(int index, CM item) {
 		++version;
 		if ((index < 0) || (index >= size)) {
@@ -181,6 +196,7 @@ public class CaveManCMList implements CMList {
 		return oldItem;
 	}
 	
+	@Override
 	public void add(int index, CM item) {
 		++version;
 		
@@ -190,6 +206,7 @@ public class CaveManCMList implements CMList {
 		++size;
 	}
 	
+	@Override
 	public int indexOf(CM item) {
 		for (int i = 0; i < size; i++) {
 			if (item == list[i]) {
@@ -200,6 +217,7 @@ public class CaveManCMList implements CMList {
 		return -1;
 	}
 	
+	@Override
 	public int lastIndexOf(CM item) {
 		for (int i = size - 1; i >= 0; i--) {
 			if (item == list[i]) {
@@ -273,8 +291,7 @@ public class CaveManCMList implements CMList {
 		@Override
 		public int grow(int oldSize, int newSize) {
 			int increase = (int)(newSize * 1.3);
-			increase = Math.max(Math.min(20, increase), 1000);
-			return increase;
+			return Math.max(Math.min(20, increase), 1000);
 		}
 	}
 }
