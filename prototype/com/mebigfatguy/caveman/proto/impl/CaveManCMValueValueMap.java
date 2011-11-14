@@ -152,17 +152,17 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 	
 	@Override
 	public Set<K> keySet() {
-		return null;
+		throw new UnsupportedOperationException();
 	}	
 	
 	@Override
 	public CaveManCMBag values() {
-		return null;
+		throw new UnsupportedOperationException();
 	}
 	
 	@Override
 	public CMValueValueMapIterator<K> iterator() {
-		return null;
+		throw new UnsupportedOperationException();
 	}
 	
 	private void ensureSize(int newSize) {
