@@ -17,19 +17,34 @@
  */
 package com.mebigfatguy.caveman.proto;
 
-import java.util.NoSuchElementException;
+import java.util.Set;
 
-import com.mebigfatguy.caveman.proto.aux.CM;
+import com.mebigfatguy.caveman.proto.aux.CMValue;
 
-public interface CMMapIterator<V> {
+
+public interface CMValueValueMap<K> {
 	
-	boolean hasNext();
+	int size();
 	
-	void next() throws NoSuchElementException;
+	boolean isEmpty();
 	
-	CM key();
+	boolean containsKey(K key);
 	
-	V value();
+	boolean containsValue(CMValue value);
 	
-	void remove();
+	CMValue get(K key, CMValue notFoundValue);
+	
+	void put(K key, CMValue value);
+	
+	void remove(K key);
+	
+	void putAll(CMValueValueMap<K> m);
+	
+	void clear();
+	
+	Set<K> keySet();
+	
+	CMBag values();
+	
+	CMValueValueMapIterator<K> iterator();
 }

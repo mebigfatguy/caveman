@@ -8,7 +8,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.regex.Pattern;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -34,6 +33,7 @@ public class CaveManTask extends Task {
 		dstPackage = pckg;
 	}
 
+	@Override
 	public void execute() {
 		validateProperties();
 
@@ -61,7 +61,8 @@ public class CaveManTask extends Task {
 		String primitiveLabel = Character.toUpperCase(primitive.charAt(0)) + primitive.substring(1);
 
 		String fileName = cavemanProtoFile.getName();
-		String className = fileName.substring(0, fileName.length() - ".java".length()).replaceAll("CM", primitiveLabel);
+		String className = applyCMReplacements(fileName.substring(0, fileName.length() - ".java".length()),
+											primitive, primitiveLabel);
 		File f = new File(dstDir, className + ".java");
 
 		BufferedReader br = null;
@@ -87,26 +88,39 @@ public class CaveManTask extends Task {
 				} else if (line.contains("toCaveMan")) {
 					if (!line.contains("private")) {
 						if ("boolean".equals(primitive)) {
-							pw.println(line.replaceAll("toCaveMan\\(([^\\)]*)\\)", "(($1 == 0) ? false : true)").replaceAll("\\bCM\\b", primitive).replaceAll("CM", primitiveLabel));
+							pw.println(applyCMReplacements(
+										line.replaceAll("toCaveMan\\(([^\\)]*)\\)", "(($1 == 0) ? false : true)"),
+										primitive, primitiveLabel));
 							
 						} else {
-							pw.println(line.replaceAll("toCaveMan\\(([^\\)]*)\\)", "(" + primitive + ") $1").replaceAll("\\bCM\\b", primitive).replaceAll("CM", primitiveLabel));
+							pw.println(applyCMReplacements(
+									line.replaceAll("toCaveMan\\(([^\\)]*)\\)", "(" + primitive + ") $1"),
+									primitive, primitiveLabel));
 						}
 					}
 				} else if (line.contains("fromCaveMan")) {
 					if (!line.contains("private")) {
 						if ("boolean".equals(primitive)) {
-							pw.println(line.replaceAll("fromCaveMan\\(([^\\)]*)\\)", "(($1) ? 1 : 0)").replaceAll("\\bCM\\b", primitive).replaceAll("CM", primitiveLabel));
+							pw.println(applyCMReplacements(
+									line.replaceAll("fromCaveMan\\(([^\\)]*)\\)", "(($1) ? 1 : 0)"),
+									primitive, primitiveLabel));
 							
 						} else {
-							pw.println(line.replaceAll("fromCaveMan\\(([^\\)]*)\\)", "(int) $1").replaceAll("\\bCM\\b", primitive).replaceAll("CM", primitiveLabel));
+							pw.println(applyCMReplacements(
+									line.replaceAll("fromCaveMan\\(([^\\)]*)\\)", "(int) $1"),
+									primitive, primitiveLabel));
 						}
 					}
 				} else if (!line.contains(".aux.")) {
 					if (line.contains(".proto."))
-						pw.println(line.replaceAll("\\.proto", "").replaceAll("\\bCM\\b", primitive).replaceAll("CM", primitiveLabel));
+						pw.println(applyCMReplacements(
+								line.replaceAll("\\.proto", ""),
+								primitive, primitiveLabel));
 					else
-						pw.println(line.replaceAll("\\bCM\\b", primitive).replaceAll("CM", primitiveLabel));
+						pw.println(applyCMReplacements(line,primitive, primitiveLabel));
+				} else if (line.contains(".proto.aux.CMKeySet") || line.contains(".proto.aux.CMValueSet")) {
+					pw.println(applyCMReplacements(line.replaceAll("\\.proto\\.aux", ""),
+							primitive, primitiveLabel));
 				}
 				line = br.readLine();
 			}
@@ -116,6 +130,12 @@ public class CaveManTask extends Task {
 			closeQuietly(pw);
 			closeQuietly(br);
 		}
+	}
+	
+	private String applyCMReplacements(String input, String primitive, String primitiveLabel) {
+		return input.replaceAll("\\bCMKey\\b", primitive).replaceAll("CMKey", primitiveLabel)
+				.replaceAll("\\bCMValue\\b", primitive).replaceAll("CMValue", primitiveLabel)
+				.replaceAll("\\bCM\\b", primitive).replaceAll("CM", primitiveLabel);
 	}
 
 	private void generate(File cavemanProtoFile, String keyPrimitive, String valuePrimitive) {

@@ -17,11 +17,15 @@
  */
 package com.mebigfatguy.caveman.proto.impl;
 
-import com.mebigfatguy.caveman.proto.CMMapIterator;
-import com.mebigfatguy.caveman.proto.aux.CM;
+import java.util.Collection;
+
+import com.mebigfatguy.caveman.proto.CMKeyKeyMap;
+import com.mebigfatguy.caveman.proto.CMKeyKeyMapIterator;
+import com.mebigfatguy.caveman.proto.aux.CMKey;
+import com.mebigfatguy.caveman.proto.aux.CMKeySet;
 
 
-public class CaveManCMMap<V> {
+public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 	private static final int DEFAULT_CAPACITY = 31;
 	private static final float DEFAULT_LOAD_FACTOR = 0.80f;
 
@@ -30,29 +34,32 @@ public class CaveManCMMap<V> {
 	private float loadFactor;
 	private int version;
 	
-	public CaveManCMMap() {
+	public CaveManCMKeyKeyMap() {
 		this(DEFAULT_CAPACITY);
 	}
 	
-	public CaveManCMMap(int initialCapacity) {
+	public CaveManCMKeyKeyMap(int initialCapacity) {
 		this(initialCapacity, DEFAULT_LOAD_FACTOR);
 	}
 	
-	public CaveManCMMap(int initialCapacity, float loadingFactor) {
+	public CaveManCMKeyKeyMap(int initialCapacity, float loadingFactor) {
 		loadFactor = loadingFactor;
 		size = 0;
-		buckets = (CMBucket<V>[])new CMBucket[initialCapacity];
+		buckets = new CMBucket[initialCapacity];
 	}
 	
+	@Override
 	public int size() {
 		return size;
 	}
 	
+	@Override
 	public boolean isEmpty() {
 		return size == 0;
 	}
 	
-	public boolean containsKey(CM key) {
+	@Override
+	public boolean containsKey(CMKey key) {
 		int hash = fromCaveMan(key) % buckets.length;
 		CMBucket<V> b = buckets[hash];
 		
@@ -62,6 +69,7 @@ public class CaveManCMMap<V> {
 		return b.indexOf(key) >= 0;
 	}
 	
+	@Override
 	public boolean containsValue(V value) {
 		for (CMBucket<V> bucket : buckets) {
 			if (bucket != null) {
@@ -79,19 +87,21 @@ public class CaveManCMMap<V> {
 		return false;	
 	}
 	
-	public V get(CM key) {
+	@Override
+	public V get(CMKey key) {
 		
 		int hash = fromCaveMan(key) % buckets.length;
 		CMBucket<V> b = buckets[hash];
 		V value = null;
 		if (b != null) {
-			value = (V)b.get(key);	
+			value = b.get(key);	
 		}
 		
 		return value;
 	}
 	
-	public void put(CM key, V value) {
+	@Override
+	public void put(CMKey key, V value) {
 		++version;
 		
 		ensureSize(size + 1);
@@ -107,7 +117,8 @@ public class CaveManCMMap<V> {
 		b.add(key, value);
 	}
 	
-	public void remove(CM key) {
+	@Override
+	public void remove(CMKey key) {
 		++version;
 		
 		int hash = fromCaveMan(key) % buckets.length;
@@ -118,19 +129,21 @@ public class CaveManCMMap<V> {
 		}
 	}
 	
-	public void putAll(CaveManCMMap m) {
+	@Override
+	public void putAll(CMKeyKeyMap<V> m) {
 		++version;
 		
 		ensureSize(size + m.size());
 		
-		CMMapIterator iterator = m.iterator();
+		CMKeyKeyMapIterator<V> iterator = m.iterator();
 		
 		while (iterator.hasNext()) {
 			iterator.next();
-			put(iterator.key(), (V)iterator.value());
+			put(iterator.key(), iterator.value());
 		}
 	}
 	
+	@Override
 	public void clear() {
 		++version;
 		
@@ -141,23 +154,30 @@ public class CaveManCMMap<V> {
 		}
 	}
 	
-	public CMMapIterator iterator() {
+	@Override
+	public CMKeyKeyMapIterator<V> iterator() {
 		return null;
 	}
 	
-	public CaveManCMSet keySet() {
+	@Override
+	public CMKeySet keySet() {
 		return null;
 	}	
+	
+	@Override
+	public Collection<V> values() {
+		return null;
+	}
 	
 	private void ensureSize(int newSize) {
 		if ((newSize / (double) buckets.length) > loadFactor) {
 			int newBucketSize = (int) ((2.0 * loadFactor) * newSize);
-			CMBucket<V>[] newBuckets = (CMBucket<V>[])new CMBucket[newBucketSize];
+			CMBucket<V>[] newBuckets = new CMBucket[newBucketSize];
 			
 			for (CMBucket<V> oldBucket : buckets) {
 				if (oldBucket != null) {
 					for (int oldBucketIndex = 0; oldBucketIndex < oldBucket.bucketSize; ++oldBucketIndex) {
-						CM key = oldBucket.keys[oldBucketIndex];
+						CMKey key = oldBucket.keys[oldBucketIndex];
 						int hash = fromCaveMan(key) % newBuckets.length;
 						CMBucket<V> newBucket = newBuckets[hash];
 						if (newBucket == null) {
@@ -173,17 +193,17 @@ public class CaveManCMMap<V> {
 	}
 	
 	private static class CMBucket<V> {
-		CM[] keys = new CM[1];
+		CMKey[] keys = new CMKey[1];
 		V[] values = (V[])new Object[1];
 		int bucketSize;
 		
-		public boolean add(CM key, V value) {
+		public boolean add(CMKey key, V value) {
 			int existingIndex = indexOf(key);
 			if (existingIndex >= 0) {
 				values[existingIndex] = value;
 			} else {
 				if (bucketSize >= keys.length) {
-					CM[] newKeys = new CM[keys.length + 4];
+					CMKey[] newKeys = new CMKey[keys.length + 4];
 					System.arraycopy(keys,  0, newKeys, 0, bucketSize);
 					keys = newKeys;
 					V[] newValues = (V[])new Object[values.length + 4];
@@ -198,7 +218,7 @@ public class CaveManCMMap<V> {
 			return true;
 		}
 		
-		public boolean remove(CM key) {
+		public boolean remove(CMKey key) {
 			for (int i = 0; i < bucketSize; i++) {
 				if (key == keys[i]) {
 					--bucketSize;
@@ -210,7 +230,7 @@ public class CaveManCMMap<V> {
 			return false;
 		}
 		
-		public int indexOf(CM key) {
+		public int indexOf(CMKey key) {
 			for (int i = 0; i < bucketSize; i++) {
 				if (key == keys[i])
 					return i;
@@ -219,7 +239,7 @@ public class CaveManCMMap<V> {
 			return -1;
 		}
 		
-		public V get(CM key) {
+		public V get(CMKey key) {
 			for (int i = 0; i < bucketSize; i++) {
 				if (key == keys[i])
 					return values[i];
@@ -234,5 +254,5 @@ public class CaveManCMMap<V> {
 	}
 	
 	
-	private int fromCaveMan(CM key) {return 0;}
+	private int fromCaveMan(CMKey key) {return 0;}
 }
