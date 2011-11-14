@@ -17,7 +17,7 @@
  */
 package com.mebigfatguy.caveman.proto.impl;
 
-import com.mebigfatguy.caveman.proto.CMKeyCMValueIterator;
+import com.mebigfatguy.caveman.proto.CMKeyCMValueMapIterator;
 import com.mebigfatguy.caveman.proto.CMKeyCMValueMap;
 import com.mebigfatguy.caveman.proto.aux.CMKey;
 import com.mebigfatguy.caveman.proto.aux.CMKeySet;
@@ -123,7 +123,7 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 		
 		ensureSize(size + m.size());
 		
-		CMKeyCMValueIterator iterator = m.iterator();
+		CMKeyCMValueMapIterator iterator = m.iterator();
 		
 		while (iterator.hasNext()) {
 			iterator.next();
@@ -141,7 +141,7 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 		}
 	}
 	
-	public CMKeyCMValueIterator iterator() {
+	public CMKeyCMValueMapIterator iterator() {
 		return null;
 	}
 	
