@@ -17,6 +17,8 @@
  */
 package com.mebigfatguy.caveman.proto.impl;
 
+import java.util.ConcurrentModificationException;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import com.mebigfatguy.caveman.proto.CMValueValueMap;
@@ -109,7 +111,9 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 			buckets[hash] = b;
 		}
 		
-		b.add(key, value);
+		if (b.add(key, value)) {
+			++size;
+		}
 	}
 	
 	@Override
@@ -120,7 +124,9 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 		CMBucket<K> b = buckets[hash];
 		
 		if (b != null) {
-			b.remove(key);
+			if (b.remove(key)) {
+				--size;
+			}
 		}
 	}
 	
@@ -147,8 +153,13 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 				b.clear();
 			}
 		}
+		size = 0;
 	}
 	
+	@Override
+	public CMValueValueMapIterator<K> iterator() {
+		return new CMCMValueValueMapIterator(version);
+	}
 	
 	@Override
 	public Set<K> keySet() {
@@ -157,11 +168,6 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 	
 	@Override
 	public CaveManCMBag values() {
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public CMValueValueMapIterator<K> iterator() {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -250,4 +256,111 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 			bucketSize = 0;
 		}
 	}
+	
+	private class CMCMValueValueMapIterator<K> implements CMValueValueMapIterator<K> {
+
+		private final int iteratorVersion;
+		private int bucketIndex;
+		private int bucketSubIndex;
+		private int pos;
+		private K key;
+		private CMValue value;
+		
+		public CMCMValueValueMapIterator(int version) {
+			iteratorVersion = version;
+			
+			pos = 0;
+			if (size > 0) {
+				for (bucketIndex = 0; bucketIndex < buckets.length; bucketIndex++) {
+					CMBucket b = buckets[bucketIndex];
+					if ((b != null) && (b.bucketSize > 0)) {
+						bucketSubIndex = 0;
+						break;
+					}
+				}
+				//?? shouldn't get here
+			}
+		}
+		
+		@Override
+		public boolean hasNext() {
+			if (iteratorVersion != version) {
+				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
+			}
+
+			return pos >= size;
+		}
+
+		@Override
+		public void next() throws NoSuchElementException {
+			if (iteratorVersion != version) {
+				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
+			}
+			
+
+			if (pos >= size) {
+				throw new NoSuchElementException("Index " + pos + " is out of bounds [0, " + (size - 1) + "]");
+			}
+
+			CMBucket b = buckets[bucketIndex];
+			key = (K)b.keys[bucketSubIndex];
+			value = b.values[bucketSubIndex++];
+			
+			if (bucketSubIndex >= b.keys.length) {
+				bucketSubIndex = 0;
+				for (;bucketIndex < buckets.length; bucketIndex++) {
+					b = buckets[bucketIndex];
+					if ((b != null) && (b.bucketSize > 0)) {
+						break;
+					}
+				}
+			}
+			++pos;
+		}
+
+		@Override
+		public K key() {
+			if (iteratorVersion != version) {
+				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
+			}
+
+			return key;
+		}
+
+		@Override
+		public CMValue value() {
+			if (iteratorVersion != version) {
+				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
+			}
+
+			return value;
+		}
+
+		@Override
+		public void remove() {
+			if (iteratorVersion != version) {
+				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
+			}
+			
+			if (pos >= size) {
+				throw new NoSuchElementException("Index " + pos + " is out of bounds [0, " + (size - 1) + "]");
+			}
+			
+			CMBucket b = buckets[bucketIndex];
+			System.arraycopy(b.keys, bucketSubIndex + 1, b.keys, bucketSubIndex, b.bucketSize - bucketSubIndex);
+			System.arraycopy(b.values, bucketSubIndex + 1, b.values, bucketSubIndex, b.bucketSize - bucketSubIndex);
+			--b.bucketSize;
+			if (bucketSubIndex >= b.bucketSize) {
+				bucketSubIndex = 0;
+				for (;bucketIndex < buckets.length; bucketIndex++) {
+					b = buckets[bucketIndex];
+					if ((b != null) && (b.bucketSize > 0)) {
+						break;
+					}
+				}
+			}
+			--pos;
+		}	
+	}
+
 }
