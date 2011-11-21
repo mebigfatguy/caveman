@@ -21,6 +21,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.mebigfatguy.caveman.proto.CMKeyCMValueMap;
+import com.mebigfatguy.caveman.proto.CMKeyCMValueMapIterator;
 import com.mebigfatguy.caveman.proto.aux.CMKey;
 import com.mebigfatguy.caveman.proto.aux.CMValue;
 import com.mebigfatguy.caveman.proto.impl.CaveManCMKeyCMValueMap;
@@ -42,8 +43,30 @@ public class CaveManCMKeyCMValueMapTest {
 		Assert.assertEquals(0, m.size());
 	}
 	
+	@Test
+	public void testIteratorRemove() {
+		CMKeyCMValueMap m = new CaveManCMKeyCMValueMap();
+		
+		for (int i = 0; i < 100; i++) {
+			m.put(toCaveManKey(i), toCaveManValue(i));
+		}
+		
+		CMKeyCMValueMapIterator it = m.iterator();
+		while (it.hasNext()) {
+			it.next();
+			
+			if ((fromCaveManKey(it.key()) & 1) == 0) {
+				it.remove();
+			}
+		}
+		
+		for (int i = 1; i < 100; i+=2) {
+			Assert.assertTrue(m.containsKey(toCaveManKey(i)));
+		}
+	}
 	
 	
+	private int fromCaveManKey(CMKey k) { return 0; }
 	private CMKey toCaveManKey(int i) { return null; }
 	private CMValue toCaveManValue(int i) { return null; }
 }

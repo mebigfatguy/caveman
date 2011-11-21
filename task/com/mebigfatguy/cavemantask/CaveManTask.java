@@ -172,6 +172,32 @@ public class CaveManTask extends Task {
 							pw.println(line.replaceAll("toCaveManValue\\(([^\\)]*)\\)", "(" + valuePrimitive + ") $1").replaceAll("\\bCM\\b", valuePrimitive).replaceAll("CM", valuePrimitiveLabel));
 						}
 					}					
+				} else if (line.contains("fromCaveManKey")) {
+					if (!line.contains("private")) {
+						if ("boolean".equals(keyPrimitive)) {
+							pw.println(applyCMReplacements(
+									line.replaceAll("fromCaveManKey\\(([^\\)]*)\\)", "(($1) ? 1 : 0)"),
+									keyPrimitive, keyPrimitiveLabel));
+							
+						} else {
+							pw.println(applyCMReplacements(
+									line.replaceAll("fromCaveManKey\\(([^\\)]*)\\)", "(int) $1"),
+									keyPrimitive, keyPrimitiveLabel));
+						}
+					}
+				} else if (line.contains("fromCaveManValue")) {
+					if (!line.contains("private")) {
+						if ("boolean".equals(valuePrimitive)) {
+							pw.println(applyCMReplacements(
+									line.replaceAll("fromCaveManValue\\(([^\\)]*)\\)", "(($1) ? 1 : 0)"),
+									valuePrimitive, valuePrimitiveLabel));
+							
+						} else {
+							pw.println(applyCMReplacements(
+									line.replaceAll("fromCaveManValue\\(([^\\)]*)\\)", "(int) $1"),
+									valuePrimitive, valuePrimitiveLabel));
+						}
+					}
 				} else if (!line.trim().startsWith("import") || line.contains("java.") || line.contains("org.")) {
 					pw.println(line.replaceAll("\\bCMKey\\b", keyPrimitive).replaceAll("\\bCMValue\\b", valuePrimitive)
 							.replaceAll("CMKey", keyPrimitiveLabel).replaceAll("CMValue", valuePrimitiveLabel));

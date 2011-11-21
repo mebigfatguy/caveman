@@ -32,7 +32,7 @@ public class CaveManCMSet implements CMSet {
 	
 	private CMBucket[] buckets;
 	private int size;
-	private float loadFactor;
+	private final float loadFactor;
 	private int version;
 	
 	public CaveManCMSet() {
@@ -50,14 +50,17 @@ public class CaveManCMSet implements CMSet {
 		version = 0;
 	}
 	
+	@Override
 	public int size() {
 		return size;
 	}
 	
+	@Override
 	public boolean isEmpty() {
 		return size == 0;
 	}
 	
+	@Override
 	public boolean contains(CM item) {
 		int hash = fromCaveMan(item) % buckets.length;
 		CMBucket b = buckets[hash];
@@ -68,10 +71,12 @@ public class CaveManCMSet implements CMSet {
 		return b.contains(item);
 	}
 	
+	@Override
 	public CMIterator iterator() {
 		return new CaveManCMSetIterator(version);
 	}
 	
+	@Override
 	public CM[] toArray() {
 		CM[] array = new CM[size];
 		int index = 0;
@@ -86,6 +91,7 @@ public class CaveManCMSet implements CMSet {
 		return array;
 	}
 	
+	@Override
 	public boolean add(CM item) {
 		++version;
 		
@@ -105,6 +111,7 @@ public class CaveManCMSet implements CMSet {
 		return added;
 	}
 	
+	@Override
 	public boolean remove(CM item) {
 		++version;
 		int hash = fromCaveMan(item) % buckets.length;
@@ -120,6 +127,7 @@ public class CaveManCMSet implements CMSet {
 		return removed;
 	}
 	
+	@Override
 	public boolean containsAll(CMCollection c) {
 		CMIterator it = c.iterator();
 		while (it.hasNext()) {
@@ -130,6 +138,7 @@ public class CaveManCMSet implements CMSet {
 		return true;
 	}
 	
+	@Override
 	public boolean addAll(CMCollection c) {
 		++version;
 		
@@ -143,6 +152,7 @@ public class CaveManCMSet implements CMSet {
 		return startSize != size;
 	}
 	
+	@Override
 	public boolean retainAll(CMCollection c) {
 		++version;
 		int startSize = size;
@@ -156,6 +166,7 @@ public class CaveManCMSet implements CMSet {
 		return startSize != size;
 	}
 	
+	@Override
 	public boolean removeAll(CMCollection c) {
 		++version;
 		int startSize = size;
@@ -166,11 +177,13 @@ public class CaveManCMSet implements CMSet {
 		return startSize != size;
 	}	
 	
+	@Override
 	public void clear() {
 		++version;
 		for (int i = 0; i < buckets.length; i++) {
 			buckets[i] = null;
 		}
+		size = 0;
 	}
 	
 	private void ensureSize(int newSize) {
@@ -238,7 +251,7 @@ public class CaveManCMSet implements CMSet {
 	
 	private class CaveManCMSetIterator implements CMIterator {
 
-		private int iteratorVersion;
+		private final int iteratorVersion;
 		private int bucketIndex;
 		private int bucketSubIndex;
 		private int pos;
@@ -246,8 +259,9 @@ public class CaveManCMSet implements CMSet {
 		CaveManCMSetIterator(int vers) {
 			iteratorVersion = vers;
 			
+			pos = 0;
 			if (size > 0) {
-				for (int bucketIndex = 0; bucketIndex < buckets.length; bucketIndex++) {
+				for (bucketIndex = 0; bucketIndex < buckets.length; bucketIndex++) {
 					CMBucket b = buckets[bucketIndex];
 					if ((b != null) && (b.bucketSize > 0)) {
 						bucketSubIndex = 0;

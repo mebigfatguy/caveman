@@ -17,6 +17,9 @@
  */
 package com.mebigfatguy.caveman.proto.impl;
 
+import java.util.ConcurrentModificationException;
+import java.util.NoSuchElementException;
+
 import com.mebigfatguy.caveman.proto.CMKeyCMValueMap;
 import com.mebigfatguy.caveman.proto.CMKeyCMValueMapIterator;
 import com.mebigfatguy.caveman.proto.aux.CMKey;
@@ -29,7 +32,7 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 	private static final float DEFAULT_LOAD_FACTOR = 0.80f;
 
 	private CMBucket[] buckets;
-	private final int size;
+	private int size;
 	private final float loadFactor;
 	private int version;
 	
@@ -110,7 +113,9 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 			buckets[hash] = b;
 		}
 		
-		b.add(key, value);
+		if (b.add(key, value)) {
+			++size;
+		}
 	}
 	
 	@Override
@@ -121,7 +126,9 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 		CMBucket b = buckets[hash];
 		
 		if (b != null) {
-			b.remove(key);
+			if (b.remove(key)) {
+				--size;
+			}
 		}
 	}
 	
@@ -148,11 +155,12 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 				b.clear();
 			}
 		}
+		size = 0;
 	}
 	
 	@Override
 	public CMKeyCMValueMapIterator iterator() {
-		throw new UnsupportedOperationException();
+		return new CMCMKeyCMValueMapIterator(version);
 	}
 	
 	@Override
@@ -197,21 +205,21 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 			int existingIndex = indexOf(key);
 			if (existingIndex >= 0) {
 				values[existingIndex] = value;
-			} else {
-				if (bucketSize >= keys.length) {
-					CMKey[] newKeys = new CMKey[keys.length + 4];
-					System.arraycopy(keys,  0, newKeys, 0, bucketSize);
-					keys = newKeys;
-					CMValue[] newValues = new CMValue[values.length + 4];
-					System.arraycopy(values,  0, newValues, 0, bucketSize);
-					values = newValues;					
-				}
-				
-				keys[bucketSize] = key;
-				values[bucketSize++] = value;
+				return false;
 			}
 			
-			return true;
+			if (bucketSize >= keys.length) {
+				CMKey[] newKeys = new CMKey[keys.length + 4];
+				System.arraycopy(keys,  0, newKeys, 0, bucketSize);
+				keys = newKeys;
+				CMValue[] newValues = new CMValue[values.length + 4];
+				System.arraycopy(values,  0, newValues, 0, bucketSize);
+				values = newValues;					
+			}
+			
+			keys[bucketSize] = key;
+			values[bucketSize++] = value;
+			return true;	
 		}
 		
 		public boolean remove(CMKey key) {
@@ -247,6 +255,112 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 		public void clear() {
 			bucketSize = 0;
 		}
+	}
+	
+	private class CMCMKeyCMValueMapIterator implements CMKeyCMValueMapIterator {
+
+		private final int iteratorVersion;
+		private int bucketIndex;
+		private int bucketSubIndex;
+		private int pos;
+		private CMKey key;
+		private CMValue value;
+		
+		public CMCMKeyCMValueMapIterator(int version) {
+			iteratorVersion = version;
+			
+			pos = 0;
+			if (size > 0) {
+				for (bucketIndex = 0; bucketIndex < buckets.length; bucketIndex++) {
+					CMBucket b = buckets[bucketIndex];
+					if ((b != null) && (b.bucketSize > 0)) {
+						bucketSubIndex = 0;
+						break;
+					}
+				}
+				//?? shouldn't get here
+			}
+		}
+		
+		@Override
+		public boolean hasNext() {
+			if (iteratorVersion != version) {
+				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
+			}
+
+			return pos >= size;
+		}
+
+		@Override
+		public void next() throws NoSuchElementException {
+			if (iteratorVersion != version) {
+				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
+			}
+			
+
+			if (pos >= size) {
+				throw new NoSuchElementException("Index " + pos + " is out of bounds [0, " + (size - 1) + "]");
+			}
+
+			CMBucket b = buckets[bucketIndex];
+			key = b.keys[bucketSubIndex];
+			value = b.values[bucketSubIndex++];
+			
+			if (bucketSubIndex >= b.keys.length) {
+				bucketSubIndex = 0;
+				for (;bucketIndex < buckets.length; bucketIndex++) {
+					b = buckets[bucketIndex];
+					if ((b != null) && (b.bucketSize > 0)) {
+						break;
+					}
+				}
+			}
+			++pos;
+		}
+
+		@Override
+		public CMKey key() {
+			if (iteratorVersion != version) {
+				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
+			}
+
+			return key;
+		}
+
+		@Override
+		public CMValue value() {
+			if (iteratorVersion != version) {
+				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
+			}
+
+			return value;
+		}
+
+		@Override
+		public void remove() {
+			if (iteratorVersion != version) {
+				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
+			}
+			
+			if (pos >= size) {
+				throw new NoSuchElementException("Index " + pos + " is out of bounds [0, " + (size - 1) + "]");
+			}
+			
+			CMBucket b = buckets[bucketIndex];
+			System.arraycopy(b.keys, bucketSubIndex + 1, b.keys, bucketSubIndex, b.bucketSize - bucketSubIndex);
+			System.arraycopy(b.values, bucketSubIndex + 1, b.values, bucketSubIndex, b.bucketSize - bucketSubIndex);
+			--b.bucketSize;
+			if (bucketSubIndex >= b.bucketSize) {
+				bucketSubIndex = 0;
+				for (;bucketIndex < buckets.length; bucketIndex++) {
+					b = buckets[bucketIndex];
+					if ((b != null) && (b.bucketSize > 0)) {
+						break;
+					}
+				}
+			}
+			--pos;
+		}	
 	}
 	
 	
