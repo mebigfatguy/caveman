@@ -203,19 +203,20 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 			int existingIndex = indexOf(key);
 			if (existingIndex >= 0) {
 				values[existingIndex] = value;
-			} else {
-				if (bucketSize >= keys.length) {
-					K[] newKeys = (K[])new Object[keys.length + 4];
-					System.arraycopy(keys,  0, newKeys, 0, bucketSize);
-					keys = newKeys;
-					CMValue[] newValues = new CMValue[values.length + 4];
-					System.arraycopy(values,  0, newValues, 0, bucketSize);
-					values = newValues;					
-				}
-				
-				keys[bucketSize] = key;
-				values[bucketSize++] = value;
+				return false;
 			}
+			
+			if (bucketSize >= keys.length) {
+				K[] newKeys = (K[])new Object[keys.length + 4];
+				System.arraycopy(keys,  0, newKeys, 0, bucketSize);
+				keys = newKeys;
+				CMValue[] newValues = new CMValue[values.length + 4];
+				System.arraycopy(values,  0, newValues, 0, bucketSize);
+				values = newValues;					
+			}
+			
+			keys[bucketSize] = key;
+				values[bucketSize++] = value;
 			
 			return true;
 		}
