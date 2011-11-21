@@ -159,44 +159,59 @@ public class CaveManTask extends Task {
 					pw.println("package " + dstPackage + ";");
 				} else if (line.contains("toCaveMan")) {
 					if (!line.contains("private")) {
-						if ("boolean".equals(keyPrimitive)) {
-							line = (line.replaceAll("toCaveManKey\\(([^\\)]*)\\)", "(($1 == 0) ? false : true)").replaceAll("\\bCM\\b", keyPrimitive).replaceAll("CM", keyPrimitiveLabel));
-							
-						} else {
-							line = (line.replaceAll("toCaveManKey\\(([^\\)]*)\\)", "(" + keyPrimitive + ") $1").replaceAll("\\bCM\\b", keyPrimitive).replaceAll("CM", keyPrimitiveLabel));
+						if (line.contains("toCaveManKey")) {
+							if ("boolean".equals(keyPrimitive)) {
+								line = applyCMReplacements(line.replaceAll("toCaveManKey\\(([^\\)]*)\\)", "(($1 == 0) ? false : true)"), 
+										keyPrimitive, keyPrimitiveLabel);
+								
+							} else {
+								line = applyCMReplacements(line.replaceAll("toCaveManKey\\(([^\\)]*)\\)", "(" + keyPrimitive + ") $1"), 
+										keyPrimitive, keyPrimitiveLabel);
+							}
+						} 
+						
+						if (line.contains("toCaveManValue")) {
+							if ("boolean".equals(valuePrimitive)) {
+								line = applyCMReplacements(line.replaceAll("toCaveManValue\\(([^\\)]*)\\)", "(($1 == 0) ? false : true)"), 
+										valuePrimitive, valuePrimitiveLabel);
+								
+							} else {
+								line = applyCMReplacements(line.replaceAll("toCaveManValue\\(([^\\)]*)\\)", "(" + valuePrimitive + ") $1"), 
+										valuePrimitive, valuePrimitiveLabel);
+							}
 						}
-						if ("boolean".equals(valuePrimitive)) {
-							pw.println(line.replaceAll("toCaveManValue\\(([^\\)]*)\\)", "(($1 == 0) ? false : true)").replaceAll("\\bCM\\b", valuePrimitive).replaceAll("CM", valuePrimitiveLabel));
-							
-						} else {
-							pw.println(line.replaceAll("toCaveManValue\\(([^\\)]*)\\)", "(" + valuePrimitive + ") $1").replaceAll("\\bCM\\b", valuePrimitive).replaceAll("CM", valuePrimitiveLabel));
-						}
+						
+						pw.println(line);
 					}					
-				} else if (line.contains("fromCaveManKey")) {
+				} else if (line.contains("fromCaveMan")) {
 					if (!line.contains("private")) {
-						if ("boolean".equals(keyPrimitive)) {
-							pw.println(applyCMReplacements(
-									line.replaceAll("fromCaveManKey\\(([^\\)]*)\\)", "(($1) ? 1 : 0)"),
-									keyPrimitive, keyPrimitiveLabel));
-							
-						} else {
-							pw.println(applyCMReplacements(
-									line.replaceAll("fromCaveManKey\\(([^\\)]*)\\)", "(int) $1"),
-									keyPrimitive, keyPrimitiveLabel));
+						if (line.contains("fromCaveManKey")) {
+							if ("boolean".equals(keyPrimitive)) {
+								line = (applyCMReplacements(
+										line.replaceAll("fromCaveManKey\\(([^\\)]*)\\)", "(($1) ? 1 : 0)"),
+										keyPrimitive, keyPrimitiveLabel));
+								
+							} else {
+								line = (applyCMReplacements(
+										line.replaceAll("fromCaveManKey\\(([^\\)]*)\\)", "(int) $1"),
+										keyPrimitive, keyPrimitiveLabel));
+							}
 						}
-					}
-				} else if (line.contains("fromCaveManValue")) {
-					if (!line.contains("private")) {
-						if ("boolean".equals(valuePrimitive)) {
-							pw.println(applyCMReplacements(
-									line.replaceAll("fromCaveManValue\\(([^\\)]*)\\)", "(($1) ? 1 : 0)"),
-									valuePrimitive, valuePrimitiveLabel));
-							
-						} else {
-							pw.println(applyCMReplacements(
-									line.replaceAll("fromCaveManValue\\(([^\\)]*)\\)", "(int) $1"),
-									valuePrimitive, valuePrimitiveLabel));
+						
+						if (line.contains("fromCaveManValue")) {
+							if ("boolean".equals(valuePrimitive)) {
+								line = (applyCMReplacements(
+										line.replaceAll("fromCaveManValue\\(([^\\)]*)\\)", "(($1) ? 1 : 0)"),
+										valuePrimitive, valuePrimitiveLabel));
+								
+							} else {
+								line = (applyCMReplacements(
+										line.replaceAll("fromCaveManValue\\(([^\\)]*)\\)", "(int) $1"),
+										valuePrimitive, valuePrimitiveLabel));
+							}
 						}
+						
+						pw.println(line);
 					}
 				} else if (!line.trim().startsWith("import") || line.contains("java.") || line.contains("org.")) {
 					pw.println(line.replaceAll("\\bCMKey\\b", keyPrimitive).replaceAll("\\bCMValue\\b", valuePrimitive)

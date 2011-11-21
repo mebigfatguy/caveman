@@ -158,7 +158,7 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 	
 	@Override
 	public CMKeyKeyMapIterator<V> iterator() {
-		throw new UnsupportedOperationException();
+		return new CMCMKeyKeyMapIterator(version);
 	}
 	
 	@Override
