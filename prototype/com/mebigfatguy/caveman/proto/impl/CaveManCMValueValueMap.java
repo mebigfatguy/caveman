@@ -158,7 +158,7 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 	
 	@Override
 	public CMValueValueMapIterator<K> iterator() {
-		return new CMCMValueValueMapIterator(version);
+		return new CaveManCMValueValueMapIterator(version);
 	}
 	
 	@Override
@@ -257,7 +257,7 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 		}
 	}
 	
-	private class CMCMValueValueMapIterator<K> implements CMValueValueMapIterator<K> {
+	private class CaveManCMValueValueMapIterator<K> implements CMValueValueMapIterator<K> {
 
 		private final int iteratorVersion;
 		private int bucketIndex;
@@ -266,7 +266,7 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 		private K key;
 		private CMValue value;
 		
-		public CMCMValueValueMapIterator(int version) {
+		public CaveManCMValueValueMapIterator(int version) {
 			iteratorVersion = version;
 			
 			pos = 0;

@@ -158,7 +158,7 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 	
 	@Override
 	public CMKeyKeyMapIterator<V> iterator() {
-		return new CMCMKeyKeyMapIterator<V>(version);
+		return new CaveCMKeyKeyMapIterator<V>(version);
 	}
 	
 	@Override
@@ -255,7 +255,7 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 		}
 	}
 	
-	private class CMCMKeyKeyMapIterator<V> implements CMKeyKeyMapIterator<V> {
+	private class CaveCMKeyKeyMapIterator<V> implements CMKeyKeyMapIterator<V> {
 
 		private final int iteratorVersion;
 		private int bucketIndex;
@@ -264,7 +264,7 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 		private CMKey key;
 		private V value;
 		
-		public CMCMKeyKeyMapIterator(int version) {
+		public CaveCMKeyKeyMapIterator(int version) {
 			iteratorVersion = version;
 			
 			pos = 0;
