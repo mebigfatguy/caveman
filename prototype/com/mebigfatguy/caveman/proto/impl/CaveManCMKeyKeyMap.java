@@ -116,7 +116,9 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 			buckets[hash] = b;
 		}
 		
-		b.add(key, value);
+		if (b.add(key, value)) {
+			++size;
+		}
 	}
 	
 	@Override
@@ -127,7 +129,9 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 		CMBucket<V> b = buckets[hash];
 		
 		if (b != null) {
-			b.remove(key);
+			if (b.remove(key)) {
+				--size;
+			}
 		}
 	}
 	
@@ -154,6 +158,7 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 				b.clear();
 			}
 		}
+		size = 0;
 	}
 	
 	@Override
@@ -203,19 +208,20 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 			int existingIndex = indexOf(key);
 			if (existingIndex >= 0) {
 				values[existingIndex] = value;
-			} else {
-				if (bucketSize >= keys.length) {
-					CMKey[] newKeys = new CMKey[keys.length + 4];
-					System.arraycopy(keys,  0, newKeys, 0, bucketSize);
-					keys = newKeys;
-					V[] newValues = (V[])new Object[values.length + 4];
-					System.arraycopy(values,  0, newValues, 0, bucketSize);
-					values = newValues;					
-				}
-				
-				keys[bucketSize] = key;
-				values[bucketSize++] = value;
+				return false;
 			}
+			
+			if (bucketSize >= keys.length) {
+				CMKey[] newKeys = new CMKey[keys.length + 4];
+				System.arraycopy(keys,  0, newKeys, 0, bucketSize);
+				keys = newKeys;
+				V[] newValues = (V[])new Object[values.length + 4];
+				System.arraycopy(values,  0, newValues, 0, bucketSize);
+				values = newValues;					
+			}
+			
+			keys[bucketSize] = key;
+			values[bucketSize++] = value;
 			
 			return true;
 		}
