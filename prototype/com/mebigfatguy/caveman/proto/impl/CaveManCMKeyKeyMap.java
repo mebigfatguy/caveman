@@ -44,6 +44,7 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 		this(initialCapacity, DEFAULT_LOAD_FACTOR);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public CaveManCMKeyKeyMap(int initialCapacity, float loadingFactor) {
 		loadFactor = loadingFactor;
 		size = 0;
@@ -176,6 +177,7 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 		throw new UnsupportedOperationException();
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void ensureSize(int newSize) {
 		if ((newSize / (double) buckets.length) > loadFactor) {
 			int newBucketSize = (int) ((2.0 * loadFactor) * newSize);
@@ -198,7 +200,8 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 			buckets = newBuckets;		
 		}
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	private static class CMBucket<V> {
 		CMKey[] keys = new CMKey[1];
 		V[] values = (V[])new Object[1];
@@ -276,7 +279,8 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 			pos = 0;
 			if (size > 0) {
 				for (bucketIndex = 0; bucketIndex < buckets.length; bucketIndex++) {
-					CMBucket b = buckets[bucketIndex];
+					@SuppressWarnings("unchecked")
+					CMBucket<V> b = (CMBucket<V>)buckets[bucketIndex];
 					if ((b != null) && (b.bucketSize > 0)) {
 						bucketSubIndex = 0;
 						break;
@@ -296,6 +300,7 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 		}
 
 		@Override
+		@SuppressWarnings("unchecked")
 		public void next() throws NoSuchElementException {
 			if (iteratorVersion != version) {
 				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
@@ -306,14 +311,14 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 				throw new NoSuchElementException("Index " + pos + " is out of bounds [0, " + (size - 1) + "]");
 			}
 
-			CMBucket b = buckets[bucketIndex];
+			CMBucket<V> b = (CMBucket<V>)buckets[bucketIndex];
 			key = b.keys[bucketSubIndex];
-			value = (V)b.values[bucketSubIndex++];
+			value = b.values[bucketSubIndex++];
 			
 			if (bucketSubIndex >= b.keys.length) {
 				bucketSubIndex = 0;
 				for (;bucketIndex < buckets.length; bucketIndex++) {
-					b = buckets[bucketIndex];
+					b = (CMBucket<V>)buckets[bucketIndex];
 					if ((b != null) && (b.bucketSize > 0)) {
 						break;
 					}
@@ -341,6 +346,7 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 		}
 
 		@Override
+		@SuppressWarnings("unchecked")
 		public void remove() {
 			if (iteratorVersion != version) {
 				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
@@ -350,14 +356,14 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 				throw new NoSuchElementException("Index " + pos + " is out of bounds [0, " + (size - 1) + "]");
 			}
 			
-			CMBucket b = buckets[bucketIndex];
+			CMBucket<V> b = (CMBucket<V>)buckets[bucketIndex];
 			System.arraycopy(b.keys, bucketSubIndex + 1, b.keys, bucketSubIndex, b.bucketSize - bucketSubIndex);
 			System.arraycopy(b.values, bucketSubIndex + 1, b.values, bucketSubIndex, b.bucketSize - bucketSubIndex);
 			--b.bucketSize;
 			if (bucketSubIndex >= b.bucketSize) {
 				bucketSubIndex = 0;
 				for (;bucketIndex < buckets.length; bucketIndex++) {
-					b = buckets[bucketIndex];
+					b = (CMBucket<V>)buckets[bucketIndex];
 					if ((b != null) && (b.bucketSize > 0)) {
 						break;
 					}
