@@ -160,7 +160,7 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 	
 	@Override
 	public CMKeyCMValueMapIterator iterator() {
-		return new CMCMKeyCMValueMapIterator(version);
+		return new CaveManCMKeyCMValueMapIterator(version);
 	}
 	
 	@Override
@@ -257,7 +257,7 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 		}
 	}
 	
-	private class CMCMKeyCMValueMapIterator implements CMKeyCMValueMapIterator {
+	private class CaveManCMKeyCMValueMapIterator implements CMKeyCMValueMapIterator {
 
 		private final int iteratorVersion;
 		private int bucketIndex;
@@ -266,7 +266,7 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 		private CMKey key;
 		private CMValue value;
 		
-		public CMCMKeyCMValueMapIterator(int version) {
+		public CaveManCMKeyCMValueMapIterator(int version) {
 			iteratorVersion = version;
 			
 			pos = 0;
