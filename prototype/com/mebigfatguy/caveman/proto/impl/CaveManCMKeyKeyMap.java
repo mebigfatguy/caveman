@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
 
+import com.mebigfatguy.caveman.proto.CMCollection;
+import com.mebigfatguy.caveman.proto.CMIterator;
 import com.mebigfatguy.caveman.proto.CMKeyKeyMap;
 import com.mebigfatguy.caveman.proto.CMKeyKeyMapIterator;
 import com.mebigfatguy.caveman.proto.CMSet;
@@ -169,7 +171,7 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 	
 	@Override
 	public CMSet keySet() {
-		throw new UnsupportedOperationException();
+		return new CaveManCMKeySet();
 	}	
 	
 	@Override
@@ -371,6 +373,78 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 			}
 			--pos;
 		}	
+	}
+	
+	private class CaveManCMKeySet implements CMSet {
+
+		@Override
+		public int size() {
+			return CaveManCMKeyKeyMap.this.size();
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return CaveManCMKeyKeyMap.this.isEmpty();
+		}
+
+		@Override
+		public boolean contains(CM item) {
+			return CaveManCMKeyKeyMap.this.containsKey(item);
+		}
+
+		@Override
+		public CMIterator iterator() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public CM[] toArray() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public boolean add(CM item) {
+			int originalSize = CaveManCMKeyKeyMap.this.size();
+			CaveManCMKeyKeyMap.this.put(item,  null);			
+			return originalSize != CaveManCMKeyKeyMap.this.size();
+		}
+
+		@Override
+		public boolean remove(CM item) {
+			int originalSize = CaveManCMKeyKeyMap.this.size();
+			CaveManCMKeyKeyMap.this.remove(item);			
+			return originalSize != CaveManCMKeyKeyMap.this.size();
+		}
+
+		@Override
+		public void clear() {
+			CaveManCMKeyKeyMap.this.clear();
+		}
+
+		@Override
+		public boolean containsAll(CMCollection c) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean addAll(CMCollection c) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean retainAll(CMCollection c) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean removeAll(CMCollection c) {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	}
 
 	
