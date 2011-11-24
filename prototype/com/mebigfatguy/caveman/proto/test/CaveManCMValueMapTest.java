@@ -20,23 +20,23 @@ package com.mebigfatguy.caveman.proto.test;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.mebigfatguy.caveman.proto.CMKeyKeyMap;
-import com.mebigfatguy.caveman.proto.CMKeyKeyMapIterator;
+import com.mebigfatguy.caveman.proto.CMValueMap;
+import com.mebigfatguy.caveman.proto.CMValueMapIterator;
 import com.mebigfatguy.caveman.proto.aux.CM;
-import com.mebigfatguy.caveman.proto.impl.CaveManCMKeyKeyMap;
+import com.mebigfatguy.caveman.proto.impl.CaveManCMValueMap;
 
-public class CaveManCMKeyKeyMapTest {
+public class CaveManCMValueMapTest {
 
 	@Test
 	public void testSizeEmpty() {
-		CMKeyKeyMap<Integer> m = new CaveManCMKeyKeyMap<Integer>();
+		CMValueMap<Integer> m = new CaveManCMValueMap<Integer>();
 		
 		for (int i = 0; i < 100; i++) {
-			m.put(toCaveMan(i), Integer.valueOf(i));
+			m.put(Integer.valueOf(i), toCaveMan(i));
 		}
 		
 		for (int i = 0; i < 100; i++) {
-			m.remove(toCaveMan(i));
+			m.remove(Integer.valueOf(i));
 		}
 		
 		Assert.assertEquals(0, m.size());
@@ -44,27 +44,26 @@ public class CaveManCMKeyKeyMapTest {
 	
 	@Test
 	public void testIteratorRemove() {
-		CMKeyKeyMap<Integer> m = new CaveManCMKeyKeyMap<Integer>();
+		CMValueMap<Integer> m = new CaveManCMValueMap<Integer>();
 		
 		for (int i = 0; i < 100; i++) {
-			m.put(toCaveMan(i), Integer.valueOf(i));
+			m.put(Integer.valueOf(i), toCaveMan(i));
 		}
 		
-		CMKeyKeyMapIterator<Integer> it = m.iterator();
+		CMValueMapIterator<Integer> it = m.iterator();
 		while (it.hasNext()) {
 			it.next();
 			
-			if ((fromCaveMan(it.key()) & 1) == 0) {
+			if (((it.key().intValue()) & 1) == 0) {
 				it.remove();
 			}
 		}
 		
 		for (int i = 1; i < 100; i+=2) {
-			Assert.assertTrue(m.containsKey(toCaveMan(i)));
+			Assert.assertTrue(m.containsKey(Integer.valueOf(i)));
 		}
 	}
 	
 	
-	private int fromCaveMan(CM k) { return 0; }
 	private CM toCaveMan(int i) { return null; }
 }

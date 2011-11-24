@@ -62,7 +62,7 @@ public class CaveManTask extends Task {
 
 		String fileName = cavemanProtoFile.getName();
 		String className = applyCMReplacements(fileName.substring(0, fileName.length() - ".java".length()),
-											primitive, primitiveLabel);
+											primitive, primitiveLabel, 1);
 		File f = new File(dstDir, className + ".java");
 
 		BufferedReader br = null;
@@ -90,12 +90,12 @@ public class CaveManTask extends Task {
 						if ("boolean".equals(primitive)) {
 							pw.println(applyCMReplacements(
 										line.replaceAll("toCaveMan\\(([^\\)]*)\\)", "(($1 == 0) ? false : true)"),
-										primitive, primitiveLabel));
+										primitive, primitiveLabel, 1));
 							
 						} else {
 							pw.println(applyCMReplacements(
 									line.replaceAll("toCaveMan\\(([^\\)]*)\\)", "(" + primitive + ") $1"),
-									primitive, primitiveLabel));
+									primitive, primitiveLabel, 1));
 						}
 					}
 				} else if (line.contains("fromCaveMan")) {
@@ -103,24 +103,24 @@ public class CaveManTask extends Task {
 						if ("boolean".equals(primitive)) {
 							pw.println(applyCMReplacements(
 									line.replaceAll("fromCaveMan\\(([^\\)]*)\\)", "(($1) ? 1 : 0)"),
-									primitive, primitiveLabel));
+									primitive, primitiveLabel, 1));
 							
 						} else {
 							pw.println(applyCMReplacements(
 									line.replaceAll("fromCaveMan\\(([^\\)]*)\\)", "(int) $1"),
-									primitive, primitiveLabel));
+									primitive, primitiveLabel, 1));
 						}
 					}
 				} else if (!line.contains(".aux.")) {
 					if (line.contains(".proto."))
 						pw.println(applyCMReplacements(
 								line.replaceAll("\\.proto", ""),
-								primitive, primitiveLabel));
+								primitive, primitiveLabel, 1));
 					else
-						pw.println(applyCMReplacements(line,primitive, primitiveLabel));
+						pw.println(applyCMReplacements(line,primitive, primitiveLabel, 1));
 				} else if (line.contains(".proto.aux.CMKeySet") || line.contains(".proto.aux.CMValueSet")) {
 					pw.println(applyCMReplacements(line.replaceAll("\\.proto\\.aux", ""),
-							primitive, primitiveLabel));
+							primitive, primitiveLabel, 1));
 				}
 				line = br.readLine();
 			}
@@ -132,10 +132,13 @@ public class CaveManTask extends Task {
 		}
 	}
 	
-	private String applyCMReplacements(String input, String primitive, String primitiveLabel) {
-		return input.replaceAll("\\bCMKey\\b", primitive).replaceAll("CMKey", primitiveLabel)
-				.replaceAll("\\bCMValue\\b", primitive).replaceAll("CMValue", primitiveLabel)
-				.replaceAll("\\bCM\\b", primitive).replaceAll("CM", primitiveLabel);
+	private String applyCMReplacements(String input, String primitive, String primitiveLabel, int numPrimitiveReplacements) {
+		if (numPrimitiveReplacements == 1) {
+			return input.replaceAll("\\bCM\\b", primitive).replaceAll("CM", primitiveLabel);
+		} else {
+			return input.replaceAll("\\bCMKey\\b", primitive).replaceAll("CMKey", primitiveLabel)
+					    .replaceAll("\\bCMValue\\b", primitive).replaceAll("CMValue", primitiveLabel);
+		}
 	}
 
 	private void generate(File cavemanProtoFile, String keyPrimitive, String valuePrimitive) {
@@ -162,22 +165,22 @@ public class CaveManTask extends Task {
 						if (line.contains("toCaveManKey")) {
 							if ("boolean".equals(keyPrimitive)) {
 								line = applyCMReplacements(line.replaceAll("toCaveManKey\\(([^\\)]*)\\)", "(($1 == 0) ? false : true)"), 
-										keyPrimitive, keyPrimitiveLabel);
+										keyPrimitive, keyPrimitiveLabel, 2);
 								
 							} else {
 								line = applyCMReplacements(line.replaceAll("toCaveManKey\\(([^\\)]*)\\)", "(" + keyPrimitive + ") $1"), 
-										keyPrimitive, keyPrimitiveLabel);
+										keyPrimitive, keyPrimitiveLabel, 2);
 							}
 						} 
 						
 						if (line.contains("toCaveManValue")) {
 							if ("boolean".equals(valuePrimitive)) {
 								line = applyCMReplacements(line.replaceAll("toCaveManValue\\(([^\\)]*)\\)", "(($1 == 0) ? false : true)"), 
-										valuePrimitive, valuePrimitiveLabel);
+										valuePrimitive, valuePrimitiveLabel, 2);
 								
 							} else {
 								line = applyCMReplacements(line.replaceAll("toCaveManValue\\(([^\\)]*)\\)", "(" + valuePrimitive + ") $1"), 
-										valuePrimitive, valuePrimitiveLabel);
+										valuePrimitive, valuePrimitiveLabel, 2);
 							}
 						}
 						
@@ -189,12 +192,12 @@ public class CaveManTask extends Task {
 							if ("boolean".equals(keyPrimitive)) {
 								line = (applyCMReplacements(
 										line.replaceAll("fromCaveManKey\\(([^\\)]*)\\)", "(($1) ? 1 : 0)"),
-										keyPrimitive, keyPrimitiveLabel));
+										keyPrimitive, keyPrimitiveLabel, 2));
 								
 							} else {
 								line = (applyCMReplacements(
 										line.replaceAll("fromCaveManKey\\(([^\\)]*)\\)", "(int) $1"),
-										keyPrimitive, keyPrimitiveLabel));
+										keyPrimitive, keyPrimitiveLabel, 2));
 							}
 						}
 						
@@ -202,12 +205,12 @@ public class CaveManTask extends Task {
 							if ("boolean".equals(valuePrimitive)) {
 								line = (applyCMReplacements(
 										line.replaceAll("fromCaveManValue\\(([^\\)]*)\\)", "(($1) ? 1 : 0)"),
-										valuePrimitive, valuePrimitiveLabel));
+										valuePrimitive, valuePrimitiveLabel, 2));
 								
 							} else {
 								line = (applyCMReplacements(
 										line.replaceAll("fromCaveManValue\\(([^\\)]*)\\)", "(int) $1"),
-										valuePrimitive, valuePrimitiveLabel));
+										valuePrimitive, valuePrimitiveLabel, 2));
 							}
 						}
 						

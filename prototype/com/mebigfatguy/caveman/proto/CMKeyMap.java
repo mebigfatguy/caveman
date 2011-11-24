@@ -21,7 +21,7 @@ import java.util.Collection;
 
 import com.mebigfatguy.caveman.proto.aux.CM;
 
-public interface CMKeyKeyMap<V> {
+public interface CMKeyMap<V> {
 	
 	int size();
 	
@@ -37,7 +37,7 @@ public interface CMKeyKeyMap<V> {
 	
 	void remove(CM key);
 	
-	void putAll(CMKeyKeyMap<V> m);
+	void putAll(CMKeyMap<V> m);
 	
 	void clear();
 	
@@ -45,5 +45,5 @@ public interface CMKeyKeyMap<V> {
 	
 	Collection<V> values();
 	
-	CMKeyKeyMapIterator<V> iterator();
+	CMKeyMapIterator<V> iterator();
 }

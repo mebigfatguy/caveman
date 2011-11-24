@@ -17,34 +17,37 @@
  */
 package com.mebigfatguy.caveman.proto.impl;
 
+import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
-import com.mebigfatguy.caveman.proto.CMBag;
-import com.mebigfatguy.caveman.proto.CMValueValueMap;
-import com.mebigfatguy.caveman.proto.CMValueValueMapIterator;
+import com.mebigfatguy.caveman.proto.CMCollection;
+import com.mebigfatguy.caveman.proto.CMIterator;
+import com.mebigfatguy.caveman.proto.CMKeyMap;
+import com.mebigfatguy.caveman.proto.CMKeyMapIterator;
+import com.mebigfatguy.caveman.proto.CMSet;
 import com.mebigfatguy.caveman.proto.aux.CM;
 
-public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
+
+public class CaveManCMKeyMap<V> implements CMKeyMap<V> {
 	private static final int DEFAULT_CAPACITY = 31;
 	private static final float DEFAULT_LOAD_FACTOR = 0.80f;
 
-	private CMBucket<K>[] buckets;
+	private CMBucket<V>[] buckets;
 	private int size;
 	private float loadFactor;
 	private int version;
 	
-	public CaveManCMValueValueMap() {
+	public CaveManCMKeyMap() {
 		this(DEFAULT_CAPACITY);
 	}
 	
-	public CaveManCMValueValueMap(int initialCapacity) {
+	public CaveManCMKeyMap(int initialCapacity) {
 		this(initialCapacity, DEFAULT_LOAD_FACTOR);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public CaveManCMValueValueMap(int initialCapacity, float loadingFactor) {
+	public CaveManCMKeyMap(int initialCapacity, float loadingFactor) {
 		loadFactor = loadingFactor;
 		size = 0;
 		buckets = new CMBucket[initialCapacity];
@@ -61,9 +64,9 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 	}
 	
 	@Override
-	public boolean containsKey(K key) {
-		int hash = (key == null) ? 0 : (key.hashCode() % buckets.length);
-		CMBucket<K> b = buckets[hash];
+	public boolean containsKey(CM key) {
+		int hash = fromCaveMan(key) % buckets.length;
+		CMBucket<V> b = buckets[hash];
 		
 		if (b == null)
 			return false;
@@ -72,11 +75,14 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 	}
 	
 	@Override
-	public boolean containsValue(CM value) {
-		for (CMBucket<K> bucket : buckets) {
+	public boolean containsValue(V value) {
+		for (CMBucket<V> bucket : buckets) {
 			if (bucket != null) {
 				for (int i = 0; i < bucket.bucketSize; ++i) {
-					if (bucket.values[i] == value) {
+					if (value == null) {
+						if (bucket.values[i] == null)
+							return true;
+					} else if (value.equals(bucket.values[i])) {
 						return true;
 					}
 				}
@@ -87,29 +93,29 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 	}
 	
 	@Override
-	public CM get(K key, CM notFoundValue) {
-		int hash = (key == null) ? 0 : (key.hashCode() % buckets.length);
-		CMBucket<K> b = buckets[hash];
+	public V get(CM key) {
 		
+		int hash = fromCaveMan(key) % buckets.length;
+		CMBucket<V> b = buckets[hash];
+		V value = null;
 		if (b != null) {
-			return b.get(key, notFoundValue);	
+			value = b.get(key);	
 		}
 		
-		return notFoundValue;
+		return value;
 	}
 	
 	@Override
-	public void put(K key, CM value) {
+	public void put(CM key, V value) {
 		++version;
 		
 		ensureSize(size + 1);
 
-		
-		int hash = (key == null) ? 0 : (key.hashCode() % buckets.length);
-		CMBucket<K> b = buckets[hash];
+		int hash = fromCaveMan(key) % buckets.length;
+		CMBucket<V> b = buckets[hash];
 		
 		if (b == null) {
-			b = new CMBucket<K>();
+			b = new CMBucket<V>();
 			buckets[hash] = b;
 		}
 		
@@ -119,11 +125,11 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 	}
 	
 	@Override
-	public void remove(K key) {
+	public void remove(CM key) {
 		++version;
 		
-		int hash = (key == null) ? 0 : (key.hashCode() % buckets.length);
-		CMBucket<K> b = buckets[hash];
+		int hash = fromCaveMan(key) % buckets.length;
+		CMBucket<V> b = buckets[hash];
 		
 		if (b != null) {
 			if (b.remove(key)) {
@@ -133,12 +139,12 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 	}
 	
 	@Override
-	public void putAll(CMValueValueMap<K> m) {
+	public void putAll(CMKeyMap<V> m) {
 		++version;
 		
 		ensureSize(size + m.size());
 		
-		CMValueValueMapIterator<K> iterator = m.iterator();
+		CMKeyMapIterator<V> iterator = m.iterator();
 		
 		while (iterator.hasNext()) {
 			iterator.next();
@@ -150,7 +156,7 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 	public void clear() {
 		++version;
 		
-		for (CMBucket<K> b : buckets) {
+		for (CMBucket<V> b : buckets) {
 			if (b != null) {
 				b.clear();
 			}
@@ -159,17 +165,17 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 	}
 	
 	@Override
-	public CMValueValueMapIterator<K> iterator() {
-		return new CaveManCMValueValueMapIterator<K>(version);
+	public CMKeyMapIterator<V> iterator() {
+		return new CaveManCMKeyMapIterator<V>(version);
 	}
 	
 	@Override
-	public Set<K> keySet() {
-		throw new UnsupportedOperationException();
+	public CMSet keySet() {
+		return new CaveManCMKeySet();
 	}	
 	
 	@Override
-	public CMBag values() {
+	public Collection<V> values() {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -177,16 +183,16 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 	private void ensureSize(int newSize) {
 		if ((newSize / (double) buckets.length) > loadFactor) {
 			int newBucketSize = (int) ((2.0 * loadFactor) * newSize);
-			CMBucket<K>[] newBuckets = new CMBucket[newBucketSize];
+			CMBucket<V>[] newBuckets = new CMBucket[newBucketSize];
 			
-			for (CMBucket<K> oldBucket : buckets) {
+			for (CMBucket<V> oldBucket : buckets) {
 				if (oldBucket != null) {
 					for (int oldBucketIndex = 0; oldBucketIndex < oldBucket.bucketSize; ++oldBucketIndex) {
-						K key = oldBucket.keys[oldBucketIndex];
-						int hash = (key == null) ? 0 : (key.hashCode() % buckets.length);
-						CMBucket<K> newBucket = newBuckets[hash];
+						CM key = oldBucket.keys[oldBucketIndex];
+						int hash = fromCaveMan(key) % newBuckets.length;
+						CMBucket<V> newBucket = newBuckets[hash];
 						if (newBucket == null) {
-							newBucket = new CMBucket<K>();
+							newBucket = new CMBucket<V>();
 							newBuckets[hash] = newBucket;
 						}
 						newBucket.add(key, oldBucket.values[oldBucketIndex]);
@@ -196,14 +202,14 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 			buckets = newBuckets;		
 		}
 	}
-	
-	private static class CMBucket<K> {
-		@SuppressWarnings("unchecked")
-		K[] keys = (K[])new Object[1];
-		CM[] values = new CM[1];
+
+	@SuppressWarnings("unchecked")
+	private static class CMBucket<V> {
+		CM[] keys = new CM[1];
+		V[] values = (V[])new Object[1];
 		int bucketSize;
 		
-		public boolean add(K key, CM value) {
+		public boolean add(CM key, V value) {
 			int existingIndex = indexOf(key);
 			if (existingIndex >= 0) {
 				values[existingIndex] = value;
@@ -211,11 +217,10 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 			}
 			
 			if (bucketSize >= keys.length) {
-				@SuppressWarnings("unchecked")
-				K[] newKeys = (K[])new Object[keys.length + 4];
+				CM[] newKeys = new CM[keys.length + 4];
 				System.arraycopy(keys,  0, newKeys, 0, bucketSize);
 				keys = newKeys;
-				CM[] newValues = new CM[values.length + 4];
+				V[] newValues = (V[])new Object[values.length + 4];
 				System.arraycopy(values,  0, newValues, 0, bucketSize);
 				values = newValues;					
 			}
@@ -226,9 +231,9 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 			return true;
 		}
 		
-		public boolean remove(K key) {
+		public boolean remove(CM key) {
 			for (int i = 0; i < bucketSize; i++) {
-				if (((key == null) && (keys[i] == null)) || key.equals(keys[i])) {
+				if (key == keys[i]) {
 					--bucketSize;
 					System.arraycopy(keys, i + 1, keys, i, bucketSize - i);
 					System.arraycopy(values, i + 1, values, i, bucketSize - i);
@@ -238,24 +243,22 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 			return false;
 		}
 		
-		public int indexOf(K key) {
+		public int indexOf(CM key) {
 			for (int i = 0; i < bucketSize; i++) {
-				if (((key == null) && (keys[i] == null)) || key.equals(keys[i])) {
+				if (key == keys[i])
 					return i;
-				}
 			}
 			
 			return -1;
 		}
 		
-		public CM get(K key, CM notFoundValue) {
+		public V get(CM key) {
 			for (int i = 0; i < bucketSize; i++) {
-				if (((key == null) && (keys[i] == null)) || key.equals(keys[i])) {
+				if (key == keys[i])
 					return values[i];
-				}
 			}
 			
-			return notFoundValue;
+			return null;
 		}
 		
 		public void clear() {
@@ -263,23 +266,23 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 		}
 	}
 	
-	private class CaveManCMValueValueMapIterator<K> implements CMValueValueMapIterator<K> {
+	private class CaveManCMKeyMapIterator<V> implements CMKeyMapIterator<V> {
 
 		private final int iteratorVersion;
 		private int bucketIndex;
 		private int bucketSubIndex;
 		private int pos;
-		private K key;
-		private CM value;
+		private CM key;
+		private V value;
 		
-		public CaveManCMValueValueMapIterator(int version) {
+		public CaveManCMKeyMapIterator(int version) {
 			iteratorVersion = version;
 			
 			pos = 0;
 			if (size > 0) {
 				for (bucketIndex = 0; bucketIndex < buckets.length; bucketIndex++) {
 					@SuppressWarnings("unchecked")
-					CMBucket<K> b = (CMBucket<K>)buckets[bucketIndex];
+					CMBucket<V> b = (CMBucket<V>)buckets[bucketIndex];
 					if ((b != null) && (b.bucketSize > 0)) {
 						bucketSubIndex = 0;
 						break;
@@ -310,14 +313,14 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 				throw new NoSuchElementException("Index " + pos + " is out of bounds [0, " + (size - 1) + "]");
 			}
 
-			CMBucket<K> b = (CMBucket<K>)buckets[bucketIndex];
+			CMBucket<V> b = (CMBucket<V>)buckets[bucketIndex];
 			key = b.keys[bucketSubIndex];
 			value = b.values[bucketSubIndex++];
 			
 			if (bucketSubIndex >= b.keys.length) {
 				bucketSubIndex = 0;
 				for (;bucketIndex < buckets.length; bucketIndex++) {
-					b = (CMBucket<K>)buckets[bucketIndex];
+					b = (CMBucket<V>)buckets[bucketIndex];
 					if ((b != null) && (b.bucketSize > 0)) {
 						break;
 					}
@@ -327,7 +330,7 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 		}
 
 		@Override
-		public K key() {
+		public CM key() {
 			if (iteratorVersion != version) {
 				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
 			}
@@ -336,7 +339,7 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 		}
 
 		@Override
-		public CM value() {
+		public V value() {
 			if (iteratorVersion != version) {
 				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
 			}
@@ -355,14 +358,14 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 				throw new NoSuchElementException("Index " + pos + " is out of bounds [0, " + (size - 1) + "]");
 			}
 			
-			CMBucket<K> b = (CMBucket<K>)buckets[bucketIndex];
+			CMBucket<V> b = (CMBucket<V>)buckets[bucketIndex];
 			System.arraycopy(b.keys, bucketSubIndex + 1, b.keys, bucketSubIndex, b.bucketSize - bucketSubIndex);
 			System.arraycopy(b.values, bucketSubIndex + 1, b.values, bucketSubIndex, b.bucketSize - bucketSubIndex);
 			--b.bucketSize;
 			if (bucketSubIndex >= b.bucketSize) {
 				bucketSubIndex = 0;
 				for (;bucketIndex < buckets.length; bucketIndex++) {
-					b = (CMBucket<K>)buckets[bucketIndex];
+					b = (CMBucket<V>)buckets[bucketIndex];
 					if ((b != null) && (b.bucketSize > 0)) {
 						break;
 					}
@@ -371,5 +374,75 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 			--pos;
 		}	
 	}
+	
+	private class CaveManCMKeySet implements CMSet {
 
+		@Override
+		public int size() {
+			return CaveManCMKeyMap.this.size();
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return CaveManCMKeyMap.this.isEmpty();
+		}
+
+		@Override
+		public boolean contains(CM item) {
+			return CaveManCMKeyMap.this.containsKey(item);
+		}
+
+		@Override
+		public CMIterator iterator() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public CM[] toArray() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean add(CM item) {
+			int originalSize = CaveManCMKeyMap.this.size();
+			CaveManCMKeyMap.this.put(item,  null);			
+			return originalSize != CaveManCMKeyMap.this.size();
+		}
+
+		@Override
+		public boolean remove(CM item) {
+			int originalSize = CaveManCMKeyMap.this.size();
+			CaveManCMKeyMap.this.remove(item);			
+			return originalSize != CaveManCMKeyMap.this.size();
+		}
+
+		@Override
+		public void clear() {
+			CaveManCMKeyMap.this.clear();
+		}
+
+		@Override
+		public boolean containsAll(CMCollection c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean addAll(CMCollection c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean retainAll(CMCollection c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean removeAll(CMCollection c) {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	
+	
+	private int fromCaveMan(CM key) {return 0;}
 }

@@ -21,15 +21,15 @@ import java.util.NoSuchElementException;
 
 import com.mebigfatguy.caveman.proto.aux.CM;
 
-public interface CMKeyKeyMapIterator<V> {
-	
+public interface CMValueMapIterator<K> {
+
 	boolean hasNext();
 	
 	void next() throws NoSuchElementException;
 	
-	CM key();
+	K key();
 	
-	V value();
+	CM value();
 	
 	void remove();
 }
