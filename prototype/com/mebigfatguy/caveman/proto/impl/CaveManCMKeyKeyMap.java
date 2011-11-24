@@ -23,8 +23,8 @@ import java.util.NoSuchElementException;
 
 import com.mebigfatguy.caveman.proto.CMKeyKeyMap;
 import com.mebigfatguy.caveman.proto.CMKeyKeyMapIterator;
-import com.mebigfatguy.caveman.proto.aux.CMKey;
-import com.mebigfatguy.caveman.proto.aux.CMKeySet;
+import com.mebigfatguy.caveman.proto.CMSet;
+import com.mebigfatguy.caveman.proto.aux.CM;
 
 
 public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
@@ -62,7 +62,7 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 	}
 	
 	@Override
-	public boolean containsKey(CMKey key) {
+	public boolean containsKey(CM key) {
 		int hash = fromCaveMan(key) % buckets.length;
 		CMBucket<V> b = buckets[hash];
 		
@@ -91,7 +91,7 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 	}
 	
 	@Override
-	public V get(CMKey key) {
+	public V get(CM key) {
 		
 		int hash = fromCaveMan(key) % buckets.length;
 		CMBucket<V> b = buckets[hash];
@@ -104,7 +104,7 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 	}
 	
 	@Override
-	public void put(CMKey key, V value) {
+	public void put(CM key, V value) {
 		++version;
 		
 		ensureSize(size + 1);
@@ -123,7 +123,7 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 	}
 	
 	@Override
-	public void remove(CMKey key) {
+	public void remove(CM key) {
 		++version;
 		
 		int hash = fromCaveMan(key) % buckets.length;
@@ -168,7 +168,7 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 	}
 	
 	@Override
-	public CMKeySet keySet() {
+	public CMSet keySet() {
 		throw new UnsupportedOperationException();
 	}	
 	
@@ -186,7 +186,7 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 			for (CMBucket<V> oldBucket : buckets) {
 				if (oldBucket != null) {
 					for (int oldBucketIndex = 0; oldBucketIndex < oldBucket.bucketSize; ++oldBucketIndex) {
-						CMKey key = oldBucket.keys[oldBucketIndex];
+						CM key = oldBucket.keys[oldBucketIndex];
 						int hash = fromCaveMan(key) % newBuckets.length;
 						CMBucket<V> newBucket = newBuckets[hash];
 						if (newBucket == null) {
@@ -203,11 +203,11 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 
 	@SuppressWarnings("unchecked")
 	private static class CMBucket<V> {
-		CMKey[] keys = new CMKey[1];
+		CM[] keys = new CM[1];
 		V[] values = (V[])new Object[1];
 		int bucketSize;
 		
-		public boolean add(CMKey key, V value) {
+		public boolean add(CM key, V value) {
 			int existingIndex = indexOf(key);
 			if (existingIndex >= 0) {
 				values[existingIndex] = value;
@@ -215,7 +215,7 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 			}
 			
 			if (bucketSize >= keys.length) {
-				CMKey[] newKeys = new CMKey[keys.length + 4];
+				CM[] newKeys = new CM[keys.length + 4];
 				System.arraycopy(keys,  0, newKeys, 0, bucketSize);
 				keys = newKeys;
 				V[] newValues = (V[])new Object[values.length + 4];
@@ -229,7 +229,7 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 			return true;
 		}
 		
-		public boolean remove(CMKey key) {
+		public boolean remove(CM key) {
 			for (int i = 0; i < bucketSize; i++) {
 				if (key == keys[i]) {
 					--bucketSize;
@@ -241,7 +241,7 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 			return false;
 		}
 		
-		public int indexOf(CMKey key) {
+		public int indexOf(CM key) {
 			for (int i = 0; i < bucketSize; i++) {
 				if (key == keys[i])
 					return i;
@@ -250,7 +250,7 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 			return -1;
 		}
 		
-		public V get(CMKey key) {
+		public V get(CM key) {
 			for (int i = 0; i < bucketSize; i++) {
 				if (key == keys[i])
 					return values[i];
@@ -270,7 +270,7 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 		private int bucketIndex;
 		private int bucketSubIndex;
 		private int pos;
-		private CMKey key;
+		private CM key;
 		private V value;
 		
 		public CaveManCMKeyKeyMapIterator(int version) {
@@ -328,7 +328,7 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 		}
 
 		@Override
-		public CMKey key() {
+		public CM key() {
 			if (iteratorVersion != version) {
 				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
 			}
@@ -375,5 +375,5 @@ public class CaveManCMKeyKeyMap<V> implements CMKeyKeyMap<V> {
 
 	
 	
-	private int fromCaveMan(CMKey key) {return 0;}
+	private int fromCaveMan(CM key) {return 0;}
 }

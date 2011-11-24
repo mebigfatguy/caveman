@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import com.mebigfatguy.caveman.proto.CMKeyKeyMap;
 import com.mebigfatguy.caveman.proto.CMKeyKeyMapIterator;
-import com.mebigfatguy.caveman.proto.aux.CMKey;
+import com.mebigfatguy.caveman.proto.aux.CM;
 import com.mebigfatguy.caveman.proto.impl.CaveManCMKeyKeyMap;
 
 public class CaveManCMKeyKeyMapTest {
@@ -65,6 +65,6 @@ public class CaveManCMKeyKeyMapTest {
 	}
 	
 	
-	private int fromCaveMan(CMKey k) { return 0; }
-	private CMKey toCaveMan(int i) { return null; }
+	private int fromCaveMan(CM k) { return 0; }
+	private CM toCaveMan(int i) { return null; }
 }

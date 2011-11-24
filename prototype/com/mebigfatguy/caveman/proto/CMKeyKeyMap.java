@@ -19,9 +19,7 @@ package com.mebigfatguy.caveman.proto;
 
 import java.util.Collection;
 
-import com.mebigfatguy.caveman.proto.aux.CMKey;
-import com.mebigfatguy.caveman.proto.aux.CMKeySet;
-
+import com.mebigfatguy.caveman.proto.aux.CM;
 
 public interface CMKeyKeyMap<V> {
 	
@@ -29,21 +27,21 @@ public interface CMKeyKeyMap<V> {
 	
 	boolean isEmpty();
 	
-	boolean containsKey(CMKey key);
+	boolean containsKey(CM key);
 	
 	boolean containsValue(V value);
 	
-	V get(CMKey key);
+	V get(CM key);
 	
-	void put(CMKey key, V value);
+	void put(CM key, V value);
 	
-	void remove(CMKey key);
+	void remove(CM key);
 	
 	void putAll(CMKeyKeyMap<V> m);
 	
 	void clear();
 	
-	CMKeySet keySet();
+	CMSet keySet();
 	
 	Collection<V> values();
 	

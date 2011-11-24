@@ -21,9 +21,10 @@ import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import com.mebigfatguy.caveman.proto.CMBag;
 import com.mebigfatguy.caveman.proto.CMValueValueMap;
 import com.mebigfatguy.caveman.proto.CMValueValueMapIterator;
-import com.mebigfatguy.caveman.proto.aux.CMValue;
+import com.mebigfatguy.caveman.proto.aux.CM;
 
 public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 	private static final int DEFAULT_CAPACITY = 31;
@@ -71,7 +72,7 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 	}
 	
 	@Override
-	public boolean containsValue(CMValue value) {
+	public boolean containsValue(CM value) {
 		for (CMBucket<K> bucket : buckets) {
 			if (bucket != null) {
 				for (int i = 0; i < bucket.bucketSize; ++i) {
@@ -86,7 +87,7 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 	}
 	
 	@Override
-	public CMValue get(K key, CMValue notFoundValue) {
+	public CM get(K key, CM notFoundValue) {
 		int hash = (key == null) ? 0 : (key.hashCode() % buckets.length);
 		CMBucket<K> b = buckets[hash];
 		
@@ -98,7 +99,7 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 	}
 	
 	@Override
-	public void put(K key, CMValue value) {
+	public void put(K key, CM value) {
 		++version;
 		
 		ensureSize(size + 1);
@@ -168,7 +169,7 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 	}	
 	
 	@Override
-	public CaveManCMBag values() {
+	public CMBag values() {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -199,10 +200,10 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 	private static class CMBucket<K> {
 		@SuppressWarnings("unchecked")
 		K[] keys = (K[])new Object[1];
-		CMValue[] values = new CMValue[1];
+		CM[] values = new CM[1];
 		int bucketSize;
 		
-		public boolean add(K key, CMValue value) {
+		public boolean add(K key, CM value) {
 			int existingIndex = indexOf(key);
 			if (existingIndex >= 0) {
 				values[existingIndex] = value;
@@ -214,13 +215,13 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 				K[] newKeys = (K[])new Object[keys.length + 4];
 				System.arraycopy(keys,  0, newKeys, 0, bucketSize);
 				keys = newKeys;
-				CMValue[] newValues = new CMValue[values.length + 4];
+				CM[] newValues = new CM[values.length + 4];
 				System.arraycopy(values,  0, newValues, 0, bucketSize);
 				values = newValues;					
 			}
 			
 			keys[bucketSize] = key;
-				values[bucketSize++] = value;
+			values[bucketSize++] = value;
 			
 			return true;
 		}
@@ -247,7 +248,7 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 			return -1;
 		}
 		
-		public CMValue get(K key, CMValue notFoundValue) {
+		public CM get(K key, CM notFoundValue) {
 			for (int i = 0; i < bucketSize; i++) {
 				if (((key == null) && (keys[i] == null)) || key.equals(keys[i])) {
 					return values[i];
@@ -269,7 +270,7 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 		private int bucketSubIndex;
 		private int pos;
 		private K key;
-		private CMValue value;
+		private CM value;
 		
 		public CaveManCMValueValueMapIterator(int version) {
 			iteratorVersion = version;
@@ -335,7 +336,7 @@ public class CaveManCMValueValueMap<K> implements CMValueValueMap<K> {
 		}
 
 		@Override
-		public CMValue value() {
+		public CM value() {
 			if (iteratorVersion != version) {
 				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
 			}

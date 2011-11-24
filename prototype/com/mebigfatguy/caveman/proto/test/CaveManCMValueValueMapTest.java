@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import com.mebigfatguy.caveman.proto.CMValueValueMap;
 import com.mebigfatguy.caveman.proto.CMValueValueMapIterator;
-import com.mebigfatguy.caveman.proto.aux.CMValue;
+import com.mebigfatguy.caveman.proto.aux.CM;
 import com.mebigfatguy.caveman.proto.impl.CaveManCMValueValueMap;
 
 public class CaveManCMValueValueMapTest {
@@ -65,5 +65,5 @@ public class CaveManCMValueValueMapTest {
 	}
 	
 	
-	private CMValue toCaveMan(int i) { return null; }
+	private CM toCaveMan(int i) { return null; }
 }

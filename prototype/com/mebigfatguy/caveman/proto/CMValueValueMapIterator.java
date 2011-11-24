@@ -19,7 +19,7 @@ package com.mebigfatguy.caveman.proto;
 
 import java.util.NoSuchElementException;
 
-import com.mebigfatguy.caveman.proto.aux.CMValue;
+import com.mebigfatguy.caveman.proto.aux.CM;
 
 public interface CMValueValueMapIterator<K> {
 
@@ -29,7 +29,7 @@ public interface CMValueValueMapIterator<K> {
 	
 	K key();
 	
-	CMValue value();
+	CM value();
 	
 	void remove();
 }

@@ -19,7 +19,7 @@ package com.mebigfatguy.caveman.proto;
 
 import java.util.Set;
 
-import com.mebigfatguy.caveman.proto.aux.CMValue;
+import com.mebigfatguy.caveman.proto.aux.CM;
 
 
 public interface CMValueValueMap<K> {
@@ -30,11 +30,11 @@ public interface CMValueValueMap<K> {
 	
 	boolean containsKey(K key);
 	
-	boolean containsValue(CMValue value);
+	boolean containsValue(CM value);
 	
-	CMValue get(K key, CMValue notFoundValue);
+	CM get(K key, CM notFoundValue);
 	
-	void put(K key, CMValue value);
+	void put(K key, CM value);
 	
 	void remove(K key);
 	
