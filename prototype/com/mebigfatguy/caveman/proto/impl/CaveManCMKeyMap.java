@@ -485,13 +485,14 @@ public class CaveManCMKeyMap<V> implements CMKeyMap<V> {
 		}
 
 		@Override
+		@SuppressWarnings("unchecked")
 		public boolean contains(Object o) {
-			throw new UnsupportedOperationException();
+			return CaveManCMKeyMap.this.containsValue((V) o);
 		}
 
 		@Override
 		public Iterator<V> iterator() {
-			throw new UnsupportedOperationException();
+			return new CaveManCMKeyMapValuesIterator();
 		}
 
 		@Override
@@ -537,6 +538,27 @@ public class CaveManCMKeyMap<V> implements CMKeyMap<V> {
 		@Override
 		public void clear() {
 			CaveManCMKeyMap.this.clear();
+		}
+		
+		private class CaveManCMKeyMapValuesIterator implements Iterator<V> {
+
+			private final CMKeyMapIterator<V> iterator = CaveManCMKeyMap.this.iterator();
+			
+			@Override
+			public boolean hasNext() {
+				return iterator.hasNext();
+			}
+
+			@Override
+			public V next() {
+				iterator.next();
+				return iterator.value();
+			}
+
+			@Override
+			public void remove() {
+				iterator.remove();
+			}
 		}
 	}
 
