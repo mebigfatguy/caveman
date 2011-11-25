@@ -51,8 +51,8 @@ FloatBag b = new CaveManFloatBag();
 and for maps,
 
 IntDoubleMap m = new CaveManIntDoubleMap();
-CharKeyMap<Integer> m = new CharKeyMap<Integer>();
-DoubleValueMap<String> m = new DoubleValueMap<String>();
+CharKeyMap<Integer> m = new CaveManCharKeyMap<Integer>();
+DoubleValueMap<String> m = new CaveManDoubleValueMap<String>();
 
 On top of the available interfaces, classes derive from a 'collection' class with a primitive name, such as
 
