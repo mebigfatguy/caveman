@@ -17,6 +17,7 @@
  */
 package com.mebigfatguy.caveman.proto.impl;
 
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
@@ -415,8 +416,23 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 		}
 
 		@Override
-		public <T> T[] toArray(T[] a) {
-			throw new UnsupportedOperationException();
+		@SuppressWarnings("unchecked")
+		public <T> T[] toArray(T[] data) {
+			
+			if (data.length < size) {
+				data = (T[]) Array.newInstance(data.getClass().getComponentType(), size);
+			}
+			
+			int pos = 0;
+			for (CMBucket<K> bucket : buckets) {
+				if (bucket != null) {
+					for (int i = 0; i < bucket.bucketSize; ++i) {
+						data[pos++] = (T)bucket.keys[i];
+					}
+				}
+			}
+
+			return data;
 		}
 
 		@Override
