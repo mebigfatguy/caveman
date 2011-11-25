@@ -401,7 +401,17 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 
 		@Override
 		public Object[] toArray() {
-			throw new UnsupportedOperationException();
+			Object[] data = new Object[size];
+			
+			int pos = 0;
+			for (CMBucket<K> bucket : buckets) {
+				if (bucket != null) {
+					for (int i = 0; i < bucket.bucketSize; ++i) {
+						data[pos++] = bucket.keys[i];
+					}
+				}
+			}
+			return data;
 		}
 
 		@Override
