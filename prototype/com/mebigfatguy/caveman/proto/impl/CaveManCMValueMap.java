@@ -283,7 +283,6 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 			pos = 0;
 			if (size > 0) {
 				for (bucketIndex = 0; bucketIndex < buckets.length; bucketIndex++) {
-					@SuppressWarnings("unchecked")
 					CMBucket<K> b = buckets[bucketIndex];
 					if ((b != null) && (b.bucketSize > 0)) {
 						bucketSubIndex = 0;
@@ -304,7 +303,6 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 		}
 
 		@Override
-		@SuppressWarnings("unchecked")
 		public void next() throws NoSuchElementException {
 			if (iteratorVersion != version) {
 				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
@@ -350,7 +348,6 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 		}
 
 		@Override
-		@SuppressWarnings("unchecked")
 		public void remove() {
 			if (iteratorVersion != version) {
 				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
@@ -437,10 +434,11 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 
 		@Override
 		public boolean add(K e) {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("add from the KeySet of a CaveManCMValueMap is not supported, as there is no default value");
 		}
 
 		@Override
+		@SuppressWarnings("unchecked")
 		public boolean remove(Object o) {
 			int originalSize = size;
 			CaveManCMValueMap.this.remove((K) o);
@@ -561,7 +559,4 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 			throw new UnsupportedOperationException();
 		}
 	}
-	
-	
-	private CM toCaveMan(int i) {return null;}
 }
