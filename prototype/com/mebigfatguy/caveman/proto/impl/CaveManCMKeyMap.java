@@ -19,6 +19,7 @@ package com.mebigfatguy.caveman.proto.impl;
 
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import com.mebigfatguy.caveman.proto.CMCollection;
@@ -176,7 +177,7 @@ public class CaveManCMKeyMap<V> implements CMKeyMap<V> {
 	
 	@Override
 	public Collection<V> values() {
-		throw new UnsupportedOperationException();
+		return new CavemanCollection<V>();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -439,6 +440,74 @@ public class CaveManCMKeyMap<V> implements CMKeyMap<V> {
 		@Override
 		public boolean removeAll(CMCollection c) {
 			throw new UnsupportedOperationException();
+		}
+	}
+	
+	private class CavemanCollection<V> implements Collection<V> {
+
+		@Override
+		public int size() {
+			return CaveManCMKeyMap.this.size();
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return CaveManCMKeyMap.this.isEmpty();
+		}
+
+		@Override
+		public boolean contains(Object o) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Iterator<V> iterator() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Object[] toArray() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public <T> T[] toArray(T[] a) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean add(V e) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean remove(Object o) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean containsAll(Collection<?> c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean addAll(Collection<? extends V> c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean removeAll(Collection<?> c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean retainAll(Collection<?> c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void clear() {
+			CaveManCMKeyMap.this.clear();
 		}
 	}
 
