@@ -24,6 +24,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import com.mebigfatguy.caveman.proto.CMBag;
+import com.mebigfatguy.caveman.proto.CMCollection;
+import com.mebigfatguy.caveman.proto.CMIterator;
 import com.mebigfatguy.caveman.proto.CMValueMap;
 import com.mebigfatguy.caveman.proto.CMValueMapIterator;
 import com.mebigfatguy.caveman.proto.aux.CM;
@@ -172,7 +174,7 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 	
 	@Override
 	public CMBag values() {
-		throw new UnsupportedOperationException();
+		return new CaveManCMValuesBag();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -445,6 +447,74 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 		public void clear() {
 			CaveManCMValueMap.this.clear();
 		}	
+	}
+	
+	private class CaveManCMValuesBag implements CMBag {
+
+		@Override
+		public int size() {
+			return CaveManCMValueMap.this.size();
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return CaveManCMValueMap.this.isEmpty();
+		}
+
+		@Override
+		public boolean contains(CM item) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public CMIterator iterator() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public CM[] toArray() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean add(CM item) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean remove(CM item) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void clear() {
+			CaveManCMValueMap.this.clear();
+		}
+
+		@Override
+		public boolean containsAll(CMCollection c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean addAll(CMCollection c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean retainAll(CMCollection c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean removeAll(CMCollection c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean removeOne(CM item) {
+			throw new UnsupportedOperationException();
+		}
 	}
 	
 	
