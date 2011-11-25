@@ -17,7 +17,9 @@
  */
 package com.mebigfatguy.caveman.proto.impl;
 
+import java.util.Collection;
 import java.util.ConcurrentModificationException;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -165,7 +167,7 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 	
 	@Override
 	public Set<K> keySet() {
-		throw new UnsupportedOperationException();
+		return new CaveManCMValueSet();
 	}	
 	
 	@Override
@@ -371,5 +373,80 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 			--pos;
 		}	
 	}
+	
+	class CaveManCMValueSet implements Set<K> {
 
+		@Override
+		public int size() {
+			return CaveManCMValueMap.this.size();
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return CaveManCMValueMap.this.isEmpty();
+		}
+
+		@Override
+		public boolean contains(Object o) {
+			K key = (K) o;
+			return CaveManCMValueMap.this.containsKey(key);
+		}
+
+		@Override
+		public Iterator<K> iterator() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Object[] toArray() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public <T> T[] toArray(T[] a) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean add(K e) {
+			int originalSize = CaveManCMValueMap.this.size();
+			CaveManCMValueMap.this.put(e, toCaveMan(0));
+			return originalSize != CaveManCMValueMap.this.size();
+		}
+
+		@Override
+		public boolean remove(Object o) {
+			int originalSize = CaveManCMValueMap.this.size();
+			CaveManCMValueMap.this.remove((K) o);
+			return originalSize != CaveManCMValueMap.this.size();
+		}
+
+		@Override
+		public boolean containsAll(Collection<?> c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean addAll(Collection<? extends K> c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean retainAll(Collection<?> c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean removeAll(Collection<?> c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void clear() {
+			CaveManCMValueMap.this.clear();
+		}	
+	}
+	
+	
+	private CM toCaveMan(int i) {return null;}
 }
