@@ -35,7 +35,7 @@ Object->primitive
 so, interfaces like
 
 IntLongMap
-CharMap<V>          // a map with a key type of char
+CharKeyMap<V>          // a map with a key type of char
 ShortValueMap<K>    // a map with a value type of short
 
 For each combination of primitive there are class implementations in the package
@@ -51,7 +51,7 @@ FloatBag b = new CaveManFloatBag();
 and for maps,
 
 IntDoubleMap m = new CaveManIntDoubleMap();
-CharMap<Integer> m = new CharMap<Integer>();
+CharKeyMap<Integer> m = new CharKeyMap<Integer>();
 DoubleValueMap<String> m = new DoubleValueMap<String>();
 
 On top of the available interfaces, classes derive from a 'collection' class with a primitive name, such as
