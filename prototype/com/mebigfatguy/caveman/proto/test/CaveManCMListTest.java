@@ -52,8 +52,34 @@ public class CaveManCMListTest {
 		}
 		
 		for (int i = 0; i < 30; i++) {
-			Assert.assertEquals(toCaveMan(i), (CM) l.get(i));
+			Assert.assertEquals(toCaveMan(i), l.get(i));
 		}
+	}
+	
+	@Test
+	public void testContains() {
+		CaveManCMList l = new CaveManCMList();
+		for (int i = 0; i < 30; i++) {
+			l.add(toCaveMan(i));
+		}
+		
+		for (int i = 0; i < 30; i++) {
+			Assert.assertTrue(l.contains(toCaveMan(i)));
+		}
+	}
+	
+	@Test
+	public void testRemoveAt() {
+		CaveManCMList l = new CaveManCMList();
+		for (int i = 0; i < 30; i++) {
+			l.add(toCaveMan(i));
+		}
+		
+		for (int i = 0; i < 30; i+= 2) {
+			l.removeAt(i/2);
+		}
+		
+		Assert.assertEquals(15, l.size());
 	}
 	
 	@Test
@@ -66,7 +92,7 @@ public class CaveManCMListTest {
 		CMIterator it = l.iterator();
 		int i = 0;
 		while (it.hasNext()) {
-			Assert.assertEquals(toCaveMan(i), (CM) it.next());
+			Assert.assertEquals(toCaveMan(i), it.next());
 			++i;
 		}
 	}
