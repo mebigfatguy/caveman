@@ -26,7 +26,7 @@ IntList
 CharSet
 ByteBag
 
-For Maps there are actually there kinds:
+For Maps there are actually three kinds:
 
 primitive->primitive
 primitive->Object
