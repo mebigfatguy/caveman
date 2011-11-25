@@ -164,12 +164,12 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 	
 	@Override
 	public CMValueMapIterator<K> iterator() {
-		return new CaveManCMValueMapIterator<K>(version);
+		return new CaveManCMValueMapIterator(version);
 	}
 	
 	@Override
 	public Set<K> keySet() {
-		return new CaveManCMValueSet();
+		return new CaveManCMValueKeySet();
 	}	
 	
 	@Override
@@ -267,7 +267,7 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 		}
 	}
 	
-	private class CaveManCMValueMapIterator<K> implements CMValueMapIterator<K> {
+	private class CaveManCMValueMapIterator implements CMValueMapIterator<K> {
 
 		private final int iteratorVersion;
 		private int bucketIndex;
@@ -283,7 +283,7 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 			if (size > 0) {
 				for (bucketIndex = 0; bucketIndex < buckets.length; bucketIndex++) {
 					@SuppressWarnings("unchecked")
-					CMBucket<K> b = (CMBucket<K>)buckets[bucketIndex];
+					CMBucket<K> b = buckets[bucketIndex];
 					if ((b != null) && (b.bucketSize > 0)) {
 						bucketSubIndex = 0;
 						break;
@@ -314,14 +314,14 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 				throw new NoSuchElementException("Index " + pos + " is out of bounds [0, " + (size - 1) + "]");
 			}
 
-			CMBucket<K> b = (CMBucket<K>)buckets[bucketIndex];
+			CMBucket<K> b = buckets[bucketIndex];
 			key = b.keys[bucketSubIndex];
 			value = b.values[bucketSubIndex++];
 			
 			if (bucketSubIndex >= b.keys.length) {
 				bucketSubIndex = 0;
 				for (;bucketIndex < buckets.length; bucketIndex++) {
-					b = (CMBucket<K>)buckets[bucketIndex];
+					b = buckets[bucketIndex];
 					if ((b != null) && (b.bucketSize > 0)) {
 						break;
 					}
@@ -359,14 +359,14 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 				throw new NoSuchElementException("Index " + pos + " is out of bounds [0, " + (size - 1) + "]");
 			}
 			
-			CMBucket<K> b = (CMBucket<K>)buckets[bucketIndex];
+			CMBucket<K> b = buckets[bucketIndex];
 			System.arraycopy(b.keys, bucketSubIndex + 1, b.keys, bucketSubIndex, b.bucketSize - bucketSubIndex);
 			System.arraycopy(b.values, bucketSubIndex + 1, b.values, bucketSubIndex, b.bucketSize - bucketSubIndex);
 			--b.bucketSize;
 			if (bucketSubIndex >= b.bucketSize) {
 				bucketSubIndex = 0;
 				for (;bucketIndex < buckets.length; bucketIndex++) {
-					b = (CMBucket<K>)buckets[bucketIndex];
+					b = buckets[bucketIndex];
 					if ((b != null) && (b.bucketSize > 0)) {
 						break;
 					}
@@ -376,7 +376,7 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 		}	
 	}
 	
-	class CaveManCMValueSet implements Set<K> {
+	class CaveManCMValueKeySet implements Set<K> {
 
 		@Override
 		public int size() {
@@ -385,18 +385,18 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 
 		@Override
 		public boolean isEmpty() {
-			return CaveManCMValueMap.this.isEmpty();
+			return CaveManCMValueMap.this.isEmpty();		
 		}
 
 		@Override
+		@SuppressWarnings("unchecked")
 		public boolean contains(Object o) {
-			K key = (K) o;
-			return CaveManCMValueMap.this.containsKey(key);
+			return CaveManCMValueMap.this.containsKey((K) o);
 		}
 
 		@Override
 		public Iterator<K> iterator() {
-			throw new UnsupportedOperationException();
+			return new CaveManCMValueMapKeySetIterator();
 		}
 
 		@Override
@@ -411,16 +411,14 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 
 		@Override
 		public boolean add(K e) {
-			int originalSize = CaveManCMValueMap.this.size();
-			CaveManCMValueMap.this.put(e, toCaveMan(0));
-			return originalSize != CaveManCMValueMap.this.size();
+			throw new UnsupportedOperationException();
 		}
 
 		@Override
 		public boolean remove(Object o) {
-			int originalSize = CaveManCMValueMap.this.size();
+			int originalSize = size;
 			CaveManCMValueMap.this.remove((K) o);
-			return originalSize != CaveManCMValueMap.this.size();
+			return size != originalSize;
 		}
 
 		@Override
@@ -447,6 +445,27 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 		public void clear() {
 			CaveManCMValueMap.this.clear();
 		}	
+		
+		private class CaveManCMValueMapKeySetIterator implements Iterator<K> {
+
+			private final CMValueMapIterator<K> iterator = CaveManCMValueMap.this.iterator();
+			
+			@Override
+			public boolean hasNext() {
+				return iterator.hasNext();
+			}
+
+			@Override
+			public K next() {
+				iterator.next();
+				return iterator.key();
+			}
+
+			@Override
+			public void remove() {
+				iterator.remove();
+			}	
+		}
 	}
 	
 	private class CaveManCMValuesBag implements CMBag {
