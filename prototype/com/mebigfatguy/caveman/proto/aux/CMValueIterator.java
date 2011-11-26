@@ -17,9 +17,12 @@
  */
 package com.mebigfatguy.caveman.proto.aux;
 
-public interface CMValueBag extends CMValueCollection {
+import java.util.NoSuchElementException;
+
+public interface CMValueIterator {
+	boolean hasNext();
 	
-	boolean removeOne(CMValue item);
+	CMValue next() throws NoSuchElementException;
 	
-	int countOf(CMValue item);
+	void remove();
 }

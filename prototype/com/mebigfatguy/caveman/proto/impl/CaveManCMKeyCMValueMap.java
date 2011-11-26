@@ -28,6 +28,8 @@ import com.mebigfatguy.caveman.proto.aux.CMKeyIterator;
 import com.mebigfatguy.caveman.proto.aux.CMKeySet;
 import com.mebigfatguy.caveman.proto.aux.CMValue;
 import com.mebigfatguy.caveman.proto.aux.CMValueBag;
+import com.mebigfatguy.caveman.proto.aux.CMValueCollection;
+import com.mebigfatguy.caveman.proto.aux.CMValueIterator;
 
 public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 	public static final CMValue DEFAULT_NOT_FOUND_VALUE = toCaveManValue(0);
@@ -175,7 +177,7 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 	
 	@Override
 	public CMValueBag values() {
-		throw new UnsupportedOperationException();
+		return new CaveManCMKeyCMValueValuesBag();
 	}
 	
 	private void ensureSize(int newSize) {
@@ -433,6 +435,79 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 
 		@Override
 		public boolean removeAll(CMKeyCollection c) {
+			throw new UnsupportedOperationException();
+		}
+	}
+	
+	private class CaveManCMKeyCMValueValuesBag implements CMValueBag {
+
+		@Override
+		public int size() {
+			return CaveManCMKeyCMValueMap.this.size();
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return CaveManCMKeyCMValueMap.this.isEmpty();
+		}
+
+		@Override
+		public boolean contains(CMValue item) {
+			return CaveManCMKeyCMValueMap.this.containsValue(item);
+		}
+
+		@Override
+		public CMValueIterator iterator() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public CMValue[] toArray() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean add(CMValue item) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean remove(CMValue item) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void clear() {
+			CaveManCMKeyCMValueMap.this.clear();
+		}
+
+		@Override
+		public boolean containsAll(CMValueCollection c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean addAll(CMValueCollection c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean retainAll(CMValueCollection c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean removeAll(CMValueCollection c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean removeOne(CMValue item) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public int countOf(CMValue item) {
 			throw new UnsupportedOperationException();
 		}
 	}

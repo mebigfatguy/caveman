@@ -17,9 +17,29 @@
  */
 package com.mebigfatguy.caveman.proto.aux;
 
-public interface CMValueBag extends CMValueCollection {
+public interface CMValueCollection {
 	
-	boolean removeOne(CMValue item);
+	int size();
 	
-	int countOf(CMValue item);
+	boolean isEmpty();
+	
+	boolean contains(CMValue item);
+	
+	CMValueIterator iterator();
+	
+	CMValue[] toArray();
+	
+	boolean add(CMValue item);
+	
+	boolean remove(CMValue item);
+	
+	void clear();
+	
+	boolean containsAll(CMValueCollection c);
+	
+	boolean addAll(CMValueCollection c);
+	
+	boolean retainAll(CMValueCollection c);
+	
+	boolean removeAll(CMValueCollection c);	
 }
