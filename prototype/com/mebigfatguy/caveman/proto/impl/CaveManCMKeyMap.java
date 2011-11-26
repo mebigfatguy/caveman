@@ -623,7 +623,7 @@ public class CaveManCMKeyMap<V> implements CMKeyMap<V> {
 		public boolean retainAll(Collection<?> c) {
 			
 			boolean modified = false;
-			CMKeyMapIterator it = CaveManCMKeyMap.this.iterator();
+			CMKeyMapIterator<V> it = CaveManCMKeyMap.this.iterator();
 			
 			while (it.hasNext()) {
 				it.next();

@@ -625,17 +625,50 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 
 		@Override
 		public boolean retainAll(CMCollection c) {
-			throw new UnsupportedOperationException();
+			
+			boolean modified = false;
+			CMValueMapIterator<K> it = CaveManCMValueMap.this.iterator();
+			
+			while (it.hasNext()) {
+				it.next();
+				if (!c.contains(it.value())) {
+					it.remove();
+					modified = true;
+				}
+			}
+			
+			return modified;
 		}
 
 		@Override
 		public boolean removeAll(CMCollection c) {
-			throw new UnsupportedOperationException();
+			int originalSize = size;
+			
+			CMIterator it = c.iterator();
+			while (it.hasNext()) {
+				remove(it.next());
+			}
+			
+			return originalSize != size;
 		}
 
 		@Override
 		public boolean removeOne(CM item) {
-			throw new UnsupportedOperationException();
+			for (CMBucket<K> bucket : buckets) {
+				if (bucket != null) {
+					for (int i = 0; i < bucket.bucketSize; ++i) {
+						if (item == bucket.values[i]) {
+							--bucket.bucketSize;
+							System.arraycopy(bucket.keys, i + 1, bucket.keys, i, bucket.bucketSize - i);
+							System.arraycopy(bucket.values, i + 1, bucket.values, i, bucket.bucketSize - i);
+							--size;
+							return true;
+						}
+					}
+				}
+			}
+			
+			return false;
 		}
 		
 		@Override
