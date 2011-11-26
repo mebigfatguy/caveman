@@ -243,6 +243,19 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 			return false;
 		}
 		
+		public int removeAllValues(CM value) {
+			int removeCount = 0;
+			for (int i = 0; i < bucketSize; i++) {
+				if (value == values[i]) {
+					--bucketSize;
+					System.arraycopy(keys, i + 1, keys, i, bucketSize - i);
+					System.arraycopy(values, i + 1, values, i, bucketSize - i);
+					++removeCount;
+				}
+			}
+			return removeCount;
+		}
+		
 		public int indexOf(K key) {
 			for (int i = 0; i < bucketSize; i++) {
 				if (((key == null) && (keys[i] == null)) || key.equals(keys[i])) {
@@ -559,7 +572,18 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 
 		@Override
 		public boolean remove(CM item) {
-			throw new UnsupportedOperationException();
+			++version;
+
+			int removeCount = 0;
+			
+			for (CMBucket<K> bucket : buckets) {
+				if (bucket != null) {
+					removeCount += bucket.removeAllValues(item);
+				}
+			}
+			
+			size -= removeCount;
+			return removeCount != 0;
 		}
 
 		@Override
