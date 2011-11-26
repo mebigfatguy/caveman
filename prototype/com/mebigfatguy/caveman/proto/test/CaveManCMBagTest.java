@@ -92,6 +92,28 @@ public class CaveManCMBagTest {
 		Assert.assertFalse(s.contains(toCaveMan(0)));	
 	}
 	
+	@Test
+	public void testToArray() {
+		CaveManCMBag s = new CaveManCMBag();
+		for (int i = 0; i < 10; i++) {
+			s.add(toCaveMan(i));
+		}
+		
+		CM[] array = s.toArray();
+		
+		Assert.assertEquals(10, array.length);
+		
+		for (int i = 0; i < 10; i++) {
+			boolean found = false;
+			for (int j = 0; j < 10; j++) {
+				if (array[j] == toCaveMan(i)) {
+					found = true;
+					break;
+				}
+			}
+			Assert.assertTrue(found);
+		}
+	}
 	
 	private CM toCaveMan(int i) { return null; }
 }
