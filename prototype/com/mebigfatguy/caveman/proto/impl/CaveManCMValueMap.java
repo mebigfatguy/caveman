@@ -233,7 +233,7 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 		
 		public boolean remove(K key) {
 			for (int i = 0; i < bucketSize; i++) {
-				if (((key == null) && (keys[i] == null)) || key.equals(keys[i])) {
+				if (((key == null) && (keys[i] == null)) || ((key != null) && key.equals(keys[i]))) {
 					--bucketSize;
 					System.arraycopy(keys, i + 1, keys, i, bucketSize - i);
 					System.arraycopy(values, i + 1, values, i, bucketSize - i);
