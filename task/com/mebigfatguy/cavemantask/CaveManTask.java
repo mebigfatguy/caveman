@@ -8,6 +8,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -156,6 +158,8 @@ public class CaveManTask extends Task {
 			br = new BufferedReader(new FileReader(cavemanProtoFile));
 			pw = new PrintWriter(new BufferedWriter(new FileWriter(f)));
 
+			Set<String> imports = new HashSet<String>();
+			
 			String line = br.readLine();
 			while (line != null) {
 				if (line.trim().startsWith("package ")) {
@@ -175,7 +179,7 @@ public class CaveManTask extends Task {
 						
 						if (line.contains("toCaveManValue")) {
 							if ("boolean".equals(valuePrimitive)) {
-								line = applyCMReplacements(line.replaceAll("toCaveManValue\\(([^\\)]*)\\)", "(($1 == 0) ? false : true)"), 
+								line = applyCMReplacements(line.replaceAll("toCaveManValue\\(0\\)", "false").replaceAll("toCaveManValue\\(([^\\)]*)\\)", "(($1 == 0) ? false : true)"), 
 										valuePrimitive, valuePrimitiveLabel, 2);
 								
 							} else {
@@ -220,9 +224,21 @@ public class CaveManTask extends Task {
 					pw.println(line.replaceAll("\\bCMKey\\b", keyPrimitive).replaceAll("\\bCMValue\\b", valuePrimitive)
 							.replaceAll("CMKey", keyPrimitiveLabel).replaceAll("CMValue", valuePrimitiveLabel));
 				} else if (line.trim().startsWith("import") && (line.contains("CMKeySet") || line.contains("CMKeyCollection") || line.contains("CMValueCollection") || line.contains("CMValueBag") || line.contains("CMKeyIterator") || line.contains("CMValueIterator"))) {
-					pw.println(line.replaceAll("\\.proto\\.aux", "").replaceAll("CMKey", keyPrimitiveLabel).replaceAll("CMValue", valuePrimitiveLabel));
+					String importLine = line.replaceAll("\\.proto\\.aux", "").replaceAll("CMKey", keyPrimitiveLabel).replaceAll("CMValue", valuePrimitiveLabel);
+					if (!imports.contains(importLine)) {
+						pw.println(importLine);
+						imports.add(importLine);
+					} else {
+						pw.println();
+					}
 				} else if (line.trim().startsWith("import") && (line.contains("proto.CMKeyCMValue") || line.contains("proto.impl.CaveManCMKeyCMValue"))) {
-					pw.println(line.replaceAll("\\.proto", "").replaceAll("CMKey", keyPrimitiveLabel).replaceAll("CMValue", valuePrimitiveLabel));
+					String importLine = line.replaceAll("\\.proto", "").replaceAll("CMKey", keyPrimitiveLabel).replaceAll("CMValue", valuePrimitiveLabel);
+					if (!imports.contains(importLine)) {
+						pw.println(importLine);
+						imports.add(importLine);
+					} else {
+						pw.println();
+					}
 				}
 				line = br.readLine();
 			}
