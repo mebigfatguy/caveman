@@ -18,13 +18,11 @@
 package com.mebigfatguy.caveman.proto;
 
 
+/** 
+ * A collection that contains no duplicate <b>CM</b>s.  More formally, sets
+ * contain no pair of <b>CM</b>s <code>e1</code> and <code>e2</code> such that
+ * <code>e1 == e2</code>.  As implied by its name, this interface models 
+ * the mathematical <i>set</i> abstraction.
+ */
 public interface CMSet extends CMCollection {
-	
-	boolean containsAll(CMCollection c);
-	
-	boolean addAll(CMCollection c);
-	
-	boolean retainAll(CMCollection c);
-	
-	boolean removeAll(CMCollection c);	
 }
