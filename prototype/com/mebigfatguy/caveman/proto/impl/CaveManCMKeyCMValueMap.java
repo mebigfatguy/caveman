@@ -23,6 +23,8 @@ import java.util.NoSuchElementException;
 import com.mebigfatguy.caveman.proto.CMKeyCMValueMap;
 import com.mebigfatguy.caveman.proto.CMKeyCMValueMapIterator;
 import com.mebigfatguy.caveman.proto.aux.CMKey;
+import com.mebigfatguy.caveman.proto.aux.CMKeyCollection;
+import com.mebigfatguy.caveman.proto.aux.CMKeyIterator;
 import com.mebigfatguy.caveman.proto.aux.CMKeySet;
 import com.mebigfatguy.caveman.proto.aux.CMValue;
 import com.mebigfatguy.caveman.proto.aux.CMValueBag;
@@ -168,7 +170,7 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 	
 	@Override
 	public CMKeySet keySet() {
-		throw new UnsupportedOperationException();
+		return new CaveManCMKeyCMValueKeySet();
 	}
 	
 	@Override
@@ -364,6 +366,75 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 			}
 			--pos;
 		}	
+	}
+	
+	private class CaveManCMKeyCMValueKeySet implements CMKeySet {
+
+		@Override
+		public int size() {
+			return CaveManCMKeyCMValueMap.this.size();
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return CaveManCMKeyCMValueMap.this.isEmpty();
+		}
+
+		@Override
+		public boolean contains(CMKey item) {
+			return CaveManCMKeyCMValueMap.this.containsKey(item);
+		}
+
+		@Override
+		public CMKeyIterator iterator() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public CMKey[] toArray() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean add(CMKey item) {
+			int originalSize = size;
+			
+			CaveManCMKeyCMValueMap.this.put(item, notFound);
+			return originalSize != size;
+		}
+
+		@Override
+		public boolean remove(CMKey item) {
+			int originalSize = size;
+			
+			CaveManCMKeyCMValueMap.this.remove(item);
+			return originalSize != size;
+		}
+
+		@Override
+		public void clear() {
+			CaveManCMKeyCMValueMap.this.clear();
+		}
+
+		@Override
+		public boolean containsAll(CMKeyCollection c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean addAll(CMKeyCollection c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean retainAll(CMKeyCollection c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean removeAll(CMKeyCollection c) {
+			throw new UnsupportedOperationException();
+		}
 	}
 	
 	

@@ -219,7 +219,7 @@ public class CaveManTask extends Task {
 				} else if (!line.trim().startsWith("import") || line.contains("java.") || line.contains("org.")) {
 					pw.println(line.replaceAll("\\bCMKey\\b", keyPrimitive).replaceAll("\\bCMValue\\b", valuePrimitive)
 							.replaceAll("CMKey", keyPrimitiveLabel).replaceAll("CMValue", valuePrimitiveLabel));
-				} else if (line.trim().startsWith("import") && (line.contains("CMKeySet") || line.contains("CMValueBag"))) {
+				} else if (line.trim().startsWith("import") && (line.contains("CMKeySet") || line.contains("CMKeyCollection") || line.contains("CMValueBag") || line.contains("CMKeyIterator"))) {
 					pw.println(line.replaceAll("\\.proto\\.aux", "").replaceAll("CMKey", keyPrimitiveLabel).replaceAll("CMValue", valuePrimitiveLabel));
 				} else if (line.trim().startsWith("import") && (line.contains("proto.CMKeyCMValue") || line.contains("proto.impl.CaveManCMKeyCMValue"))) {
 					pw.println(line.replaceAll("\\.proto", "").replaceAll("CMKey", keyPrimitiveLabel).replaceAll("CMValue", valuePrimitiveLabel));

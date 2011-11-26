@@ -18,29 +18,28 @@
 package com.mebigfatguy.caveman.proto.aux;
 
 
-public interface CMKeySet extends CMKeyCollection {
-	
-	@Override
+public interface CMKeyCollection {
 	int size();
 	
-	@Override
 	boolean isEmpty();
 	
-	@Override
 	boolean contains(CMKey item);
 	
-	@Override
 	CMKeyIterator iterator();
 	
-	@Override
 	CMKey[] toArray();
 	
-	@Override
 	boolean add(CMKey item);
 	
-	@Override
 	boolean remove(CMKey item);
 	
-	@Override
 	void clear();
+	
+	boolean containsAll(CMKeyCollection c);
+	
+	boolean addAll(CMKeyCollection c);
+	
+	boolean retainAll(CMKeyCollection c);
+	
+	boolean removeAll(CMKeyCollection c);	
 }

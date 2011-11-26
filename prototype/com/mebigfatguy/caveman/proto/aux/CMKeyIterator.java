@@ -17,30 +17,13 @@
  */
 package com.mebigfatguy.caveman.proto.aux;
 
+import java.util.NoSuchElementException;
 
-public interface CMKeySet extends CMKeyCollection {
+public interface CMKeyIterator {
 	
-	@Override
-	int size();
+	boolean hasNext();
 	
-	@Override
-	boolean isEmpty();
+	CMKey next() throws NoSuchElementException;
 	
-	@Override
-	boolean contains(CMKey item);
-	
-	@Override
-	CMKeyIterator iterator();
-	
-	@Override
-	CMKey[] toArray();
-	
-	@Override
-	boolean add(CMKey item);
-	
-	@Override
-	boolean remove(CMKey item);
-	
-	@Override
-	void clear();
+	void remove();
 }
