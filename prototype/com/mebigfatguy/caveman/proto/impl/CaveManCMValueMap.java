@@ -446,23 +446,45 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 		}
 
 		@Override
+		@SuppressWarnings("unchecked")
 		public boolean containsAll(Collection<?> c) {
-			throw new UnsupportedOperationException();
+			for (Object o : c) {
+				if (!containsKey((K) o)) {
+					return false;
+				}
+			}
+			
+			return true;
 		}
 
 		@Override
 		public boolean addAll(Collection<? extends K> c) {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("addAll from the KeySet of a CaveManCMValueMap is not supported, as there are no default values");
 		}
 
 		@Override
+		@SuppressWarnings("unchecked")
 		public boolean retainAll(Collection<?> c) {
-			throw new UnsupportedOperationException();
+			
+			int originalSize = size;
+			for (Object o : c) {
+				if (!containsKey((K) o)) {
+					CaveManCMValueMap.this.remove((K) o);
+				}
+			}
+			
+			return originalSize != size;
 		}
 
 		@Override
+		@SuppressWarnings("unchecked")
 		public boolean removeAll(Collection<?> c) {
-			throw new UnsupportedOperationException();
+			int originalSize = size;
+			for (Object o : c) {
+				CaveManCMValueMap.this.remove((K) o);
+			}
+			
+			return originalSize != size;
 		}
 
 		@Override
