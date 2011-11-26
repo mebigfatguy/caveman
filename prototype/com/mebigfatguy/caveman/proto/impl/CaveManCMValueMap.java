@@ -528,7 +528,7 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 
 		@Override
 		public boolean contains(CM item) {
-			throw new UnsupportedOperationException();
+			return CaveManCMValueMap.this.containsValue(item);
 		}
 
 		@Override
@@ -538,12 +538,23 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 
 		@Override
 		public CM[] toArray() {
-			throw new UnsupportedOperationException();
+			CM[] data = new CM[size];
+			
+			int pos = 0;
+			for (CMBucket<K> bucket : buckets) {
+				if (bucket != null) {
+					for (int i = 0; i < bucket.bucketSize; ++i) {
+						data[pos++] = bucket.values[i];
+					}
+				}
+			}
+			
+			return data;
 		}
 
 		@Override
 		public boolean add(CM item) {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("add is not supported from the values bag of a CaveManCMValueMap as there's no obvious key");
 		}
 
 		@Override
