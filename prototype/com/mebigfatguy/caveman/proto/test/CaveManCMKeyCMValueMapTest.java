@@ -24,10 +24,27 @@ import com.mebigfatguy.caveman.proto.CMKeyCMValueMap;
 import com.mebigfatguy.caveman.proto.CMKeyCMValueMapIterator;
 import com.mebigfatguy.caveman.proto.aux.CMKey;
 import com.mebigfatguy.caveman.proto.aux.CMValue;
+import com.mebigfatguy.caveman.proto.aux.IgnoreBoolean;
 import com.mebigfatguy.caveman.proto.impl.CaveManCMKeyCMValueMap;
 
 public class CaveManCMKeyCMValueMapTest {
 
+	@Test @IgnoreBoolean
+	public void testPutGet() {
+		CMValue notFound = toCaveManValue(Integer.MAX_VALUE);
+		CMKeyCMValueMap m = new CaveManCMKeyCMValueMap(notFound, 10);
+
+		for (int i = 0; i < 100; i++) {
+			m.put(toCaveManKey(i), toCaveManValue(i));
+		}
+		
+		for (int i = 0; i < 100; i++) {
+			Assert.assertEquals(toCaveManValue(i), m.get(toCaveManKey(i)));
+		}
+		
+		Assert.assertEquals(toCaveManValue(Integer.MAX_VALUE), m.get(toCaveManKey(501)));
+	}
+	
 	@Test
 	public void testSizeEmpty() {
 		CMKeyCMValueMap m = new CaveManCMKeyCMValueMap();
