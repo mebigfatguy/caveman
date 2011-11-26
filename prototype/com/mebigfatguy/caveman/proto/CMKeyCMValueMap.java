@@ -33,7 +33,7 @@ public interface CMKeyCMValueMap {
 	
 	boolean containsValue(CMValue value);
 	
-	CMValue get(CMKey key, CMValue notFoundValue);
+	CMValue get(CMKey key);
 	
 	void put(CMKey key, CMValue value);
 	

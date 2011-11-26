@@ -28,23 +28,26 @@ import com.mebigfatguy.caveman.proto.aux.CMValue;
 import com.mebigfatguy.caveman.proto.aux.CMValueBag;
 
 public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
+	public static final CMValue DEFAULT_NOT_FOUND_VALUE = toCaveManValue(0);
 	private static final int DEFAULT_CAPACITY = 31;
 	private static final float DEFAULT_LOAD_FACTOR = 0.80f;
 
+	private final CMValue notFound;
 	private CMBucket[] buckets;
 	private int size;
 	private final float loadFactor;
 	private int version;
 	
 	public CaveManCMKeyCMValueMap() {
-		this(DEFAULT_CAPACITY);
+		this(DEFAULT_NOT_FOUND_VALUE, DEFAULT_CAPACITY);
 	}
 	
-	public CaveManCMKeyCMValueMap(int initialCapacity) {
-		this(initialCapacity, DEFAULT_LOAD_FACTOR);
+	public CaveManCMKeyCMValueMap(CMValue notFoundValue, int initialCapacity) {
+		this(notFoundValue, initialCapacity, DEFAULT_LOAD_FACTOR);
 	}
 	
-	public CaveManCMKeyCMValueMap(int initialCapacity, float loadingFactor) {
+	public CaveManCMKeyCMValueMap(CMValue notFoundValue, int initialCapacity, float loadingFactor) {
+		notFound = notFoundValue;
 		loadFactor = loadingFactor;
 		size = 0;
 		buckets = new CMBucket[initialCapacity];
@@ -87,16 +90,16 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 	}
 	
 	@Override
-	public CMValue get(CMKey key, CMValue notFoundValue) {
+	public CMValue get(CMKey key) {
 		
 		int hash = fromCaveManKey(key) % buckets.length;
 		CMBucket b = buckets[hash];
 		
 		if (b != null) {
-			return b.get(key, notFoundValue);	
+			return b.get(key, notFound);	
 		}
 		
-		return notFoundValue;
+		return notFound;
 	}
 	
 	@Override
@@ -364,5 +367,6 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 	}
 	
 	
-	private int fromCaveManKey(CMKey key) {return 0;}
+	private static int fromCaveManKey(CMKey key) {return 0;}
+	private static CMValue toCaveManValue(int i) {return null;}
 }
