@@ -67,7 +67,7 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 	
 	@Override
 	public boolean containsKey(K key) {
-		int hash = (key == null) ? 0 : (key.hashCode() % buckets.length);
+		int hash = Math.abs((key == null) ? 0 : (key.hashCode() % buckets.length));
 		CMBucket<K> b = buckets[hash];
 		
 		if (b == null)
@@ -93,7 +93,7 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 	
 	@Override
 	public CM get(K key, CM notFoundValue) {
-		int hash = (key == null) ? 0 : (key.hashCode() % buckets.length);
+		int hash = Math.abs((key == null) ? 0 : (key.hashCode() % buckets.length));
 		CMBucket<K> b = buckets[hash];
 		
 		if (b != null) {
@@ -110,7 +110,7 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 		ensureSize(size + 1);
 
 		
-		int hash = (key == null) ? 0 : (key.hashCode() % buckets.length);
+		int hash = Math.abs((key == null) ? 0 : (key.hashCode() % buckets.length));
 		CMBucket<K> b = buckets[hash];
 		
 		if (b == null) {
@@ -127,7 +127,7 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 	public void remove(K key) {
 		++version;
 		
-		int hash = (key == null) ? 0 : (key.hashCode() % buckets.length);
+		int hash = Math.abs((key == null) ? 0 : (key.hashCode() % buckets.length));
 		CMBucket<K> b = buckets[hash];
 		
 		if (b != null) {
@@ -188,7 +188,7 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 				if (oldBucket != null) {
 					for (int oldBucketIndex = 0; oldBucketIndex < oldBucket.bucketSize; ++oldBucketIndex) {
 						K key = oldBucket.keys[oldBucketIndex];
-						int hash = (key == null) ? 0 : (key.hashCode() % buckets.length);
+						int hash = Math.abs((key == null) ? 0 : (key.hashCode() % buckets.length));
 						CMBucket<K> newBucket = newBuckets[hash];
 						if (newBucket == null) {
 							newBucket = new CMBucket<K>();
