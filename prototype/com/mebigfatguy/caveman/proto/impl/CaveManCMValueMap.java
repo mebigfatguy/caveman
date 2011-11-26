@@ -476,13 +476,16 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 		}
 
 		@Override
-		@SuppressWarnings("unchecked")
 		public boolean retainAll(Collection<?> c) {
 			
 			int originalSize = size;
-			for (Object o : c) {
-				if (!containsKey((K) o)) {
-					CaveManCMValueMap.this.remove((K) o);
+			
+			CMValueMapIterator<K> it = CaveManCMValueMap.this.iterator();
+			while (it.hasNext()) {
+				it.next();
+				K k = it.key();
+				if (!c.contains(k)) {
+					it.remove();
 				}
 			}
 			
