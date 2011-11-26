@@ -91,7 +91,9 @@ public class CaveManTask extends Task {
 					if (!line.contains("private")) {
 						if ("boolean".equals(primitive)) {
 							pw.println(applyCMReplacements(
-										line.replaceAll("toCaveMan\\(([^\\)]*)\\)", "(($1 == 0) ? false : true)"),
+										line.replaceAll("toCaveMan\\(0\\)", "false")
+										.replaceAll("toCaveMan\\(1\\)", "true")
+										.replaceAll("toCaveMan\\(([^\\)]*)\\)", "(($1 == 0) ? false : true)"),
 										primitive, primitiveLabel, 1));
 							
 						} else {
