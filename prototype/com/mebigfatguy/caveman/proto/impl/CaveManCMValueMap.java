@@ -276,6 +276,18 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 			return notFoundValue;
 		}
 		
+		public int valueCount(CM item) {
+			int count = 0;
+			
+			for (int i = 0; i < bucketSize; i++) {
+				if (item == values[i]) {
+					++count;
+				}
+			}
+			
+			return count;
+		}
+		
 		public void clear() {
 			bucketSize = 0;
 		}
@@ -617,6 +629,19 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 		@Override
 		public boolean removeOne(CM item) {
 			throw new UnsupportedOperationException();
+		}
+		
+		@Override
+		public int countOf(CM item) {
+			int count = 0;
+			
+			for (CMBucket<K> bucket : buckets) {
+				if (bucket != null) {
+					count += bucket.valueCount(item);
+				}
+			}
+			
+			return count;
 		}
 		
 		private class CaveManCMValuesBagIterator implements CMIterator {

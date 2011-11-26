@@ -22,4 +22,6 @@ import com.mebigfatguy.caveman.proto.aux.CM;
 public interface CMBag extends CMCollection {
 	
 	boolean removeOne(CM item);
+	
+	int countOf(CM item);
 }

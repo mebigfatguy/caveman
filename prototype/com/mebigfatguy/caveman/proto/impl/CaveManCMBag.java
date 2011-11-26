@@ -31,7 +31,7 @@ public class CaveManCMBag implements CMBag {
 	
 	private CMBucket[] buckets;
 	private int size;
-	private float loadFactor;
+	private final float loadFactor;
 	private int version;
 	
 	public CaveManCMBag() {
@@ -49,14 +49,17 @@ public class CaveManCMBag implements CMBag {
 		version = 0;
 	}
 	
+	@Override
 	public int size() {
 		return size;
 	}
 	
+	@Override
 	public boolean isEmpty() {
 		return size == 0;
 	}
 	
+	@Override
 	public boolean contains(CM item) {
 		int hash = fromCaveMan(item) % buckets.length;
 		CMBucket b = buckets[hash];
@@ -67,10 +70,12 @@ public class CaveManCMBag implements CMBag {
 		return b.contains(item);
 	}
 	
+	@Override
 	public CMIterator iterator() {
 		return new CaveManCMBagIterator(version);
 	}
 	
+	@Override
 	public CM[] toArray() {
 		CM[] array = new CM[size];
 		int index = 0;
@@ -85,6 +90,7 @@ public class CaveManCMBag implements CMBag {
 		return array;
 	}
 	
+	@Override
 	public boolean add(CM item) {
 		++version;
 		
@@ -102,6 +108,7 @@ public class CaveManCMBag implements CMBag {
 		return true;
 	}
 	
+	@Override
 	public boolean remove(CM item) {
 		++version;
 		int hash = fromCaveMan(item) % buckets.length;
@@ -121,6 +128,7 @@ public class CaveManCMBag implements CMBag {
 		return oneRemoved;
 	}
 	
+	@Override
 	public boolean removeOne(CM item) {
 		++version;
 		int hash = fromCaveMan(item) % buckets.length;
@@ -137,6 +145,18 @@ public class CaveManCMBag implements CMBag {
 		return removed;
 	}
 	
+	@Override
+	public int countOf(CM item) {
+		int hash = fromCaveMan(item) % buckets.length;
+		CMBucket b = buckets[hash];
+		if (b == null) {
+			return 0;
+		}
+		
+		return b.countOf(item);
+	}
+	
+	@Override
 	public boolean containsAll(CMCollection c) {
 		CMIterator it = c.iterator();
 		while (it.hasNext()) {
@@ -147,6 +167,7 @@ public class CaveManCMBag implements CMBag {
 		return true;
 	}
 	
+	@Override
 	public boolean addAll(CMCollection c) {
 		++version;
 		
@@ -160,6 +181,7 @@ public class CaveManCMBag implements CMBag {
 		return startSize != size;
 	}
 	
+	@Override
 	public boolean retainAll(CMCollection c) {
 		++version;
 		int startSize = size;
@@ -173,6 +195,7 @@ public class CaveManCMBag implements CMBag {
 		return startSize != size;
 	}
 	
+	@Override
 	public boolean removeAll(CMCollection c) {
 		++version;
 		int startSize = size;
@@ -183,6 +206,7 @@ public class CaveManCMBag implements CMBag {
 		return startSize != size;
 	}	
 	
+	@Override
 	public void clear() {
 		++version;
 		for (int i = 0; i < buckets.length; i++) {
@@ -247,11 +271,23 @@ public class CaveManCMBag implements CMBag {
 			}
 			return false;
 		}
+		
+		public int countOf(CM item) {
+			int count = 0;
+			
+			for (int i = 0; i < bucketSize; i++) {
+				if (item == list[i]) {
+					++count;
+				}
+			}
+			
+			return count;
+		}
 	}
 	
 	private class CaveManCMBagIterator implements CMIterator {
 
-		private int iteratorVersion;
+		private final int iteratorVersion;
 		private int bucketIndex;
 		private int bucketSubIndex;
 		private int pos;
