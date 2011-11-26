@@ -523,7 +523,7 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 
 		@Override
 		public CMValueIterator iterator() {
-			throw new UnsupportedOperationException();
+			return new CaveManCMKeyCMValueValuesBagIterator();
 		}
 
 		@Override
@@ -574,6 +574,27 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 		@Override
 		public int countOf(CMValue item) {
 			throw new UnsupportedOperationException();
+		}
+		
+		private class CaveManCMKeyCMValueValuesBagIterator implements CMValueIterator {
+
+			private final CMKeyCMValueMapIterator iterator = CaveManCMKeyCMValueMap.this.iterator();
+			
+			@Override
+			public boolean hasNext() {
+				return iterator.hasNext();
+			}
+
+			@Override
+			public CMValue next() throws NoSuchElementException {
+				iterator.next();
+				return iterator.value();
+			}
+
+			@Override
+			public void remove() {
+				iterator.remove();
+			}
 		}
 	}
 	
