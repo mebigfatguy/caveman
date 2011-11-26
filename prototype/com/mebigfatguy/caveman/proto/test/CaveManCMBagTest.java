@@ -57,6 +57,20 @@ public class CaveManCMBagTest {
 		}
 	}
 	
+	@Test
+	public void testCountOf() {
+		CaveManCMBag s = new CaveManCMBag();
+		Assert.assertEquals(0, s.countOf(toCaveMan(0)));
+		
+		s.add(toCaveMan(0));
+		s.add(toCaveMan(1));
+		Assert.assertEquals(1, s.countOf(toCaveMan(0)));
+		
+		s.add(toCaveMan(1));
+		Assert.assertEquals(1, s.countOf(toCaveMan(0)));
+		Assert.assertEquals(2, s.countOf(toCaveMan(1)));
+	}
+	
 	
 	private CM toCaveMan(int i) { return null; }
 }
