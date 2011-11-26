@@ -70,7 +70,7 @@ public class CaveManTask extends Task {
 		BufferedReader br = null;
 		PrintWriter pw = null;
 		try {
-			br = new BufferedReader(new FileReader(cavemanProtoFile, "UTF-8"));
+			br = new BufferedReader(new FileReader(cavemanProtoFile));
 			pw = new PrintWriter(new BufferedWriter(new FileWriter(f)));
 
 			boolean ignoring = false;
