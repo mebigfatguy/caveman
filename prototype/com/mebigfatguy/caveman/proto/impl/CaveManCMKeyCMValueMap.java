@@ -528,17 +528,44 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 
 		@Override
 		public CMValue[] toArray() {
-			throw new UnsupportedOperationException();
+			CMValue[] data = new CMValue[size];
+			
+			int pos = 0;
+			
+			for (CMBucket bucket : buckets) {
+				if (bucket != null) {
+					for (int i = 0; i < bucket.bucketSize; ++i) {
+						data[pos++] = bucket.values[i];
+					}
+				}
+			}
+			
+			return data;
 		}
 
 		@Override
 		public boolean add(CMValue item) {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("add is not supported from the values bag of a CaveManCMKeyCMValueMap as there's no obvious key");
 		}
 
 		@Override
 		public boolean remove(CMValue item) {
-			throw new UnsupportedOperationException();
+			int originalSize = size;
+			
+			for (CMBucket bucket : buckets) {
+				if (bucket != null) {
+					for (int i = 0; i < bucket.bucketSize; ++i) {
+						if (item == bucket.values[i]) {
+							--bucket.bucketSize;
+							System.arraycopy(bucket.keys, i + 1, bucket.keys, i, bucket.bucketSize - i);
+							System.arraycopy(bucket.values, i + 1, bucket.values, i, bucket.bucketSize - i);
+							--size;
+						}
+					}
+				}
+			}
+			
+			return originalSize != size;
 		}
 
 		@Override
@@ -568,7 +595,22 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 
 		@Override
 		public boolean removeOne(CMValue item) {
-			throw new UnsupportedOperationException();
+		
+			for (CMBucket bucket : buckets) {
+				if (bucket != null) {
+					for (int i = 0; i < bucket.bucketSize; ++i) {
+						if (item == bucket.values[i]) {
+							--bucket.bucketSize;
+							System.arraycopy(bucket.keys, i + 1, bucket.keys, i, bucket.bucketSize - i);
+							System.arraycopy(bucket.values, i + 1, bucket.values, i, bucket.bucketSize - i);
+							--size;
+							return true;
+						}
+					}
+				}
+			}
+			
+			return false;
 		}
 
 		@Override
