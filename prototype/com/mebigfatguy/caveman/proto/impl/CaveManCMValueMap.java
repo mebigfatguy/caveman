@@ -608,12 +608,19 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 
 		@Override
 		public boolean containsAll(CMCollection c) {
-			throw new UnsupportedOperationException();
+			CMIterator it = c.iterator();
+			while (it.hasNext()) {
+				if (!CaveManCMValueMap.this.containsValue(it.next())) {
+					return false;
+				}
+			}
+			
+			return true;
 		}
 
 		@Override
 		public boolean addAll(CMCollection c) {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("addAll is not supported from the values bag of a CaveManCMValueMap as there's no obvious keys");
 		}
 
 		@Override
