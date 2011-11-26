@@ -567,7 +567,7 @@ public class CaveManCMKeyMap<V> implements CMKeyMap<V> {
 
 		@Override
 		public boolean add(V e) {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("add is not supported from the values collection of a CaveManCMKeyMap as there's no obvious key");
 		}
 
 		@Override
