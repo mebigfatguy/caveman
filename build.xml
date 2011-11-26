@@ -36,7 +36,7 @@
 	<property name="javac.deprecation" value="on" />
 	<property name="javac.debug" value="on" />
 
-	<property name="caveman.version" value="0.3.0" />
+	<property name="caveman.version" value="0.5.0" />
 
 	<property name="ant_.version" value="1.8.2" />
 	<property name="junit.version" value="4.10" />
@@ -143,8 +143,9 @@
 				<attribute name="Bundle-SymbolicName" value="caveman; singleton:=true" />
 				<attribute name="Bundle-Version" value="${caveman.version}" />
 				<attribute name="Bundle-ClassPath" value="." />
-				<attribute name="Bundle-Vendor" value="caveman Project" />
+				<attribute name="Bundle-Vendor" value="MeBigFatGuy.com" />
 				<attribute name="Bundle-ActivationPolicy" value="lazy" />
+				<attribute name="Export-Package" value="com.mebigfatguy.caveman;version=&quot;${caveman.version}&quot;,com.mebigfatguy.caveman.impl;version=&quot;${caveman.version}&quot;" />
 			</manifest>
 		</jar>
 	</target>
