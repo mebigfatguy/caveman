@@ -572,27 +572,68 @@ public class CaveManCMKeyMap<V> implements CMKeyMap<V> {
 
 		@Override
 		public boolean remove(Object o) {
-			throw new UnsupportedOperationException();
+			int originalSize = size;
+			
+			for (CMBucket<V> bucket : buckets) {
+				if (bucket != null) {
+					for (int i = 0; i < bucket.bucketSize; ++i) {
+						if (((o == null) && (bucket.values[i] == null)) || ((o != null) && o.equals(bucket.values[i]))) {
+							--bucket.bucketSize;
+							System.arraycopy(bucket.keys, i + 1, bucket.keys, i, bucket.bucketSize - i);
+							System.arraycopy(bucket.values, i + 1, bucket.values, i, bucket.bucketSize - i);
+							--size;
+						}
+					}
+				}
+			}
+			
+			return originalSize != size;
 		}
 
 		@Override
+		@SuppressWarnings("unchecked")
 		public boolean containsAll(Collection<?> c) {
-			throw new UnsupportedOperationException();
+			
+			for (Object o : c) {
+				if (!CaveManCMKeyMap.this.containsValue((V) o)) {
+					return false;
+				}
+			}
+			
+			return true;
 		}
 
 		@Override
 		public boolean addAll(Collection<? extends V> c) {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("addAll is not supported from the values collection of a CaveManCMKeyMap as there's no obvious keys");
 		}
 
 		@Override
 		public boolean removeAll(Collection<?> c) {
-			throw new UnsupportedOperationException();
+			int originalSize = size;
+			
+			for (Object o : c) {
+				remove(o);
+			}
+			
+			return originalSize != size;
 		}
 
 		@Override
 		public boolean retainAll(Collection<?> c) {
-			throw new UnsupportedOperationException();
+			
+			boolean modified = false;
+			CMKeyMapIterator it = CaveManCMKeyMap.this.iterator();
+			
+			while (it.hasNext()) {
+				it.next();
+				if (!c.contains(it.value())) {
+					it.remove();
+					modified = true;
+				}
+			}
+			
+			return modified;
 		}
 
 		@Override
