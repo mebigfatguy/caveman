@@ -530,7 +530,19 @@ public class CaveManCMKeyMap<V> implements CMKeyMap<V> {
 
 		@Override
 		public Object[] toArray() {
-			throw new UnsupportedOperationException();
+			Object[] data = new Object[size];
+			
+			int pos = 0;
+			
+			for (CMBucket<V> bucket : buckets) {
+				if (bucket != null) {
+					for (int i = 0; i < bucket.bucketSize; ++i) {
+						data[pos++] = bucket.values[i];
+					}
+				}
+			}
+			
+			return data;
 		}
 
 		@Override
