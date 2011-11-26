@@ -258,7 +258,7 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 		
 		public int indexOf(K key) {
 			for (int i = 0; i < bucketSize; i++) {
-				if (((key == null) && (keys[i] == null)) || key.equals(keys[i])) {
+				if (((key == null) && (keys[i] == null)) || ((key != null) && key.equals(keys[i]))) {
 					return i;
 				}
 			}
