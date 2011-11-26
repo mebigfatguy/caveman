@@ -394,7 +394,19 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 
 		@Override
 		public CMKey[] toArray() {
-			throw new UnsupportedOperationException();
+			CMKey[] data = new CMKey[size];
+			
+			int pos = 0;
+			
+			for (CMBucket bucket : buckets) {
+				if (bucket != null) {
+					for (int i = 0; i < bucket.bucketSize; ++i) {
+						data[pos++] = bucket.keys[i];
+					}
+				}
+			}
+			
+			return data;
 		}
 
 		@Override
