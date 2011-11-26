@@ -71,6 +71,27 @@ public class CaveManCMBagTest {
 		Assert.assertEquals(2, s.countOf(toCaveMan(1)));
 	}
 	
+	@Test
+	public void testRemoveOne() {
+		CaveManCMBag s = new CaveManCMBag();
+		for (int i = 0; i < 10; i++) {
+			s.add(toCaveMan(0));
+		}
+		
+		Assert.assertEquals(10, s.size());
+		Assert.assertTrue(s.contains(toCaveMan(0)));
+		
+		s.removeOne(toCaveMan(0));
+		
+		Assert.assertEquals(9, s.size());
+		Assert.assertTrue(s.contains(toCaveMan(0)));
+
+		s.remove(toCaveMan(0));
+		
+		Assert.assertEquals(0, s.size());
+		Assert.assertFalse(s.contains(toCaveMan(0)));	
+	}
+	
 	
 	private CM toCaveMan(int i) { return null; }
 }
