@@ -615,7 +615,18 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 
 		@Override
 		public int countOf(CMValue item) {
-			throw new UnsupportedOperationException();
+			int count = 0;
+			for (CMBucket bucket : buckets) {
+				if (bucket != null) {
+					for (int i = 0; i < bucket.bucketSize; ++i) {
+						if (item == bucket.values[i]) {
+							++count;
+						}
+					}
+				}
+			}
+			
+			return count;
 		}
 		
 		private class CaveManCMKeyCMValueValuesBagIterator implements CMValueIterator {
