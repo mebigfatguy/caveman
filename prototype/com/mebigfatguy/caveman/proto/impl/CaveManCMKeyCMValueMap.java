@@ -432,22 +432,55 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 
 		@Override
 		public boolean containsAll(CMKeyCollection c) {
-			throw new UnsupportedOperationException();
+			CMKeyIterator it = c.iterator();
+			while (it.hasNext()) {
+				if (!CaveManCMKeyCMValueMap.this.containsKey(it.next())) {
+					return false;
+				}
+			}
+			
+			return true;
 		}
 
 		@Override
 		public boolean addAll(CMKeyCollection c) {
-			throw new UnsupportedOperationException();
+			int originalSize = size;
+			
+			CMKeyIterator it = c.iterator();
+			while (it.hasNext()) {
+				CaveManCMKeyCMValueMap.this.put(it.next(), notFound);
+			}	
+			
+			return originalSize != size;
 		}
 
 		@Override
 		public boolean retainAll(CMKeyCollection c) {
-			throw new UnsupportedOperationException();
+			boolean modified = false;
+			
+			CMKeyCMValueMapIterator it = CaveManCMKeyCMValueMap.this.iterator();
+			while (it.hasNext()) {
+				it.next();
+				CMKey key = it.key();
+				if (!c.contains(key)) {
+					it.remove();
+					modified = true;
+				}
+			}
+			
+			return modified;
 		}
 
 		@Override
 		public boolean removeAll(CMKeyCollection c) {
-			throw new UnsupportedOperationException();
+			int originalSize = size;
+			
+			CMKeyIterator it = c.iterator();
+			while (it.hasNext()) {
+				CaveManCMKeyCMValueMap.this.remove(it.next());
+			}
+			
+			return originalSize != size;
 		}
 		
 		private class CaveManCMKeyCMValueKeySetIterator implements CMKeyIterator {
