@@ -62,7 +62,7 @@ public class CaveManCMSet implements CMSet {
 	
 	@Override
 	public boolean contains(CM item) {
-		int hash = fromCaveMan(item) % buckets.length;
+		int hash = Math.abs(fromCaveMan(item) % buckets.length);
 		CMBucket b = buckets[hash];
 		
 		if (b == null)
@@ -97,7 +97,7 @@ public class CaveManCMSet implements CMSet {
 		
 		ensureSize(size+1);
 		
-		int hash = fromCaveMan(item) % buckets.length;
+		int hash = Math.abs(fromCaveMan(item) % buckets.length);
 		CMBucket b = buckets[hash];
 		if (b == null) {
 			b = new CMBucket();
@@ -114,7 +114,7 @@ public class CaveManCMSet implements CMSet {
 	@Override
 	public boolean remove(CM item) {
 		++version;
-		int hash = fromCaveMan(item) % buckets.length;
+		int hash = Math.abs(fromCaveMan(item) % buckets.length);
 		CMBucket b = buckets[hash];
 		if (b == null) {
 			return false;
@@ -195,7 +195,7 @@ public class CaveManCMSet implements CMSet {
 				if (oldBucket != null) {
 					for (int oldBucketIndex = 0; oldBucketIndex < oldBucket.bucketSize; ++oldBucketIndex) {
 						CM item = oldBucket.list[oldBucketIndex];
-						int hash = fromCaveMan(item) % newBuckets.length;
+						int hash = Math.abs(fromCaveMan(item) % newBuckets.length);
 						CMBucket newBucket = newBuckets[hash];
 						if (newBucket == null) {
 							newBucket = new CMBucket();
