@@ -170,6 +170,7 @@
 			<fileset dir="${basedir}">
 				<include name="build.xml" />
 				<include name="README" />
+				<include name="LICENSE" />
 			</fileset>
 		</zip>
 	</target>
