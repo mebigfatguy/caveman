@@ -136,6 +136,9 @@
 			<fileset dir="${classes.dir}">
 				<include name="**/*.class" />
 			</fileset>
+			<fileset dir="${basedir}">
+				<include name="LICENSE" />
+			</fileset>
 			<manifest>
 				<attribute name="caveman-version" value="${caveman.version}" />
 				<attribute name="Bundle-ManifestVersion" value="2" />
