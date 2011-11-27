@@ -28,7 +28,7 @@ import com.mebigfatguy.caveman.proto.aux.CMValueBag;
  * each key can map to at most one value.
  * 
  * <p>The <tt>CMKeyCMValueMap</tt> interface provides two <i>collection views</i>, which
- * allow a map's contents to be viewed as a set of keys pr collection of values
+ * allow a map's contents to be viewed as a set of keys or collection of values
  * The <i>order</i> of a map is defined as the order in which the iterators on the map's collection 
  * views return their elements.  
  */
@@ -76,7 +76,7 @@ public interface CMKeyCMValueMap {
      *
      * @param key the key whose associated value is to be returned
      * @return the value to which the specified key is mapped, or
-     *         {@code null} if this map contains no mapping for the key
+     *         the 'not found' value if this map contains no mapping for the key
      */
 	CMValue get(CMKey key);
 	

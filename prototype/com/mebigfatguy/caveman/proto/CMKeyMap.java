@@ -27,7 +27,7 @@ import com.mebigfatguy.caveman.proto.aux.CMKey;
  * each key can map to at most one value.
  * 
  * <p>The <tt>CMKeyMap</tt> interface provides two <i>collection views</i>, which
- * allow a map's contents to be viewed as a set of keys pr collection of values
+ * allow a map's contents to be viewed as a set of keys or collection of values
  * The <i>order</i> of a map is defined as the order in which the iterators on the map's collection 
  * views return their elements.  
  */
@@ -70,8 +70,7 @@ public interface CMKeyMap<V> {
 	
     /**
      * Returns the value to which the specified <b>CMKey</b> key is mapped,
-     * or a default value if this map contains no mapping for the key.
-     * The default value can be specified when constructing the map.
+     * or null if this map contains no mapping for the key.
      *
      * @param key the key whose associated value is to be returned
      * @return the value to which the specified key is mapped, or
