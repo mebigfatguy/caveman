@@ -17,15 +17,43 @@
  */
 package com.mebigfatguy.caveman.proto;
 
+import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
 
 import com.mebigfatguy.caveman.proto.aux.CM;
 
+/**
+ * An iterator over a collection of <b>CM</b> elements
+ */
 public interface CMIterator {
 
+    /**
+     * Returns <tt>true</tt> if the iteration has more <b>CM</b> elements. (In other
+     * words, returns <tt>true</tt> if <tt>next</tt> would return an element
+     * rather than throwing an exception.)
+     *
+     * @return <tt>true</tt> if the iterator has more elements.
+     */
 	boolean hasNext();
 	
+    /**
+     * Returns the next <b>CM</b> element in the iteration.
+     *
+     * @return the next element in the iteration.
+     * @exception NoSuchElementException iteration has no more elements.
+     */
 	CM next() throws NoSuchElementException;
 	
+    /**
+     * 
+     * Removes from the underlying collection the last <b>CM</b> element returned by the
+     * iterator (optional operation).  This method can be called only once per
+     * call to <tt>next</tt>.  The behavior of an iterator is unspecified if
+     * the underlying collection is modified while the iteration is in
+     * progress in any way other than by calling this method.
+     
+     * @exception ConcurrentModificationException if the underlying collection has changed
+     * since the iterator was created.
+     */
 	void remove();
 }
