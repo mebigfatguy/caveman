@@ -168,7 +168,7 @@ public interface CMKeyMap<V> {
 	Collection<V> values();
 	
 	/**
-	 * Returns a iterator over the the <b>CMKey</b>, <b>CMValue</b> pairs in the map.
+	 * Returns a iterator over the the <b>CMKey</b>, <b>Object</b> pairs in the map.
 	 * 
 	 * @return an iterator to navigate the map
 	 */
