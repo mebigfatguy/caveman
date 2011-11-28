@@ -290,8 +290,7 @@ public class CaveManCMList implements CMList {
 
 		@Override
 		public int grow(int oldSize, int newSize) {
-			int increase = (int)(newSize * 1.3);
-			return Math.max(Math.min(20, increase), 1000);
+			return (int)(oldSize + newSize * 1.4);
 		}
 	}
 }
