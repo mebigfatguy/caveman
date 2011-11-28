@@ -184,7 +184,7 @@ public class CaveManCMKeyMap<V> implements CMKeyMap<V> {
 	@SuppressWarnings("unchecked")
 	private void ensureSize(int newSize) {
 		if ((newSize / (double) buckets.length) > loadFactor) {
-			int newBucketSize = (int) ((2.0 * loadFactor) * newSize);
+			int newBucketSize = (int) (2.0 * newSize);
 			CMBucket<V>[] newBuckets = new CMBucket[newBucketSize];
 			
 			for (CMBucket<V> oldBucket : buckets) {

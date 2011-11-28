@@ -181,7 +181,7 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 	@SuppressWarnings("unchecked")
 	private void ensureSize(int newSize) {
 		if ((newSize / (double) buckets.length) > loadFactor) {
-			int newBucketSize = (int) ((2.0 * loadFactor) * newSize);
+			int newBucketSize = (int) (2.0 * newSize);
 			CMBucket<K>[] newBuckets = new CMBucket[newBucketSize];
 			
 			for (CMBucket<K> oldBucket : buckets) {
