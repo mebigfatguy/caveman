@@ -190,7 +190,7 @@ public class CaveManCMKeyMap<V> implements CMKeyMap<V> {
 			for (CMBucket<V> oldBucket : buckets) {
 				if (oldBucket != null) {
 					int oldBucketSize = oldBucket.bucketSize;
-					CMBucket<V> reusableBucket = (oldBucketSize <= 2) ? oldBucket : null;
+					CMBucket<V> reusableBucket = oldBucket;
 					boolean reusedBucket = false;
 					for (int oldBucketIndex = 0; oldBucketIndex < oldBucketSize; ++oldBucketIndex) {
 						CM key = oldBucket.keys[oldBucketIndex];
@@ -200,13 +200,13 @@ public class CaveManCMKeyMap<V> implements CMKeyMap<V> {
 							if (reusableBucket != null) {
 								newBuckets[hash] = reusableBucket;
 								reusableBucket.bucketSize = 1;
-								reusableBucket = null;
 								reusedBucket = true;
 							} else {
 								newBucket = new CMBucket<V>();
 								newBuckets[hash] = newBucket;
 							}
 						}
+						reusableBucket = null;
 						
 						if (!reusedBucket) {
 							newBucket.add(key, oldBucket.values[oldBucketIndex]);
