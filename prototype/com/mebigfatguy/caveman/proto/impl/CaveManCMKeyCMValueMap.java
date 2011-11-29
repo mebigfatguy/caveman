@@ -204,8 +204,8 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 	}
 	
 	private static class CMBucket {
-		CMKey[] keys = new CMKey[1];
-		CMValue[] values = new CMValue[1];
+		CMKey[] keys = new CMKey[2];
+		CMValue[] values = new CMValue[2];
 		int bucketSize;
 		
 		public boolean add(CMKey key, CMValue value) {

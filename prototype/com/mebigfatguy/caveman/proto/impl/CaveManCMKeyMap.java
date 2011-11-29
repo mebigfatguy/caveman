@@ -207,8 +207,8 @@ public class CaveManCMKeyMap<V> implements CMKeyMap<V> {
 
 	@SuppressWarnings("unchecked")
 	private static class CMBucket<V> {
-		CM[] keys = new CM[1];
-		V[] values = (V[])new Object[1];
+		CM[] keys = new CM[2];
+		V[] values = (V[])new Object[2];
 		int bucketSize;
 		
 		public boolean add(CM key, V value) {

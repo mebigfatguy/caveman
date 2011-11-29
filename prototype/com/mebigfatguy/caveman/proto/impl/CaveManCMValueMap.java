@@ -204,8 +204,8 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 	
 	private static class CMBucket<K> {
 		@SuppressWarnings("unchecked")
-		K[] keys = (K[])new Object[1];
-		CM[] values = new CM[1];
+		K[] keys = (K[])new Object[2];
+		CM[] values = new CM[2];
 		int bucketSize;
 		
 		public boolean add(K key, CM value) {
