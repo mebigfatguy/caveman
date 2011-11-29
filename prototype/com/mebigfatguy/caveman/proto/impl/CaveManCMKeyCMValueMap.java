@@ -187,15 +187,28 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 			
 			for (CMBucket oldBucket : buckets) {
 				if (oldBucket != null) {
-					for (int oldBucketIndex = 0; oldBucketIndex < oldBucket.bucketSize; ++oldBucketIndex) {
+					int oldBucketSize = oldBucket.bucketSize;
+					CMBucket reusableBucket = (oldBucketSize <= 2) ? oldBucket : null;
+					boolean reusedBucket = false;
+					for (int oldBucketIndex = 0; oldBucketIndex < oldBucketSize; ++oldBucketIndex) {
 						CMKey key = oldBucket.keys[oldBucketIndex];
 						int hash = Math.abs(fromCaveManKey(key) % newBuckets.length);
 						CMBucket newBucket = newBuckets[hash];
 						if (newBucket == null) {
-							newBucket = new CMBucket();
-							newBuckets[hash] = newBucket;
+							if (reusableBucket != null) {
+								newBuckets[hash] = reusableBucket;
+								reusableBucket.bucketSize = 1;
+								reusableBucket = null;
+								reusedBucket = true;
+							} else {
+								newBucket = new CMBucket();
+								newBuckets[hash] = newBucket;
+							}
 						}
-						newBucket.add(key, oldBucket.values[oldBucketIndex]);
+						
+						if (!reusedBucket) {
+							newBucket.add(key, oldBucket.values[oldBucketIndex]);
+						}
 					}
 				}
 			}

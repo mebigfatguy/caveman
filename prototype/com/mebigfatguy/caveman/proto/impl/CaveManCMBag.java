@@ -221,15 +221,28 @@ public class CaveManCMBag implements CMBag {
 			
 			for (CMBucket oldBucket : buckets) {
 				if (oldBucket != null) {
-					for (int oldBucketIndex = 0; oldBucketIndex < oldBucket.bucketSize; ++oldBucketIndex) {
+					int oldBucketSize = oldBucket.bucketSize;
+					CMBucket reusableBucket = (oldBucketSize <= 2) ? oldBucket : null;
+					boolean reusedBucket = false;
+					for (int oldBucketIndex = 0; oldBucketIndex < oldBucketSize; ++oldBucketIndex) {
 						CM item = oldBucket.list[oldBucketIndex];
 						int hash = Math.abs(fromCaveMan(item) % newBuckets.length);
 						CMBucket newBucket = newBuckets[hash];
 						if (newBucket == null) {
-							newBucket = new CMBucket();
-							newBuckets[hash] = newBucket;
+							if (reusableBucket != null) {
+								newBuckets[hash] = reusableBucket;
+								reusableBucket.bucketSize = 1;
+								reusableBucket = null;
+								reusedBucket = true;
+							} else {
+								newBucket = new CMBucket();
+								newBuckets[hash] = newBucket;
+							}
 						}
-						newBucket.add(item);
+						
+						if (!reusedBucket) {
+							newBucket.add(item);
+						}
 					}
 				}
 			}
