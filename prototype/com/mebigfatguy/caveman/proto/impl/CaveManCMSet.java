@@ -1,7 +1,7 @@
 /*
  * caveman - A primitive collection library
- * Copyright 2011-2012 MeBigFatGuy.com
- * Copyright 2011-2012 Dave Brosius
+ * Copyright 2011-2013 MeBigFatGuy.com
+ * Copyright 2011-2013 Dave Brosius
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,53 +29,53 @@ public class CaveManCMSet implements CMSet {
 
 	private static final int DEFAULT_CAPACITY = 31;
 	private static final float DEFAULT_LOAD_FACTOR = 0.80f;
-	
+
 	private CMBucket[] buckets;
 	private int size;
 	private final float loadFactor;
 	private int version;
-	
+
 	public CaveManCMSet() {
 		this(DEFAULT_CAPACITY);
 	}
-	
+
 	public CaveManCMSet(int initialCapacity) {
 		this(initialCapacity, DEFAULT_LOAD_FACTOR);
 	}
-	
+
 	public CaveManCMSet(int initialCapacity, float loadingFactor) {
 		buckets = new CMBucket[initialCapacity];
 		loadFactor = loadingFactor;
 		size = 0;
 		version = 0;
 	}
-	
+
 	@Override
 	public int size() {
 		return size;
 	}
-	
+
 	@Override
 	public boolean isEmpty() {
 		return size == 0;
 	}
-	
+
 	@Override
 	public boolean contains(CM item) {
 		int hash = Math.abs(fromCaveMan(item) % buckets.length);
 		CMBucket b = buckets[hash];
-		
+
 		if (b == null)
 			return false;
-		
+
 		return b.contains(item);
 	}
-	
+
 	@Override
 	public CMIterator iterator() {
 		return new CaveManCMSetIterator(version);
 	}
-	
+
 	@Override
 	public CM[] toArray() {
 		CM[] array = new CM[size];
@@ -87,30 +87,30 @@ public class CaveManCMSet implements CMSet {
 				}
 			}
 		}
-		
+
 		return array;
 	}
-	
+
 	@Override
 	public boolean add(CM item) {
 		++version;
-		
+
 		ensureSize(size+1);
-		
+
 		int hash = Math.abs(fromCaveMan(item) % buckets.length);
 		CMBucket b = buckets[hash];
 		if (b == null) {
 			b = new CMBucket();
 			buckets[hash] = b;
 		}
-		
+
 		boolean added = b.add(item);
 		if (added) {
 			++size;
 		}
 		return added;
 	}
-	
+
 	@Override
 	public boolean remove(CM item) {
 		++version;
@@ -119,14 +119,14 @@ public class CaveManCMSet implements CMSet {
 		if (b == null) {
 			return false;
 		}
-		
+
 		boolean removed = b.remove(item);
 		if (removed) {
 			--size;
 		}
 		return removed;
 	}
-	
+
 	@Override
 	public boolean containsAll(CMCollection c) {
 		CMIterator it = c.iterator();
@@ -137,13 +137,13 @@ public class CaveManCMSet implements CMSet {
 		}
 		return true;
 	}
-	
+
 	@Override
 	public boolean addAll(CMCollection c) {
 		++version;
-		
+
 		ensureSize(size + c.size());
-		
+
 		int startSize = size;
 		CMIterator it = c.iterator();
 		while (it.hasNext()) {
@@ -151,7 +151,7 @@ public class CaveManCMSet implements CMSet {
 		}
 		return startSize != size;
 	}
-	
+
 	@Override
 	public boolean retainAll(CMCollection c) {
 		++version;
@@ -165,7 +165,7 @@ public class CaveManCMSet implements CMSet {
 		}
 		return startSize != size;
 	}
-	
+
 	@Override
 	public boolean removeAll(CMCollection c) {
 		++version;
@@ -175,8 +175,8 @@ public class CaveManCMSet implements CMSet {
 			remove(it.next());
 		}
 		return startSize != size;
-	}	
-	
+	}
+
 	@Override
 	public void clear() {
 		++version;
@@ -185,12 +185,25 @@ public class CaveManCMSet implements CMSet {
 		}
 		size = 0;
 	}
-	
+
+	@Override
+	public CM getOne() {
+	    if (size > 0) {
+	        for (CMBucket bucket : buckets) {
+	            if ((bucket != null) && (bucket.bucketSize > 0)) {
+	                return bucket.list[0];
+	            }
+	        }
+	    }
+
+	    throw new IllegalStateException("set has no items");
+	}
+
 	private void ensureSize(int newSize) {
 		if ((newSize / (double) buckets.length) > loadFactor) {
 			int newBucketSize = (int) (2.0 * newSize);
 			CMBucket[] newBuckets = new CMBucket[newBucketSize];
-			
+
 			for (CMBucket oldBucket : buckets) {
 				if (oldBucket != null) {
 					int oldBucketSize = oldBucket.bucketSize;
@@ -211,45 +224,45 @@ public class CaveManCMSet implements CMSet {
 							}
 						}
 						reusableBucket = null;
-						
+
 						if (!reusedBucket) {
 							newBucket.add(item);
 						}
 					}
 				}
 			}
-			buckets = newBuckets;		
+			buckets = newBuckets;
 		}
 	}
-	
+
 	private static class CMBucket {
 		CM[] list = new CM[1];
 		int bucketSize;
-		
+
 		public boolean add(CM item) {
 			if (contains(item)) {
 				return false;
 			}
-			
+
 			if (bucketSize >= list.length) {
 				CM[] newList = new CM[list.length + 4];
 				System.arraycopy(list,  0, newList, 0, bucketSize);
 				list = newList;
 			}
-			
+
 			list[bucketSize++] = item;
 			return true;
 		}
-		
+
 		public boolean contains(CM item) {
 			for (int i = 0; i < bucketSize; i++) {
 				if (item == list[i])
 					return true;
 			}
-			
+
 			return false;
 		}
-		
+
 		public boolean remove(CM item) {
 			for (int i = 0; i < bucketSize; i++) {
 				if (item == list[i]) {
@@ -261,17 +274,17 @@ public class CaveManCMSet implements CMSet {
 			return false;
 		}
 	}
-	
+
 	private class CaveManCMSetIterator implements CMIterator {
 
 		private final int iteratorVersion;
 		private int bucketIndex;
 		private int bucketSubIndex;
 		private int pos;
-		
+
 		CaveManCMSetIterator(int vers) {
 			iteratorVersion = vers;
-			
+
 			pos = 0;
 			if (size > 0) {
 				for (bucketIndex = 0; bucketIndex < buckets.length; bucketIndex++) {
@@ -283,9 +296,9 @@ public class CaveManCMSet implements CMSet {
 				}
 				//?? shouldn't get here
 			}
-			
+
 		}
-		
+
 		@Override
 		public boolean hasNext() {
 			if (iteratorVersion != version) {
@@ -317,7 +330,7 @@ public class CaveManCMSet implements CMSet {
 				}
 			}
 			++pos;
-			
+
 			return item;
 		}
 
@@ -326,11 +339,11 @@ public class CaveManCMSet implements CMSet {
 			if (iteratorVersion != version) {
 				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
 			}
-			
+
 			if (pos >= size) {
 				throw new NoSuchElementException("Index " + pos + " is out of bounds [0, " + (size - 1) + "]");
 			}
-			
+
 			CMBucket b = buckets[bucketIndex];
 			System.arraycopy(b.list, bucketSubIndex + 1, b.list, bucketSubIndex, b.bucketSize - bucketSubIndex);
 			--b.bucketSize;
@@ -346,8 +359,8 @@ public class CaveManCMSet implements CMSet {
 			--pos;
 		}
 	}
-	
-	
+
+
 	private int fromCaveMan(CM item) {return 0;}
 }
 

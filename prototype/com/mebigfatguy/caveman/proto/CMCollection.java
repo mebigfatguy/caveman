@@ -1,7 +1,7 @@
 /*
  * caveman - A primitive collection library
- * Copyright 2011-2012 MeBigFatGuy.com
- * Copyright 2011-2012 Dave Brosius
+ * Copyright 2011-2013 MeBigFatGuy.com
+ * Copyright 2011-2013 Dave Brosius
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import com.mebigfatguy.caveman.proto.aux.CM;
  * The root interface in the <i><b>CM</b> collection hierarchy</i>.  A collection
  * represents a group of <b>CM</b>s, known as its <i>elements</i>.  Some
  * collections allow duplicate elements and others do not.  Some are ordered
- * and others unordered. This interface is typically used to pass collections 
+ * and others unordered. This interface is typically used to pass collections
  * around and manipulate them where maximum generality is desired.
  */
 public interface CMCollection {
@@ -34,16 +34,16 @@ public interface CMCollection {
      * <tt>Integer.MAX_VALUE</tt>.
      *
      * @return the number of <b>CM</b>s in this collection
-     */	
+     */
 	int size();
-	
+
     /**
      * Returns <tt>true</tt> if this collection contains no <b>CM</b>s, otherwise <tt>false</tt>.
      *
      * @return <tt>true</tt> if this collection contains no <b>CM</b>s, otherwise <tt>false</tt>
      */
 	boolean isEmpty();
-	
+
     /**
      * Returns <tt>true</tt> if this collection contains the specified <b>CM</b>.
      * More formally, returns <tt>true</tt> if and only if this collection
@@ -54,7 +54,7 @@ public interface CMCollection {
      * @return <tt>true</tt> if this collection contains the specified <b>CM</b>
      */
 	boolean contains(CM item);
-	
+
     /**
      * Returns an iterator over the <b>CM</b>s in this collection.  There are no
      * guarantees concerning the order in which the <b>CM</b>s are returned
@@ -64,7 +64,7 @@ public interface CMCollection {
      * @return an <tt>Iterator</tt> over the <b>CM</b>s in this collection
      */
 	CMIterator iterator();
-	
+
     /**
      * Returns an array containing all of the <b>CM</b>s in this collection.
      * If this collection makes any guarantees as to what order its <b>CM</b>s
@@ -82,7 +82,7 @@ public interface CMCollection {
      * @return an array containing all of the <b>CM</b>s in this collection
      */
 	CM[] toArray();
-	
+
     /**
      * Ensures that this collection contains the specified <b>CM</b> (optional
      * operation).  Returns <tt>true</tt> if this collection changed as a
@@ -102,7 +102,7 @@ public interface CMCollection {
      *         is not supported by this collection
      */
 	boolean add(CM item);
-	
+
     /**
      * Removes a single instance of the specified <b>CM</b> from this
      * collection, if it is present (optional operation).  More formally,
@@ -118,7 +118,7 @@ public interface CMCollection {
      *         is not supported by this collection
      */
 	boolean remove(CM item);
-	
+
     /**
      * Removes all of the <b>CM</b>s from this collection (optional operation).
      * The collection will be empty after this method returns.
@@ -127,7 +127,7 @@ public interface CMCollection {
      *         is not supported by this collection
      */
 	void clear();
-	
+
     /**
      * Returns <tt>true</tt> if this collection contains all of the <b>CM</b>s
      * in the specified collection.
@@ -137,7 +137,7 @@ public interface CMCollection {
      *	       in the specified collection
      */
 	boolean containsAll(CMCollection c);
-	
+
     /**
      * Adds all of the <b>CM</b>s in the specified collection to this collection
      * (optional operation).  The behavior of this operation is undefined if
@@ -152,7 +152,7 @@ public interface CMCollection {
      *         is not supported by this collection
      */
 	boolean addAll(CMCollection c);
-	
+
     /**
      * Retains only the <b>CM</b>s in this collection that are contained in the
      * specified collection (optional operation).  In other words, removes from
@@ -165,7 +165,7 @@ public interface CMCollection {
      *         is not supported by this collection
      */
 	boolean retainAll(CMCollection c);
-	
+
     /**
      * Removes all of this collection's <b>CM</b>s that are also contained in the
      * specified collection (optional operation).  After this call returns,
@@ -178,5 +178,14 @@ public interface CMCollection {
      * @throws UnsupportedOperationException if the <tt>removeAll</tt> method
      *         is not supported by this collection
      */
-	boolean removeAll(CMCollection c);	
+	boolean removeAll(CMCollection c);
+
+	/**
+	 * Retrieves an arbitrary object from the collection, for when you just need
+	 * an exemplar object. Which object is selected is not defined.
+	 *
+	 * @return a representative object
+	 * @throws IllegalStateException if the collection is empty
+	 */
+	CM getOne() throws IllegalStateException;
 }

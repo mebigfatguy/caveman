@@ -1,7 +1,7 @@
 /*
  * caveman - A primitive collection library
- * Copyright 2011-2012 MeBigFatGuy.com
- * Copyright 2011-2012 Dave Brosius
+ * Copyright 2011-2013 MeBigFatGuy.com
+ * Copyright 2011-2013 Dave Brosius
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,53 +28,53 @@ import com.mebigfatguy.caveman.proto.aux.CM;
 public class CaveManCMBag implements CMBag {
 	private static final int DEFAULT_CAPACITY = 31;
 	private static final float DEFAULT_LOAD_FACTOR = 0.80f;
-	
+
 	private CMBucket[] buckets;
 	private int size;
 	private final float loadFactor;
 	private int version;
-	
+
 	public CaveManCMBag() {
 		this(DEFAULT_CAPACITY);
 	}
-	
+
 	public CaveManCMBag(int initialCapacity) {
 		this(initialCapacity, DEFAULT_LOAD_FACTOR);
 	}
-	
+
 	public CaveManCMBag(int initialCapacity, float loadingFactor) {
 		buckets = new CMBucket[initialCapacity];
 		loadFactor = loadingFactor;
 		size = 0;
 		version = 0;
 	}
-	
+
 	@Override
 	public int size() {
 		return size;
 	}
-	
+
 	@Override
 	public boolean isEmpty() {
 		return size == 0;
 	}
-	
+
 	@Override
 	public boolean contains(CM item) {
 		int hash = Math.abs(fromCaveMan(item) % buckets.length);
 		CMBucket b = buckets[hash];
-		
+
 		if (b == null)
 			return false;
-		
+
 		return b.contains(item);
 	}
-	
+
 	@Override
 	public CMIterator iterator() {
 		return new CaveManCMBagIterator(version);
 	}
-	
+
 	@Override
 	public CM[] toArray() {
 		CM[] array = new CM[size];
@@ -86,28 +86,28 @@ public class CaveManCMBag implements CMBag {
 				}
 			}
 		}
-		
+
 		return array;
 	}
-	
+
 	@Override
 	public boolean add(CM item) {
 		++version;
-		
+
 		ensureSize(size + 1);
-		
+
 		int hash = Math.abs(fromCaveMan(item) % buckets.length);
 		CMBucket b = buckets[hash];
 		if (b == null) {
 			b = new CMBucket();
 			buckets[hash] = b;
 		}
-		
+
 		b.add(item);
 		++size;
 		return true;
 	}
-	
+
 	@Override
 	public boolean remove(CM item) {
 		++version;
@@ -116,18 +116,18 @@ public class CaveManCMBag implements CMBag {
 		if (b == null) {
 			return false;
 		}
-		
+
 		boolean oneRemoved = b.remove(item);
 		boolean removed = oneRemoved;
-		
+
 		while (removed) {
 			--size;
 			removed = b.remove(item);
-			
+
 		}
 		return oneRemoved;
 	}
-	
+
 	@Override
 	public boolean removeOne(CM item) {
 		++version;
@@ -136,15 +136,15 @@ public class CaveManCMBag implements CMBag {
 		if (b == null) {
 			return false;
 		}
-		
+
 		boolean removed = b.remove(item);
-		
+
 		if (removed) {
 			--size;
 		}
 		return removed;
 	}
-	
+
 	@Override
 	public int countOf(CM item) {
 		int hash = Math.abs(fromCaveMan(item) % buckets.length);
@@ -152,10 +152,10 @@ public class CaveManCMBag implements CMBag {
 		if (b == null) {
 			return 0;
 		}
-		
+
 		return b.countOf(item);
 	}
-	
+
 	@Override
 	public boolean containsAll(CMCollection c) {
 		CMIterator it = c.iterator();
@@ -166,13 +166,13 @@ public class CaveManCMBag implements CMBag {
 		}
 		return true;
 	}
-	
+
 	@Override
 	public boolean addAll(CMCollection c) {
 		++version;
-		
+
 		ensureSize(size + c.size());
-		
+
 		int startSize = size;
 		CMIterator it = c.iterator();
 		while (it.hasNext()) {
@@ -180,7 +180,7 @@ public class CaveManCMBag implements CMBag {
 		}
 		return startSize != size;
 	}
-	
+
 	@Override
 	public boolean retainAll(CMCollection c) {
 		++version;
@@ -194,7 +194,7 @@ public class CaveManCMBag implements CMBag {
 		}
 		return startSize != size;
 	}
-	
+
 	@Override
 	public boolean removeAll(CMCollection c) {
 		++version;
@@ -204,8 +204,8 @@ public class CaveManCMBag implements CMBag {
 			remove(it.next());
 		}
 		return startSize != size;
-	}	
-	
+	}
+
 	@Override
 	public void clear() {
 		++version;
@@ -213,12 +213,25 @@ public class CaveManCMBag implements CMBag {
 			buckets[i] = null;
 		}
 	}
-	
+
+	@Override
+	public CM getOne() {
+	    if (size > 0) {
+	        for (CMBucket bucket : buckets) {
+    	        if ((bucket != null) && (bucket.bucketSize > 0)) {
+    	            return bucket.list[0];
+    	        }
+    	    }
+	    }
+
+	    throw new IllegalStateException("bag has no items");
+	}
+
 	private void ensureSize(int newSize) {
 		if ((newSize / (double) buckets.length) > loadFactor) {
 			int newBucketSize = (int) (2.0 * newSize);
 			CMBucket[] newBuckets = new CMBucket[newBucketSize];
-			
+
 			for (CMBucket oldBucket : buckets) {
 				if (oldBucket != null) {
 					int oldBucketSize = oldBucket.bucketSize;
@@ -239,41 +252,41 @@ public class CaveManCMBag implements CMBag {
 							}
 						}
 						reusableBucket = null;
-						
+
 						if (!reusedBucket) {
 							newBucket.add(item);
 						}
 					}
 				}
 			}
-			buckets = newBuckets;		
+			buckets = newBuckets;
 		}
 	}
-	
+
 	private static class CMBucket {
 		CM[] list = new CM[1];
 		int bucketSize;
-		
+
 		public void add(CM item) {
-			
+
 			if (bucketSize >= list.length) {
 				CM[] newList = new CM[list.length + 4];
 				System.arraycopy(list,  0, newList, 0, bucketSize);
 				list = newList;
 			}
-			
+
 			list[bucketSize++] = item;
 		}
-		
+
 		public boolean contains(CM item) {
 			for (int i = 0; i < bucketSize; i++) {
 				if (item == list[i])
 					return true;
 			}
-			
+
 			return false;
 		}
-		
+
 		public boolean remove(CM item) {
 			for (int i = 0; i < bucketSize; i++) {
 				if (item == list[i]) {
@@ -284,30 +297,30 @@ public class CaveManCMBag implements CMBag {
 			}
 			return false;
 		}
-		
+
 		public int countOf(CM item) {
 			int count = 0;
-			
+
 			for (int i = 0; i < bucketSize; i++) {
 				if (item == list[i]) {
 					++count;
 				}
 			}
-			
+
 			return count;
 		}
 	}
-	
+
 	private class CaveManCMBagIterator implements CMIterator {
 
 		private final int iteratorVersion;
 		private int bucketIndex;
 		private int bucketSubIndex;
 		private int pos;
-		
+
 		CaveManCMBagIterator(int vers) {
 			iteratorVersion = vers;
-			
+
 			if (size > 0) {
 				for (int bucketIndex = 0; bucketIndex < buckets.length; bucketIndex++) {
 					CMBucket b = buckets[bucketIndex];
@@ -318,9 +331,9 @@ public class CaveManCMBag implements CMBag {
 				}
 				//?? shouldn't get here
 			}
-			
+
 		}
-		
+
 		@Override
 		public boolean hasNext() {
 			if (iteratorVersion != version) {
@@ -352,7 +365,7 @@ public class CaveManCMBag implements CMBag {
 				}
 			}
 			++pos;
-			
+
 			return item;
 		}
 
@@ -361,11 +374,11 @@ public class CaveManCMBag implements CMBag {
 			if (iteratorVersion != version) {
 				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
 			}
-			
+
 			if (pos >= size) {
 				throw new NoSuchElementException("Index " + pos + " is out of bounds [0, " + (size - 1) + "]");
 			}
-			
+
 			CMBucket b = buckets[bucketIndex];
 			System.arraycopy(b.list, bucketSubIndex + 1, b.list, bucketSubIndex, b.bucketSize - bucketSubIndex);
 			--b.bucketSize;
@@ -382,7 +395,7 @@ public class CaveManCMBag implements CMBag {
 		}
 	}
 
-	
-	
+
+
 	private int fromCaveMan(CM item) {return 0;}
 }
