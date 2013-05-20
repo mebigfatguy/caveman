@@ -322,7 +322,7 @@ public class CaveManCMBag implements CMBag {
 			iteratorVersion = vers;
 
 			if (size > 0) {
-				for (int bucketIndex = 0; bucketIndex < buckets.length; bucketIndex++) {
+				for (bucketIndex = 0; bucketIndex < buckets.length; bucketIndex++) {
 					CMBucket b = buckets[bucketIndex];
 					if ((b != null) && (b.bucketSize > 0)) {
 						bucketSubIndex = 0;
@@ -340,7 +340,7 @@ public class CaveManCMBag implements CMBag {
 				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
 			}
 
-			return pos >= size;
+			return pos < size;
 		}
 
 		@Override
