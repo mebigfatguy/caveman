@@ -17,6 +17,7 @@
  */
 package com.mebigfatguy.caveman.proto.impl;
 
+import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
 
@@ -308,6 +309,10 @@ public class CaveManCMBag implements CMBag {
 			}
 
 			return count;
+		}
+		
+		public String toString() {
+		    return "CMBucket[size=" + bucketSize + " buckets=" + Arrays.toString(list) + "]";
 		}
 	}
 
