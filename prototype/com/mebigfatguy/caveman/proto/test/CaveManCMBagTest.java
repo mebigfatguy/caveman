@@ -20,8 +20,10 @@ package com.mebigfatguy.caveman.proto.test;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.mebigfatguy.caveman.proto.CMIterator;
 import com.mebigfatguy.caveman.proto.aux.CM;
 import com.mebigfatguy.caveman.proto.impl.CaveManCMBag;
+import com.mebigfatguy.caveman.proto.impl.CaveManCMList;
 
 public class CaveManCMBagTest {
 	@Test
@@ -114,6 +116,25 @@ public class CaveManCMBagTest {
 			Assert.assertTrue(found);
 		}
 	}
+	
+    @Test
+    public void testSimpleIterator() {
+        CaveManCMBag b = new CaveManCMBag();
+        for (int i = 0; i < 30; i++) {
+            b.add(toCaveMan(i));
+            b.add(toCaveMan(i));
+        }
+        
+        Assert.assertEquals(60, b.size());
+        
+        CMIterator it = b.iterator();
+        while (it.hasNext()) {
+            CM cm = it.next();
+            it.remove();
+        }
+        
+        Assert.assertEquals(0, b.size()); 
+    }
 	
 	private CM toCaveMan(int i) { return null; }
 }
