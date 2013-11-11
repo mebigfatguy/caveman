@@ -8,3 +8,5 @@ test.classes
 *.jar
 *.zip
 *.*~
+.~lock.yank.*
+version.properties
