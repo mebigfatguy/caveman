@@ -42,4 +42,6 @@ public interface CMValueCollection {
 	boolean retainAll(CMValueCollection c);
 	
 	boolean removeAll(CMValueCollection c);	
+	
+	CMValue getOne() throws IllegalStateException; 
 }

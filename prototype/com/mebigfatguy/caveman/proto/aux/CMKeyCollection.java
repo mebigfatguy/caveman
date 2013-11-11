@@ -41,5 +41,7 @@ public interface CMKeyCollection {
 	
 	boolean retainAll(CMKeyCollection c);
 	
-	boolean removeAll(CMKeyCollection c);	
+	boolean removeAll(CMKeyCollection c);
+
+	CMKey getOne() throws IllegalStateException;
 }
