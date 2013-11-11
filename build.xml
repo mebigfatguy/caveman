@@ -18,8 +18,9 @@
  */
  -->
 
-<project name="caveman" default="jar">
-	<property file="build.properties" />
+<project name="caveman" default="info" basedir="." xmlns:yank="antlib:com.mebigfatguy.yank">
+    <property file="build.properties" />
+    <property file="version.properties" />
 
 	<property name="src.dir" value="${basedir}/src" />
 	<property name="task.dir" value="${basedir}/task" />
@@ -38,35 +39,30 @@
 
 	<property name="caveman.version" value="0.7.0" />
 
-	<property name="ant_.version" value="1.8.2" />
-	<property name="junit.version" value="4.11" />
-
-	<property name="ant-url" value="http://repo1.maven.org/maven2/org/apache/ant/ant/${ant_.version}/ant-${ant_.version}.jar" />
-	<property name="junit-url" value="http://repo1.maven.org/maven2/junit/junit/${junit.version}/junit-${junit.version}.jar" />
-
-	<target name="ant-check">
-		<available file="${basedir}/lib/ant-${ant_.version}.jar" property="ant-exists" />
-	</target>
-	<target name="junit-check">
-		<available file="${basedir}/lib/junit-${junit.version}.jar" property="junit-exists" />
-	</target>
-
-	<target name="install-ant" depends="ant-check" unless="ant-exists" description="installs ant.jar into lib">
-		<get src="${ant-url}" dest="${lib.dir}/ant-${ant_.version}.jar" verbose="true" ignoreerrors="true" />
-	</target>
-	<target name="install-junit" depends="junit-check" unless="junit-exists" description="installs junit.jar into lib">
-		<get src="${junit-url}" dest="${lib.dir}/junit-${junit.version}.jar" verbose="true" ignoreerrors="true" />
-	</target>
-
-	<target name="pull" depends="install-ant, install-junit" description="pull 3rdparty jars to the lib directory" />
-
 	<path id="caveman.classpath">
 		<pathelement location="${lib.dir}/ant-${ant_.version}.jar" />
-		<pathelement location="${lib.dir}/junit-${junit.version}.jar" />
+        <pathelement location="${lib.dir}/junit-${junit.version}.jar" />
+        <pathelement location="${lib.dir}/hamcrest-core-${hamcrest-core.version}.jar" />
 		<pathelement location="${classes.dir}" />
 		<pathelement location="${task.classes.dir}" />
 		<pathelement location="${test.classes.dir}" />
 	</path>
+	
+    <target name="info">
+        <echo message="CaveMan - a collection library for primitives"/>
+        <echo message=""/>
+        <echo message="    this project uses yank (https://github.com/mebigfatguy/yank) for dependency management"/>
+        <echo message="    download yank.jar and place in ant/lib directory"/>
+        <echo message="    http://search.maven.org/#artifactdetails%7Ccom.mebigfatguy.yank%7Cyank%7C0.4.2%7Cjar"/>
+    </target>
+	
+   <target name="yank">
+        <mkdir dir="${lib.dir}"/>
+        <yank:yank yankFile="${basedir}/yank.xls" destination="${lib.dir}" source="true">
+            <server url="http://repo1.maven.org/maven2"/>
+            <generateVersions propertyFileName="${basedir}/version.properties" />
+        </yank:yank>
+    </target>
 
 	<target name="clean" description="removes all generated collateral">
 		<delete dir="${src.dir}" />
@@ -80,7 +76,7 @@
 		<delete file="${basedir}/caveman-${caveman.version}-sources.zip" />
 	</target>
 
-	<target name="-init" description="prepares repository for a build">
+	<target name="-init" depends="yank" description="prepares repository for a build">
 		<mkdir dir="${src.dir}" />
 		<mkdir dir="${test.dir}" />
 		<mkdir dir="${classes.dir}" />
@@ -129,7 +125,7 @@
 		</junit>
 	</target>
 
-	<target name="build" depends="clean, -init, pull, compile_task, produce, compile_src, compile_test, test" description="compiles the code" />
+	<target name="build" depends="clean, -init, compile_task, produce, compile_src, compile_test, test" description="compiles the code" />
 
 	<target name="jar" depends="build" description="produces the caveman jar file">
 		<jar destfile="${basedir}/caveman-${caveman.version}.jar">
