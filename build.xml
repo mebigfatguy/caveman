@@ -117,7 +117,8 @@
 			<classpath>
 				<pathelement location="${test.classes.dir}" />
 				<pathelement path="${classes.dir}" />
-				<pathelement path="${lib.dir}/junit-${junit.version}.jar" />
+                <pathelement path="${lib.dir}/junit-${junit.version}.jar" />
+                <pathelement path="${lib.dir}/hamcrest-core-${hamcrest-core.version}.jar" />
 			</classpath>
 			<batchtest fork="false" todir="${reports.dir}">
 				<fileset dir="${test.classes.dir}" />
