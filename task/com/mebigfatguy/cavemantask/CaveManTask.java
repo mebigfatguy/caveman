@@ -129,6 +129,11 @@ public class CaveManTask extends Task {
 										primitive, primitiveLabel, 1));
 							}
 						}
+	                  } else if (line.contains("cmIsBoolean()")) {
+                        if (!line.contains("private")) {
+                            line = line.replaceAll("cmIsBoolean\\(\\)", "boolean".equals(primitive) ? "true" : "false");
+                            pw.println(line);
+                        }
 					} else if (!line.contains(".aux.")) {
 						if (line.contains(".proto."))
 							pw.println(applyCMReplacements(

@@ -44,6 +44,9 @@ public class CaveManCMBag implements CMBag {
 	}
 
 	public CaveManCMBag(int initialCapacity, float loadingFactor) {
+	    if (cmIsBoolean()) {
+	        initialCapacity = 2;
+	    }
 		buckets = new CMBucket[initialCapacity];
 		loadFactor = loadingFactor;
 		size = 0;
@@ -229,7 +232,7 @@ public class CaveManCMBag implements CMBag {
 	}
 
 	private void ensureSize(int newSize) {
-		if ((newSize / (double) buckets.length) > loadFactor) {
+		if (!cmIsBoolean() && (newSize / (double) buckets.length) > loadFactor) {
 			int newBucketSize = (int) (2.0 * newSize);
 			CMBucket[] newBuckets = new CMBucket[newBucketSize];
 
@@ -406,4 +409,5 @@ public class CaveManCMBag implements CMBag {
 
 
 	private int fromCaveMan(CM item) {return 0;}
+	private boolean cmIsBoolean() {return false;}
 }
