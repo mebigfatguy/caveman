@@ -236,27 +236,16 @@ public class CaveManCMBag implements CMBag {
 			for (CMBucket oldBucket : buckets) {
 				if (oldBucket != null) {
 					int oldBucketSize = oldBucket.bucketSize;
-					CMBucket reusableBucket = oldBucket;
-					boolean reusedBucket = false;
 					for (int oldBucketIndex = 0; oldBucketIndex < oldBucketSize; ++oldBucketIndex) {
 						CM item = oldBucket.list[oldBucketIndex];
 						int hash = Math.abs(fromCaveMan(item) % newBuckets.length);
 						CMBucket newBucket = newBuckets[hash];
-						if (newBucket == null) {
-							if (reusableBucket != null) {
-								newBuckets[hash] = reusableBucket;
-								reusableBucket.bucketSize = 1;
-								reusedBucket = true;
-							} else {
-								newBucket = new CMBucket();
-								newBuckets[hash] = newBucket;
-							}
+						if (newBucket == null) {							
+							newBucket = new CMBucket();
+							newBuckets[hash] = newBucket;
 						}
-						reusableBucket = null;
 
-						if (!reusedBucket) {
-							newBucket.add(item);
-						}
+						newBucket.add(item);
 					}
 				}
 			}
@@ -319,8 +308,8 @@ public class CaveManCMBag implements CMBag {
 	private class CaveManCMBagIterator implements CMIterator {
 
 		private final int iteratorVersion;
-		private int bucketIndex;
-		private int bucketSubIndex;
+		private int bucketIndex, visitedBucketIndex;
+		private int bucketSubIndex, visitedBucketSubIndex;
 		private int pos;
 
 		CaveManCMBagIterator(int vers) {
@@ -336,6 +325,9 @@ public class CaveManCMBag implements CMBag {
 				}
 				//?? shouldn't get here
 			}
+			
+			visitedBucketIndex = -1;
+			visitedBucketSubIndex = -1;
 
 		}
 
@@ -357,11 +349,15 @@ public class CaveManCMBag implements CMBag {
 			if (pos >= size) {
 				throw new NoSuchElementException("Index " + pos + " is out of bounds [0, " + (size - 1) + "]");
 			}
+			
+			visitedBucketIndex = bucketIndex;
+			visitedBucketSubIndex = bucketSubIndex;
 
 			CMBucket b = buckets[bucketIndex];
 			CM item = b.list[bucketSubIndex++];
-			if (bucketSubIndex >= b.list.length) {
+			if (bucketSubIndex >= b.bucketSize) {
 				bucketSubIndex = 0;
+				++bucketIndex;
 				for (;bucketIndex < buckets.length; bucketIndex++) {
 					b = buckets[bucketIndex];
 					if ((b != null) && (b.bucketSize > 0)) {
@@ -380,23 +376,30 @@ public class CaveManCMBag implements CMBag {
 				throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
 			}
 
-			if (pos >= size) {
-				throw new NoSuchElementException("Index " + pos + " is out of bounds [0, " + (size - 1) + "]");
+			if (pos > size) {
+				throw new NoSuchElementException("Index " + (pos-1) + " is out of bounds [0, " + (size - 1) + "]");
 			}
 
-			CMBucket b = buckets[bucketIndex];
-			System.arraycopy(b.list, bucketSubIndex + 1, b.list, bucketSubIndex, b.bucketSize - bucketSubIndex);
+			CMBucket b = buckets[visitedBucketIndex];
+			System.arraycopy(b.list, visitedBucketSubIndex + 1, b.list, visitedBucketSubIndex, b.bucketSize - visitedBucketSubIndex - 1);
 			--b.bucketSize;
-			if (bucketSubIndex >= b.bucketSize) {
-				bucketSubIndex = 0;
-				for (;bucketIndex < buckets.length; bucketIndex++) {
-					b = buckets[bucketIndex];
+			if (visitedBucketSubIndex >= b.bucketSize) {
+			    visitedBucketSubIndex = 0;
+			    ++visitedBucketIndex;
+				for (;visitedBucketIndex < buckets.length; visitedBucketIndex++) {
+					b = buckets[visitedBucketIndex];
 					if ((b != null) && (b.bucketSize > 0)) {
 						break;
 					}
 				}
 			}
+			bucketIndex = visitedBucketIndex;
+			bucketSubIndex = visitedBucketSubIndex;
+			visitedBucketIndex = -1;
+			visitedBucketSubIndex = -1;
+			
 			--pos;
+			--size;
 		}
 	}
 
