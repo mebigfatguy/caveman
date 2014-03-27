@@ -50,7 +50,7 @@ public interface CMCollection {
      * contains at least one element <tt>e</tt> such that
      * <tt>(o == e)</tt>.
      *
-     * @param o <b>CM</b> whose presence in this collection is to be tested
+     * @param item <b>CM</b> whose presence in this collection is to be tested
      * @return <tt>true</tt> if this collection contains the specified <b>CM</b>
      */
 	boolean contains(CM item);
@@ -95,7 +95,7 @@ public interface CMCollection {
      * the invariant that a collection always contains the specified <b>CM</b>
      * after this call returns.
      *
-     * @param e <b>CM</b> whose presence in this collection is to be ensured
+     * @param item <b>CM</b> whose presence in this collection is to be ensured
      * @return <tt>true</tt> if this collection changed as a result of the
      *         call
      * @throws UnsupportedOperationException if the <tt>add</tt> operation
@@ -112,7 +112,7 @@ public interface CMCollection {
      * <tt>true</tt> if this collection contained the specified <b>CM</b> (or
      * equivalently, if this collection changed as a result of the call).
      *
-     * @param o <b>CM</b> to be removed from this collection, if present
+     * @param item <b>CM</b> to be removed from this collection, if present
      * @return <tt>true</tt> if an <b>CM</b> was removed as a result of this call
      * @throws UnsupportedOperationException if the <tt>remove</tt> operation
      *         is not supported by this collection

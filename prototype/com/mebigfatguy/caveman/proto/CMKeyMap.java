@@ -85,7 +85,6 @@ public interface CMKeyMap<V> {
      *
      * @param key key with which the specified value is to be associated
      * @param value value to be associated with the specified key
-     * @return the previous value associated with <tt>key</tt>, or a 'not found' value if not found
      * @throws UnsupportedOperationException if the <tt>put</tt> operation
      *         is not supported by this map
      */
@@ -102,8 +101,6 @@ public interface CMKeyMap<V> {
      * call returns.
      *
      * @param key key whose mapping is to be removed from the map
-     * @return the previous value associated with <tt>key</tt>, or
-     *         <tt>null</tt> if there was no mapping for <tt>key</tt>.
      * @throws UnsupportedOperationException if the <tt>remove</tt> operation
      *         is not supported by this map
      */
