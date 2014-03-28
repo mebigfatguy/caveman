@@ -111,7 +111,7 @@ public interface CMValueMap<K> {
     /**
      * Copies all of the mappings from the specified map to this map
      * (optional operation).  The effect of this call is equivalent to that
-     * of calling {@link #put(K key, CM value) put(k, v)} on this map once
+     * of calling {@link #put(K key, CM value) put(key, value)} on this map once
      * for each mapping from <b>Object</b> key <tt>k</tt> to <b>CMValue</b> value <tt>v</tt> in the
      * specified map.  The behavior of this operation is undefined if the
      * specified map is modified while the operation is in progress.

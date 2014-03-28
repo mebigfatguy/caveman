@@ -109,7 +109,7 @@ public interface CMKeyMap<V> {
     /**
      * Copies all of the mappings from the specified map to this map
      * (optional operation).  The effect of this call is equivalent to that
-     * of calling {@link #put(CMKey,Object) put(k, v)} on this map once
+     * of calling {@link #put(CMKey key,V value)} on this map once
      * for each mapping from <b>CMKey</b> key <tt>k</tt> to <b>Object</b> value <tt>v</tt> in the
      * specified map.  The behavior of this operation is undefined if the
      * specified map is modified while the operation is in progress.
