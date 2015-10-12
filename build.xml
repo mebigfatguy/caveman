@@ -26,14 +26,15 @@
 	<property name="task.dir" value="${basedir}/task" />
 	<property name="prototype.dir" value="${basedir}/prototype" />
 	<property name="test.dir" value="${basedir}/test" />
-	<property name="reports.dir" value="${basedir}/reports" />
-	<property name="classes.dir" value="${basedir}/classes" />
-	<property name="task.classes.dir" value="${basedir}/task.classes" />
-	<property name="test.classes.dir" value="${basedir}/test.classes" />
+	<property name="target.dir" value="${basedir}/target" />
+	<property name="reports.dir" value="${target.dir}/reports" />
+	<property name="classes.dir" value="${target.dir}/classes" />
+	<property name="task.classes.dir" value="${target.dir}/task.classes" />
+	<property name="test.classes.dir" value="${target.dir}/test.classes" />
 	<property name="lib.dir" value="${basedir}/lib" />
-	<property name="javadoc.dir" value="${basedir}/javadoc" />
-	<property name="javac.source" value="1.5" />
-	<property name="javac.target" value="1.5" />
+	<property name="javadoc.dir" value="${target.dir}/javadoc" />
+	<property name="javac.source" value="1.6" />
+	<property name="javac.target" value="1.6" />
 	<property name="javac.deprecation" value="on" />
 	<property name="javac.debug" value="on" />
 
@@ -67,18 +68,15 @@
 	<target name="clean" description="removes all generated collateral">
 		<delete dir="${src.dir}" />
 		<delete dir="${test.dir}" />
-		<delete dir="${classes.dir}" />
-		<delete dir="${task.classes.dir}" />
-		<delete dir="${test.classes.dir}" />
-		<delete dir="${reports.dir}" />
-		<delete dir="${javadoc.dir}" />
-		<delete file="${basedir}/caveman-${caveman.version}.jar" />
-		<delete file="${basedir}/caveman-${caveman.version}-sources.zip" />
+		<delete dir="${target.dir}" />
+		<delete file="${target.dir}/caveman-${caveman.version}.jar" />
+		<delete file="${target.dir}/caveman-${caveman.version}-sources.zip" />
 	</target>
 
 	<target name="-init" depends="yank" description="prepares repository for a build">
 		<mkdir dir="${src.dir}" />
 		<mkdir dir="${test.dir}" />
+		<mkdir dir="${target.dir}" />
 		<mkdir dir="${classes.dir}" />
 		<mkdir dir="${task.classes.dir}" />
 		<mkdir dir="${test.classes.dir}" />
@@ -129,7 +127,7 @@
 	<target name="build" depends="clean, -init, compile_task, produce, compile_src, compile_test, test" description="compiles the code" />
 
 	<target name="jar" depends="build" description="produces the caveman jar file">
-		<jar destfile="${basedir}/caveman-${caveman.version}.jar">
+		<jar destfile="${target.dir}/caveman-${caveman.version}.jar">
 			<fileset dir="${classes.dir}">
 				<include name="**/*.class" />
 			</fileset>
@@ -151,7 +149,7 @@
 	</target>
 
 	<target name="srczip" description="builds the source distribution zip file">
-		<zip destfile="${basedir}/caveman-${caveman.version}-sources.jar" basedir="${basedir}">
+		<zip destfile="${target.dir}/caveman-${caveman.version}-sources.jar" basedir="${basedir}">
 			<fileset dir="${src.dir}">
 				<include name="**/*.java" />
 			</fileset>
@@ -186,9 +184,9 @@
 	
     <target name="sonatype" depends="release" description="prepare an artifact bundle for sonatype">
         <mkdir dir="${sonatype.dir}"/>
-        <copy todir="${sonatype.dir}" file="${basedir}/caveman-${caveman.version}.jar"/>
-        <copy tofile="${sonatype.dir}/caveman-${caveman.version}-sources.jar" file="${basedir}/caveman-${caveman.version}-sources.jar"/>
-        <jar destfile="${sonatype.dir}/caveman-${caveman.version}-javadoc.jar" basedir="${basedir}" includes="javadoc/**"/>
+        <copy todir="${sonatype.dir}" file="${target.dir}/caveman-${caveman.version}.jar"/>
+        <copy tofile="${sonatype.dir}/caveman-${caveman.version}-sources.jar" file="${target.dir}/caveman-${caveman.version}-sources.jar"/>
+        <jar destfile="${sonatype.dir}/caveman-${caveman.version}-javadoc.jar" basedir="${target.dir}" includes="javadoc/**"/>
         <copy tofile="${sonatype.dir}/caveman-${caveman.version}.pom" file="${basedir}/pom.xml"/>
         
         <exec executable="gpg">
