@@ -17,6 +17,7 @@
  */
 package com.mebigfatguy.caveman.proto.impl;
 
+import java.io.Serializable;
 import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
 
@@ -25,9 +26,9 @@ import com.mebigfatguy.caveman.proto.CMIterator;
 import com.mebigfatguy.caveman.proto.CMSet;
 import com.mebigfatguy.caveman.proto.aux.CM;
 
-public class CaveManCMSet implements CMSet {
-
-	private static final int DEFAULT_CAPACITY = 31;
+public class CaveManCMSet implements CMSet, Serializable {
+    private static final long serialVersionUID = 2206411569130634386L;
+    private static final int DEFAULT_CAPACITY = 31;
 	private static final float DEFAULT_LOAD_FACTOR = 0.80f;
 
 	private CMBucket[] buckets;
@@ -235,8 +236,10 @@ public class CaveManCMSet implements CMSet {
 		}
 	}
 
-	private static class CMBucket {
-		CM[] list = new CM[1];
+	private static class CMBucket implements Serializable {
+        private static final long serialVersionUID = 7608069521020561888L;
+
+        CM[] list = new CM[1];
 		int bucketSize;
 
 		public boolean add(CM item) {

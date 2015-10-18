@@ -17,6 +17,7 @@
  */
 package com.mebigfatguy.caveman.proto.impl;
 
+import java.io.Serializable;
 import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
 
@@ -25,8 +26,9 @@ import com.mebigfatguy.caveman.proto.CMIterator;
 import com.mebigfatguy.caveman.proto.CMList;
 import com.mebigfatguy.caveman.proto.aux.CM;
 
-public class CaveManCMList implements CMList {
-	private static final int DEFAULT_SIZE = 20;
+public class CaveManCMList implements CMList, Serializable {
+    private static final long serialVersionUID = -4847042274014370360L;
+    private static final int DEFAULT_SIZE = 20;
 	private static final CaveManCMListExpander DEFAULT_EXPANDER = new CaveManCMListExpander();
 
 	private final CMListExpander expander;
@@ -295,9 +297,10 @@ public class CaveManCMList implements CMList {
 		}
 	}
 
-	private static final class CaveManCMListExpander implements CMListExpander {
+	private static final class CaveManCMListExpander implements CMListExpander, Serializable {
+        private static final long serialVersionUID = -512021696178141491L;
 
-		@Override
+        @Override
 		public int grow(int oldSize, int newSize) {
 			return (int)(oldSize + newSize * 1.4);
 		}

@@ -17,6 +17,7 @@
  */
 package com.mebigfatguy.caveman.proto.impl;
 
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
@@ -31,8 +32,9 @@ import com.mebigfatguy.caveman.proto.CMValueMap;
 import com.mebigfatguy.caveman.proto.CMValueMapIterator;
 import com.mebigfatguy.caveman.proto.aux.CM;
 
-public class CaveManCMValueMap<K> implements CMValueMap<K> {
-	private static final int DEFAULT_CAPACITY = 31;
+public class CaveManCMValueMap<K> implements CMValueMap<K>, Serializable {
+    private static final long serialVersionUID = 8548358962822912724L;
+    private static final int DEFAULT_CAPACITY = 31;
 	private static final float DEFAULT_LOAD_FACTOR = 0.80f;
 
 	private CMBucket<K>[] buckets;
@@ -215,8 +217,10 @@ public class CaveManCMValueMap<K> implements CMValueMap<K> {
 		}
 	}
 
-	private static class CMBucket<K> {
-		@SuppressWarnings("unchecked")
+	private static class CMBucket<K> implements Serializable {
+        private static final long serialVersionUID = -8946557186111832432L;
+        
+        @SuppressWarnings("unchecked")
 		K[] keys = (K[])new Object[2];
 		CM[] values = new CM[2];
 		int bucketSize;

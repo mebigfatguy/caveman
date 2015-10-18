@@ -17,6 +17,7 @@
  */
 package com.mebigfatguy.caveman.proto.impl;
 
+import java.io.Serializable;
 import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
 
@@ -31,8 +32,9 @@ import com.mebigfatguy.caveman.proto.aux.CMValueBag;
 import com.mebigfatguy.caveman.proto.aux.CMValueCollection;
 import com.mebigfatguy.caveman.proto.aux.CMValueIterator;
 
-public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
-	public static final CMValue DEFAULT_NOT_FOUND_VALUE = toCaveManValue(0);
+public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap, Serializable {
+    private static final long serialVersionUID = 3426594697002329831L;
+    public static final CMValue DEFAULT_NOT_FOUND_VALUE = toCaveManValue(0);
 	private static final int DEFAULT_CAPACITY = 31;
 	private static final float DEFAULT_LOAD_FACTOR = 0.80f;
 
@@ -216,8 +218,10 @@ public class CaveManCMKeyCMValueMap implements CMKeyCMValueMap {
 		}
 	}
 
-	private static class CMBucket {
-		CMKey[] keys = new CMKey[2];
+	private static class CMBucket implements Serializable {
+        private static final long serialVersionUID = -1971035400552543174L;
+        
+        CMKey[] keys = new CMKey[2];
 		CMValue[] values = new CMValue[2];
 		int bucketSize;
 

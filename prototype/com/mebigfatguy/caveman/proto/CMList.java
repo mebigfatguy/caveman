@@ -17,6 +17,8 @@
  */
 package com.mebigfatguy.caveman.proto;
 
+import java.io.Serializable;
+
 import com.mebigfatguy.caveman.proto.aux.CM;
 /**
  * An ordered collection (also known as a <i>sequence</i>).  The user of this
