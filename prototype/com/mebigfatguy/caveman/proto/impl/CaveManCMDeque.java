@@ -24,7 +24,6 @@ import com.mebigfatguy.caveman.proto.CMCollection;
 import com.mebigfatguy.caveman.proto.CMDeque;
 import com.mebigfatguy.caveman.proto.CMIterator;
 import com.mebigfatguy.caveman.proto.aux.CM;
-import com.mebigfatguy.caveman.proto.aux.CMValue;
 
 public class CaveManCMDeque implements CMDeque, Serializable {
 
@@ -45,6 +44,10 @@ public class CaveManCMDeque implements CMDeque, Serializable {
     }
     
     public CaveManCMDeque(CM notFoundValue, int initialCapacity) {
+        if (initialCapacity < 1) {
+            initialCapacity = 1;
+        }
+        
         items = new CM[initialCapacity];
         notFound = notFoundValue;
     }
@@ -185,17 +188,40 @@ public class CaveManCMDeque implements CMDeque, Serializable {
 
     @Override
     public CM getOne() throws IllegalStateException {
-        throw new UnsupportedOperationException("getOne()");
+        if (size() == 0)
+            throw new IllegalStateException("This deque is empty");
+        
+        return getFirst();
     }
 
     @Override
     public void addFirst(CM item) {
-        throw new UnsupportedOperationException("addFirst(CM item)");
+        if (item == notFound)
+            throw new IllegalStateException("Attempted to add an item that was equal to the 'not-found' value");
+        
+        head--;
+        if (head < 0) {
+            head = items.length - 1;
+        }
+        items[head] = item;
+        
+        if (head == tail)
+            expand();
     }
 
     @Override
     public void addLast(CM item) {
-        throw new UnsupportedOperationException("addLast(CM item)");
+        if (item == notFound)
+            throw new IllegalStateException("Attempted to add an item that was equal to the 'not-found' value");
+        
+        items[tail] = item;
+        tail++;
+        if (tail >= items.length) {
+            tail = 0;
+        }
+        
+        if (head == tail)
+            expand();
     }
 
     @Override
@@ -228,32 +254,56 @@ public class CaveManCMDeque implements CMDeque, Serializable {
 
     @Override
     public CM pollFirst() {
-        throw new UnsupportedOperationException("pollFirst()");
+        if (head == tail) {
+            return notFound;
+        }
+        
+        return removeFirst();
     }
 
     @Override
     public CM pollLast() {
-        throw new UnsupportedOperationException("pollLast()");
+        if (head == tail) {
+            return notFound;
+        }
+        
+        return removeLast();
    }
 
     @Override
     public CM getFirst() {
-        throw new UnsupportedOperationException("getFirst()");
+        if (head == tail) {
+            throw new NoSuchElementException();
+        }
+        
+        return peekFirst();
     }
 
     @Override
     public CM getLast() {
-        throw new UnsupportedOperationException("getLast()");
+        if (head == tail) {
+            throw new NoSuchElementException();
+        }
+        
+        return peekLast();
     }
 
     @Override
     public CM peekFirst() {
-        throw new UnsupportedOperationException("peekFirst()");
+        if (head == tail) {
+            return notFound;
+        }
+        
+        return items[head];
     }
 
     @Override
     public CM peekLast() {
-        throw new UnsupportedOperationException("peekLast()");
+        if (head == tail) {
+            return notFound;
+        }
+        
+        return items[--tail];
     }
 
     @Override
@@ -266,6 +316,19 @@ public class CaveManCMDeque implements CMDeque, Serializable {
         throw new UnsupportedOperationException("removeLastOccurrence(CM item)");
     }
 
+    private void expand() {
+        CM[] newItems = new CM[items.length * 2];
+        if (head > tail) {
+            System.arraycopy(items,  head,  newItems,  0, items.length - head);
+            System.arraycopy(items, 0,  newItems,  items.length - head, tail);
+        } else {
+            System.arraycopy(items, head, newItems, 0, tail - head);
+        }
+        tail = size();
+        head = 0;
+        items = newItems;
+    }
+    
     
     private static CM toCaveMan(int i) {return null;}
 }
