@@ -26,7 +26,7 @@ import com.mebigfatguy.caveman.proto.aux.CM;
  * and others unordered. This interface is typically used to pass collections
  * around and manipulate them where maximum generality is desired.
  */
-public interface CMCollection {
+public interface CMCollection extends CMIterable {
 
     /**
      * Returns the number of <b>CM</b>s in this collection.  If this collection
