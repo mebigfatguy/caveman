@@ -1,6 +1,6 @@
 target
 src
-test
+/test
 classes
 javadoc
 reports
