@@ -196,9 +196,6 @@ public class CaveManCMDeque implements CMDeque, Serializable {
 
     @Override
     public void addFirst(CM item) {
-        if (item == notFound)
-            throw new IllegalStateException("Attempted to add an item that was equal to the 'not-found' value");
-        
         head--;
         if (head < 0) {
             head = items.length - 1;
@@ -211,9 +208,6 @@ public class CaveManCMDeque implements CMDeque, Serializable {
 
     @Override
     public void addLast(CM item) {
-        if (item == notFound)
-            throw new IllegalStateException("Attempted to add an item that was equal to the 'not-found' value");
-        
         items[tail] = item;
         tail++;
         if (tail >= items.length) {
