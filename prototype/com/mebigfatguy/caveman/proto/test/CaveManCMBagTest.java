@@ -23,7 +23,6 @@ import org.junit.Test;
 import com.mebigfatguy.caveman.proto.CMIterator;
 import com.mebigfatguy.caveman.proto.aux.CM;
 import com.mebigfatguy.caveman.proto.impl.CaveManCMBag;
-import com.mebigfatguy.caveman.proto.impl.CaveManCMList;
 
 public class CaveManCMBagTest {
 	@Test
