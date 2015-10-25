@@ -232,17 +232,19 @@ public class CaveManCMDeque implements CMDeque, Serializable {
 
     @Override
     public CM removeFirst() {
+        if (head == tail) {
+            throw new NoSuchElementException();           
+        }
         CM item = pollFirst();
-        if (item == notFound)
-            throw new NoSuchElementException();
         return item;
     }
 
     @Override
     public CM removeLast() {
+        if (head == tail) {
+            throw new NoSuchElementException();           
+        }
         CM item = pollLast();
-        if (item == notFound)
-            throw new NoSuchElementException();
         return item;
     }
 
