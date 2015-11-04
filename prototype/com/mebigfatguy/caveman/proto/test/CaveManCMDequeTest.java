@@ -20,6 +20,7 @@ package com.mebigfatguy.caveman.proto.test;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.mebigfatguy.caveman.proto.CMIterator;
 import com.mebigfatguy.caveman.proto.aux.CM;
 import com.mebigfatguy.caveman.proto.impl.CaveManCMDeque;
 
@@ -43,6 +44,24 @@ public class CaveManCMDequeTest {
         
         Assert.assertEquals(0, s.size());
         Assert.assertTrue(s.isEmpty());
+    }
+    
+    @Test
+    public void testRemoveFirst() {
+        CaveManCMDeque s = new CaveManCMDeque();
+        for (int i = 0; i < 10; i++) {
+            s.add(toCaveMan(0));
+            s.add(toCaveMan(1));
+        }
+        
+        s.removeFirstOccurrence(toCaveMan(1));
+        Assert.assertEquals(9, s.size());
+        
+        CMIterator it = s.iterator();
+        Assert.assertEquals(0,  it.next());
+        Assert.assertEquals(1,  it.next());
+        Assert.assertEquals(1,  it.next());
+        
     }
     
     private CM toCaveMan(int i) { return null; }
