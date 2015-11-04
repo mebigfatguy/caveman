@@ -27,6 +27,7 @@ import com.mebigfatguy.caveman.proto.aux.CM;
 
 public class CaveManCMDeque implements CMDeque, Serializable {
 
+    private static final long serialVersionUID = 6594083693968281501L;
     public static final CM DEFAULT_NOT_FOUND_VALUE = toCaveMan(0);
     private static final int DEFAULT_CAPACITY = 16;
     
@@ -304,11 +305,54 @@ public class CaveManCMDeque implements CMDeque, Serializable {
 
     @Override
     public boolean removeFirstOccurrence(CM item) {
+        if (head == tail) {
+            return false;
+        }
+        
+        int idx = head;
+        if (head > tail) {
+            while (idx < items.length) {
+                if (items[idx] == item) {
+                    
+                }
+                idx++;
+            }
+            idx = 0;
+        }
+        
+        while (idx < tail) {
+            if (items[idx] == item) {
+                
+            }
+            idx++;
+        }
         throw new UnsupportedOperationException("removeFirstOccurrence(CM item)");
     }
 
     @Override
     public boolean removeLastOccurrence(CM item) {
+        if (head == tail) {
+            return false;
+        }
+        
+        int idx = head;
+        if (head > tail) {
+            while (idx >= 0) {
+                if (items[idx] == item) {
+                    
+                }
+                idx--;
+            }
+            idx = items.length - 1;
+        }
+        
+        while (idx >= head) {
+            if (items[idx] == item) {
+                
+            }
+            idx--;
+        }
+        
         throw new UnsupportedOperationException("removeLastOccurrence(CM item)");
     }
 
