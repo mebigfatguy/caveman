@@ -371,17 +371,23 @@ public class CaveManCMDeque implements CMDeque, Serializable {
     }
     
     private void removeAt(int pos) {
-        throw new UnsupportedOperationException("removeAt(pos)");
+        if (head > tail) {
+            if (pos > head) {
+                System.arraycopy(items, head, items, head+1, pos-head);
+                head++;
+            } else {
+                System.arraycopy(items, 0, items, 1, tail - 1);
+                tail--;
+            }
+        } else {
+            System.arraycopy(items, pos+1, items, pos, tail - pos - 1);
+        }
     }
 
     private void expand() {
         CM[] newItems = new CM[items.length * 2];
-        if (head > tail) {
-            System.arraycopy(items,  head,  newItems,  0, items.length - head);
-            System.arraycopy(items, 0,  newItems,  items.length - head, tail);
-        } else {
-            System.arraycopy(items, head, newItems, 0, tail - head);
-        }
+        System.arraycopy(items,  head,  newItems,  0, items.length - head);
+        System.arraycopy(items, 0,  newItems,  items.length - head, tail);
         tail = size();
         head = 0;
         items = newItems;
