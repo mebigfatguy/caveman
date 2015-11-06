@@ -18,6 +18,7 @@
 package com.mebigfatguy.caveman.proto.impl;
 
 import java.io.Serializable;
+import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
 
 import com.mebigfatguy.caveman.proto.CMCollection;
@@ -35,6 +36,7 @@ public class CaveManCMDeque implements CMDeque, Serializable {
     private int head;
     private int tail;
     private final CM notFound;
+    private int version;
     
     public CaveManCMDeque() {
         this(DEFAULT_NOT_FOUND_VALUE);
@@ -51,6 +53,7 @@ public class CaveManCMDeque implements CMDeque, Serializable {
         
         items = new CM[initialCapacity];
         notFound = notFoundValue;
+        version = 0;
     }
     
     @Override
@@ -116,7 +119,7 @@ public class CaveManCMDeque implements CMDeque, Serializable {
 
     @Override
     public CMIterator iterator() {
-        throw new UnsupportedOperationException("iterator()");
+        return new CaveManCMDequeIterator(version);
     }
 
     @Override
@@ -147,6 +150,7 @@ public class CaveManCMDeque implements CMDeque, Serializable {
     public void clear() {
         head = 0;
         tail = 0;
+        version++;
     }
 
     @Override
@@ -205,6 +209,7 @@ public class CaveManCMDeque implements CMDeque, Serializable {
         
         if (head == tail)
             expand();
+        version++;
     }
 
     @Override
@@ -217,6 +222,7 @@ public class CaveManCMDeque implements CMDeque, Serializable {
         
         if (head == tail)
             expand();
+        version++;
     }
 
     @Override
@@ -305,6 +311,8 @@ public class CaveManCMDeque implements CMDeque, Serializable {
 
     @Override
     public boolean removeFirstOccurrence(CM item) {
+        version++;
+        
         if (head == tail) {
             return false;
         }
@@ -313,7 +321,8 @@ public class CaveManCMDeque implements CMDeque, Serializable {
         if (head > tail) {
             while (idx < items.length) {
                 if (items[idx] == item) {
-                    
+                    removeAt(idx);
+                    return true;
                 }
                 idx++;
             }
@@ -322,15 +331,18 @@ public class CaveManCMDeque implements CMDeque, Serializable {
         
         while (idx < tail) {
             if (items[idx] == item) {
-                
+                removeAt(idx);
+                return true;
             }
             idx++;
         }
-        throw new UnsupportedOperationException("removeFirstOccurrence(CM item)");
+        return false;
     }
 
     @Override
     public boolean removeLastOccurrence(CM item) {
+        version++;
+        
         if (head == tail) {
             return false;
         }
@@ -339,7 +351,8 @@ public class CaveManCMDeque implements CMDeque, Serializable {
         if (head > tail) {
             while (idx >= 0) {
                 if (items[idx] == item) {
-                    
+                    removeAt(idx);
+                    return true;
                 }
                 idx--;
             }
@@ -348,12 +361,17 @@ public class CaveManCMDeque implements CMDeque, Serializable {
         
         while (idx >= head) {
             if (items[idx] == item) {
-                
+                removeAt(idx);
+                return true;
             }
             idx--;
         }
         
-        throw new UnsupportedOperationException("removeLastOccurrence(CM item)");
+        return false;
+    }
+    
+    private void removeAt(int pos) {
+        throw new UnsupportedOperationException("removeAt(pos)");
     }
 
     private void expand() {
@@ -367,6 +385,56 @@ public class CaveManCMDeque implements CMDeque, Serializable {
         tail = size();
         head = 0;
         items = newItems;
+    }
+    
+    private class CaveManCMDequeIterator implements CMIterator {
+
+        private int iteratorVersion;
+        private int pos;
+
+        CaveManCMDequeIterator(int vers) {
+            iteratorVersion = vers;
+            pos = head;
+        }
+
+        @Override
+        public boolean hasNext() {
+            if (iteratorVersion != version) {
+                throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
+            }
+            
+            return pos != tail;
+        }
+
+        @Override
+        public CM next() throws NoSuchElementException {
+            if (iteratorVersion != version) {
+                throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
+            }
+
+            if (pos == tail) {
+                throw new NoSuchElementException("Index " + size() + " is out of bounds");
+            }
+            CM item = items[pos++];
+            if (pos == items.length) {
+                pos = 0;
+            }
+            return item;
+        }
+
+        @Override
+        public void remove() {
+            if (iteratorVersion != version) {
+                throw new ConcurrentModificationException((version - iteratorVersion) + " changes have been made since the iterator was created");
+            }
+
+            if (pos == tail) {
+                throw new NoSuchElementException("Index " + size() + " is out of bounds");
+            }
+
+            removeAt(pos);
+            ++iteratorVersion;
+        }
     }
     
     
