@@ -77,7 +77,7 @@ public class CaveManCMDequeTest {
         
         CMIterator it = s.iterator();
         Assert.assertEquals(0,  it.next());
-        Assert.assertEquals(1,  it.next());
+        Assert.assertEquals(0,  it.next());
         Assert.assertEquals(1,  it.next());
         
     }
