@@ -39,8 +39,10 @@ public class CaveManCMDequeTest {
         Assert.assertEquals(20, s.size());
         Assert.assertFalse(s.isEmpty());
         
-        s.remove(toCaveMan(0));
-        s.remove(toCaveMan(1));
+        for (int i = 0; i < 10; i++) {
+            s.remove(toCaveMan(0));
+            s.remove(toCaveMan(1));
+        }
         
         Assert.assertEquals(0, s.size());
         Assert.assertTrue(s.isEmpty());
