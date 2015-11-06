@@ -61,7 +61,7 @@ public class CaveManCMDequeTest {
             Assert.assertEquals(toCaveMan(1), it.next());
             count+= 2;
         }
-        Assert.assertEquals(2, count);
+        Assert.assertEquals(20, count);
     }
     
     @Test
