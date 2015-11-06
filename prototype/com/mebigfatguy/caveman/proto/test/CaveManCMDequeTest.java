@@ -73,7 +73,7 @@ public class CaveManCMDequeTest {
         }
         
         s.removeFirstOccurrence(toCaveMan(1));
-        Assert.assertEquals(9, s.size());
+        Assert.assertEquals(19, s.size());
         
         CMIterator it = s.iterator();
         Assert.assertEquals(0,  it.next());
