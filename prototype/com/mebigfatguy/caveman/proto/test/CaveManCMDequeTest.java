@@ -47,6 +47,24 @@ public class CaveManCMDequeTest {
     }
     
     @Test
+    public void testIterator() {
+        CaveManCMDeque s = new CaveManCMDeque();
+        for (int i = 0; i < 10; i++) {
+            s.add(toCaveMan(0));
+            s.add(toCaveMan(1));
+        }
+        
+        int count = 0;
+        CMIterator it = s.iterator();
+        while (it.hasNext()) {
+            Assert.assertEquals(toCaveMan(0), it.next());
+            Assert.assertEquals(toCaveMan(1), it.next());
+            count+= 2;
+        }
+        Assert.assertEquals(2, count);
+    }
+    
+    @Test
     public void testRemoveFirst() {
         CaveManCMDeque s = new CaveManCMDeque();
         for (int i = 0; i < 10; i++) {
