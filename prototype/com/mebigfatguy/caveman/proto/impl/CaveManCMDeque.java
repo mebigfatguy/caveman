@@ -78,7 +78,7 @@ public class CaveManCMDeque implements CMDeque, Serializable {
 
     @Override
     public int size() {
-        if (head < tail) {
+        if (head <= tail) {
             return tail - head;
         }
         
@@ -381,14 +381,17 @@ public class CaveManCMDeque implements CMDeque, Serializable {
             }
         } else {
             System.arraycopy(items, pos+1, items, pos, tail - pos - 1);
+            tail--;
         }
     }
 
     private void expand() {
         CM[] newItems = new CM[items.length * 2];
         System.arraycopy(items,  head,  newItems,  0, items.length - head);
-        System.arraycopy(items, 0,  newItems,  items.length - head, tail);
-        tail = size();
+        if (tail > 0) {
+            System.arraycopy(items, 0,  newItems,  items.length - head, tail);
+        }
+        tail = items.length;
         head = 0;
         items = newItems;
     }
