@@ -4,6 +4,7 @@ List
 Set
 Map
 Bag
+Deque
 
 Each collection type can be used with any primitive type, 
 
