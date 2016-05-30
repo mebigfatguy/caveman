@@ -38,7 +38,7 @@
 	<property name="javac.deprecation" value="on" />
 	<property name="javac.debug" value="on" />
 
-	<property name="caveman.version" value="0.7.0" />
+	<property name="caveman.version" value="0.2.0" />
 
 	<path id="caveman.classpath">
 		<pathelement location="${lib.dir}/ant-${ant_.version}.jar" />
