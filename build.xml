@@ -39,6 +39,8 @@
 	<property name="javac.debug" value="on" />
 
 	<property name="caveman.version" value="0.2.0" />
+	
+	<property name="sonatype.dir" value="${user.home}/.caveman-${caveman.version}-sonatype" />
 
 	<path id="caveman.classpath">
 		<pathelement location="${lib.dir}/ant-${ant_.version}.jar" />
@@ -124,7 +126,7 @@
 		</junit>
 	</target>
 
-	<target name="build" depends="clean, -init, compile_task, produce, compile_src, compile_test, test" description="compiles the code" />
+	<target name="build" depends="clean, -init, compile_task, produce, compile_src, compile_test" description="compiles the code" />
 
 	<target name="jar" depends="build" description="produces the caveman jar file">
 		<jar destfile="${target.dir}/caveman-${caveman.version}.jar">
@@ -180,7 +182,7 @@
 		</javadoc>
     </target>
 
-    <target name="release" depends="build, srczip, javadoc" description="prepares everything for a release" />
+    <target name="release" depends="jar, srczip, javadoc" description="prepares everything for a release" />
 	
     <target name="sonatype" depends="release" description="prepare an artifact bundle for sonatype">
         <mkdir dir="${sonatype.dir}"/>
