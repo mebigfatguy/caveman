@@ -139,7 +139,7 @@
 			<manifest>
 				<attribute name="caveman-version" value="${caveman.version}" />
 				<attribute name="Bundle-ManifestVersion" value="2" />
-				<attribute name="Bundle-Name" value="caveman plugin" />
+				<attribute name="Bundle-Name" value="caveman collections" />
 				<attribute name="Bundle-SymbolicName" value="caveman; singleton:=true" />
 				<attribute name="Bundle-Version" value="${caveman.version}" />
 				<attribute name="Bundle-ClassPath" value="." />
