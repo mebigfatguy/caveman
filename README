@@ -33,7 +33,8 @@ primitive->primitive
 primitive->Object
 Object->primitive
 
-so, interfaces like
+In the case where an Object is used, 
+typical generics notation is expected, so, interfaces like
 
 IntLongMap
 CharKeyMap<V>          // a map with a key type of char
