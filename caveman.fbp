@@ -1,7 +1,7 @@
 <Project projectName="caveman">
   <Jar>./classes</Jar>
   <Jar>./task.classes</Jar>
-  <AuxClasspathEntry>./lib/ant-1.8.2.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>./lib/ant-1.10.7.jar</AuxClasspathEntry>
   <AuxClasspathEntry>./lib/junit-4.10.jar</AuxClasspathEntry>
   <SrcDir>./src</SrcDir>
   <SrcDir>./task</SrcDir>
